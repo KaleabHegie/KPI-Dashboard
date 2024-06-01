@@ -114,6 +114,8 @@ class Indicator(models.Model):
     class Meta:
         verbose_name = "Key Performance Indicator"
 
+
+
 view_types  = [
     ('month', 'Month'),
     ('quarter', 'Quarter'),
@@ -133,9 +135,12 @@ class DashboardCategory(models.Model):
 
 
 class DashboardSetting(models.Model):
-    indicator = models.ForeignKey( Indicator , on_delete=models.CASCADE)
-    view_type = models.CharField(choices= view_types , max_length=200) 
-    trend_type = models.CharField(choices= trend , max_length=200)
+    year = models.ForeignKey(Year , on_delete=models.CASCADE)
+    performance = models.BooleanField(default=False)
+    target = models.BooleanField(default=False)
+    indicator = models.ManyToManyField(Indicator)
+    month = models.ForeignKey(Month, on_delete=models.CASCADE)
+    quarter = models.ForeignKey(Quarter, on_delete=models.CASCADE)
     dashboard_category = models.ForeignKey(DashboardCategory , on_delete=models.CASCADE)
     
     def __str__(self):

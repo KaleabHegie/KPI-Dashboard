@@ -2839,130 +2839,130 @@ let handleOnSearch = () =>{
 }
 
 
-let homePieChart = () => {
-  $.ajax({
-    url: "/dashboard-api/pie_chart_data",
-    type: "GET",
+// let homePieChart = () => {
+//   $.ajax({
+//     url: "/dashboard-api/pie_chart_data",
+//     type: "GET",
 
-    success: function (dataMain) {
-      let chartData = [
-        {
-          id: '0.0',
-          parent: '',
-          name: "National Topic",
-        },
-      ];
+//     success: function (dataMain) {
+//       let chartData = [
+//         {
+//           id: '0.0',
+//           parent: '',
+//           name: "National Topic",
+//         },
+//       ];
 
-      // Assign topics with their corresponding parent
-for (const topic of dataMain.topics) {
-    const newObj = {
-      id: `1.${topic.id}`,
-      parent: '0.0',
-      name: topic.title_ENG,
-      value: topic.category_count,
-    };
-    chartData.push(newObj);
-  }
+//       // Assign topics with their corresponding parent
+// for (const topic of dataMain.topics) {
+//     const newObj = {
+//       id: `1.${topic.id}`,
+//       parent: '0.0',
+//       name: topic.title_ENG,
+//       value: topic.category_count,
+//     };
+//     chartData.push(newObj);
+//   }
   
-  // Assign categories with their corresponding parent
-  for (const cat of dataMain.category) {
-    const newObj = {
-      id: `2.${cat.id}`,
-      parent: `1.${cat.dashboard_topic__id}`,
-      name: cat.name_ENG,
-      value: cat.category_count,
-    };
-    chartData.push(newObj);
-  }
+//   // Assign categories with their corresponding parent
+//   for (const cat of dataMain.category) {
+//     const newObj = {
+//       id: `2.${cat.id}`,
+//       parent: `1.${cat.dashboard_topic__id}`,
+//       name: cat.name_ENG,
+//       value: cat.category_count,
+//     };
+//     chartData.push(newObj);
+//   }
   
-  // Assign indicators with their corresponding parent
-  for (const indicator of dataMain.indicators) {
-    const obj = {
-      id: `3.${indicator.id}`,
-      parent: `2.${indicator.for_category__id}`,
-      name: indicator.title_ENG,
-      value: 3,
-    };
-    chartData.push(obj);
-  }
+//   // Assign indicators with their corresponding parent
+//   for (const indicator of dataMain.indicators) {
+//     const obj = {
+//       id: `3.${indicator.id}`,
+//       parent: `2.${indicator.for_category__id}`,
+//       name: indicator.title_ENG,
+//       value: 3,
+//     };
+//     chartData.push(obj);
+//   }
 
 
 
-  Highcharts.chart('bigPieChart', {
+//   Highcharts.chart('bigPieChart', {
 
-    chart: {
-        height: '100%'
-    },
+//     chart: {
+//         height: '100%'
+//     },
 
-    // Let the center circle be transparent
-    colors: ['transparent'].concat(Highcharts.getOptions().colors),
+//     // Let the center circle be transparent
+//     colors: ['transparent'].concat(Highcharts.getOptions().colors),
 
-    title: {
-        text: 'National Topic'
-    },
+//     title: {
+//         text: 'National Topic'
+//     },
 
-    series: [{
-        type: 'sunburst',
-        data: chartData,
-        name: 'National Level',
-        allowDrillToNode: true,
-        borderRadius: 3,
-        cursor: 'pointer',
-        dataLabels: {
-            format: '{point.name}',
-            filter: {
-                property: 'innerArcLength',
-                operator: '>',
-                value: 16
-            }
-        },
-        levels: [{
-            level: 1,
-            levelIsConstant: false,
-            dataLabels: {
-                filter: {
-                    property: 'outerArcLength',
-                    operator: '>',
-                    value: 64
-                }
-            }
-        }, {
-            level: 2,
-            colorByPoint: true
-        },
-        {
-            level: 3,
-            colorVariation: {
-                key: 'brightness',
-                to: -0.5
-            }
-        }, {
-            level: 4,
-            colorVariation: {
-                key: 'brightness',
-                to: 0.5
-            }
-        }]
+//     series: [{
+//         type: 'sunburst',
+//         data: chartData,
+//         name: 'National Level',
+//         allowDrillToNode: true,
+//         borderRadius: 3,
+//         cursor: 'pointer',
+//         dataLabels: {
+//             format: '{point.name}',
+//             filter: {
+//                 property: 'innerArcLength',
+//                 operator: '>',
+//                 value: 16
+//             }
+//         },
+//         levels: [{
+//             level: 1,
+//             levelIsConstant: false,
+//             dataLabels: {
+//                 filter: {
+//                     property: 'outerArcLength',
+//                     operator: '>',
+//                     value: 64
+//                 }
+//             }
+//         }, {
+//             level: 2,
+//             colorByPoint: true
+//         },
+//         {
+//             level: 3,
+//             colorVariation: {
+//                 key: 'brightness',
+//                 to: -0.5
+//             }
+//         }, {
+//             level: 4,
+//             colorVariation: {
+//                 key: 'brightness',
+//                 to: 0.5
+//             }
+//         }]
 
-    }],
+//     }],
 
-    tooltip: {
-        headerFormat: '',
-        pointFormat: '<b>{point.name}</b>' 
-    }
-});
-    },
-    error: function (xhr, status, error) {
-      console.error("AJAX request failed:", error);
-    },
-  });
-}
+//     tooltip: {
+//         headerFormat: '',
+//         pointFormat: '<b>{point.name}</b>' 
+//     }
+// });
+//     },
+//     error: function (xhr, status, error) {
+//       console.error("AJAX request failed:", error);
+//     },
+//   });
+// }
 
 $(document).ready(function () {
 
   $.ajax({
     type: "GET",
-    url: "/dashboard-api/topic_lists/",
+    url: "/ministries_lists/",
     beforeSend: function () {
       showLoadingSkeletonTopic();
       showLoadingSkeleton();
@@ -2972,6 +2972,7 @@ $(document).ready(function () {
       hideLoadingSkeletonCategory();
     },
     success: function (data) {
+      console.log(data)
       handleOnSearch()
       const bootstrapColors = [
         "primary",
@@ -2984,31 +2985,28 @@ $(document).ready(function () {
       let cardTopic = ``
       let sideNav = ``;
       let selectedCard = ''
-      data.topics.forEach((item) => {
+      data.ministries.forEach((item) => {
         cardTopic += `
         <!-- custom cards -->
-             <div class="col-md-6  col-xl-3 d-none d-md-block topic-card"
+          <div class="col-md-6  col-xl-3 d-none d-md-block topic-card"
              data-id = ${item.id}
-             data-category-name = "${item.title_ENG}"
+             data-category-name = "${item.responsible_ministry_eng}"
              >
                 <div class="card ${ item.id == 3 ? selectedCard : '' } selected-card social-widget-card bg-${bootstrapColors[Math.floor(Math.random() * bootstrapColors.length)]}">
                     <div class="card-body d-flex justify-content-between align-items-center p-2">
                         <div class="d-flex flex-column">
-                            <h3 class="text-white m-0">${Number(item.category_count)} +</h3>
-                            <span class="m-t-10">${item.title_ENG}</span>
+                            <h3 class="text-white m-0">${Number(item.goal_count)} +</h3>
+                            <span class="m-t-10">${item.responsible_ministry_eng}</span>
                         </div>
-                        <i class="fa fa-${item.icon.split(",")[1]}"></i>
-
+                        
                     </div>
                 </div>
             </div>`;
 
-        sideNav += `<li class="pc-item topic-card" data-id = ${item.id} data-category-name = "${item.title_ENG}">
+        sideNav += `<li class="pc-item topic-card" data-id = ${item.id} data-category-name = "${item.responsible_ministry_eng}">
             <a href="#" class="pc-link">
-                <span class="pc-micon">
-                    <i class="fa fa-${item.icon.split(",")[1]}"></i>
-                </span>
-                <span class="pc-mtext">${item.title_ENG}</span>   
+  
+                <span class="pc-mtext">${item.responsible_ministry_eng}</span>   
                 </a>
         </li>
         `
@@ -3016,62 +3014,30 @@ $(document).ready(function () {
         
       });
 
-       cardTopic += `
-      <div class="col-md-6  col-xl-3 d-none d-md-block topic-card"  data-id="Civil_Service" data-category-name="Civil_Service" id="Civil_Service" bis_skin_checked="1">
-      <div class="card  social-widget-card bg-${bootstrapColors[Math.floor(Math.random() * bootstrapColors.length)]}">
-                  <div class="card-body d-flex justify-content-between align-items-center p-2" bis_skin_checked="1">
-                      <div class="d-flex flex-column" bis_skin_checked="1">
-                          <h3 class="text-white m-0">3 +</h3>
-                          <span class="m-t-10">Civil Service</span>
-                      </div>
-                      <i class="fa fa-briefcase" aria-hidden="true"></i>
-
-                  </div>
-              </div>
-          </div>
-      `;
-      cardTopic += `
-      <!-- custom cards -->
-      <div class="col-md-6  col-xl-3 d-none d-md-block topic-card" data-id = "project" data-category-name = "project">
-         <div class="card  social-widget-card bg-${bootstrapColors[Math.floor(Math.random() * bootstrapColors.length)]}">
-             <div class="card-body d-flex justify-content-between align-items-center p-2">
-                 <div class="d-flex flex-column">
-                     <h3 class="text-white m-0">3 +</h3>
-                     <span class="m-t-10">Project</span>
-                 </div>
-                 <i class="fa fa-cogs" aria-hidden="true"></i>
-             </div>
-         </div>
-     </div>
-     `;
-
-     sideNav += `  <li class="pc-item topic-card" data-id = "Civil_Service" data-category-name = "Civil_Service">
-       <a href="#" class="pc-link">
-           <span class="pc-micon">
-           <i class="fa fa-briefcase" aria-hidden="true"></i>
-           </span>
-           <span class="pc-mtext">Civil Service</span>   
-           </a>     
-   </li>
-   `
-     sideNav += `  <li class="pc-item topic-card" data-id = "project" data-category-name = "project">
-       <a href="#" class="pc-link">
-           <span class="pc-micon">
-           <i class="fa fa-cogs" aria-hidden="true"></i>
-           </span>
-           <span class="pc-mtext">Project</span>   
-           </a>     
-   </li>
-   `
+   
       $("#mobile-collapse").click(function(){
         $("#sidebarHtml").removeClass("d-none")
       })
+
+      goals_list = `
+      <div class="row justify-content-center">
+        <div class="col-5">
+          <label for="selectOption" class="form-label h5">Select a goal</label>
+          <select id="selectOption" class="form-select form-select-md" aria-label=".form-select-sm example">
+            <option selected>Open this select menu</option>
+            <option value="1">One</option>
+            <option value="2">Two</option>
+            <option value="3">Three</option>
+          </select>
+        </div>
+      </div>
+      `
       
       $("#topic-card-lists").html(cardTopic);
+      $("#topic-card-lists").append(goals_list);
       $("#sidebar-topic-list").html(sideNav);
 
-      handleTopicClicked() //handle Topic Clicked
-      homePieChart()
+      handleTopicClicked() 
 
     },error: function(response) {
       hideLoadingSkeletonTopic();
@@ -3081,7 +3047,7 @@ $(document).ready(function () {
   });
 
   //Default 
-  defaultCategoryLists()
+
   
 });
 
