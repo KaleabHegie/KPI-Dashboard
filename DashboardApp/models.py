@@ -18,7 +18,7 @@ class Quarter(models.Model):
         Year, on_delete=models.SET_NULL, blank=True, null=True)
     quarter_eng = models.CharField(max_length=100, blank=True, null=True)
     quarter_amharic = models.CharField(max_length=100, blank=True, null=True)
-
+    
     def __str__(self):
         return self.quarter_eng
 

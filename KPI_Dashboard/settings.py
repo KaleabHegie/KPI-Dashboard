@@ -40,8 +40,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'DashboardApp',
     'userManagement',
-     'import_export',
-     'fontawesome_5',
+    'import_export',
+    'fontawesome_5',
+    'User_Admin',
 ]
 
 MIDDLEWARE = [
