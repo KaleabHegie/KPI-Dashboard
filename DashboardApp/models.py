@@ -16,7 +16,7 @@ class Year(models.Model):
 class Quarter(models.Model):
     quarter_eng = models.CharField(max_length=100, blank=True, null=True)
     quarter_amharic = models.CharField(max_length=100, blank=True, null=True)
-
+    
     def __str__(self):
         return self.quarter_eng
 
