@@ -1312,53 +1312,68 @@ let renderCategoryGraph = (id, dataArray, bootstrapColorsCode) => {
   });
 $(`#all-earnings-graph${id}`).html("")
 new ApexCharts(document.querySelector(`#all-earnings-graph${id}`), {
-    chart: {
-      type: "bar",
-      height: 50,
-      sparkline: {
-        enabled: true,
-      },
+  series: [
+    {
+      data: [
+        { x: "", y: [1, 6] },
+        { x: "", y: [3, 7] },
+        { x: "", y: [4, 8] },
+        { x: "", y: [5, 9] },
+        { x: "", y: [4, 8] },
+        { x: "", y: [4, 7] },
+        { x: "", y: [2, 5] },
+      ],
     },
-    colors: [
-      `${ColorsCode[bootstrapColorsCode]}`,
-    ],
-    plotOptions: {
-      bar: {
-        columnWidth: "80%",
-      },
+  ],
+  chart: {
+    type: "rangeBar",
+    height: 80,
+    sparkline: { enabled: !0 },
+    toolbar: { show: !1 },
+  },
+  colors: ["#E58A00"],
+  plotOptions: {
+    bar: { columnWidth: "30%", borderRadius: 5, horizontal: !1 },
+  },
+  yaxis: { tickAmount: 2, min: 0, max: 10 },
+  grid: { show: !1, padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+  xaxis: {
+    labels: { show: !1 },
+    axisBorder: { show: !1 },
+    axisBorder: { show: !1 },
+    axisTicks: { show: !1 },
+  },
+  dataLabels: { enabled: !1 },
+}).render();
+var e = {
+chart: { height: 250, type: "bar", toolbar: { show: !1 } },
+plotOptions: {
+  bar: {
+    horizontal: !1,
+    columnWidth: "55%",
+    borderRadius: 4,
+    borderRadiusApplication: "end",
+  },
+},
+legend: { show: !0, position: "top", horizontalAlign: "left" },
+dataLabels: { enabled: !1 },
+colors: ["#4680FF", "#4680FF"],
+stroke: { show: !0, width: 3, colors: ["transparent"] },
+fill: { colors: ["#4680FF", "#4680FF"], opacity: [1, 0.5] },
+grid: { strokeDashArray: 4 },
+series: [
+  { name: "Net Profit", data: [76, 85, 101, 98, 87, 105, 91] },
+  { name: "Revenue", data: [44, 55, 57, 56, 61, 58, 63] },
+],
+xaxis: { categories: ["Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"] },
+tooltip: {
+  y: {
+    formatter: function (e) {
+      return "$ " + e + " thousands";
     },
-    series: [
-      {
-        data: seriesData,
-      },
-    ],
-    xaxis: {
-      crosshairs: {
-        width: 1,
-      },
-    },
-    tooltip: {
-      fixed: {
-        enabled: true,
-      },
-      x: {
-        show: true,
-        formatter: function (val) {
-          return `Year: ${val}`; // Access x value (year) directly
-        },
-      },
-      y: {
-        title: {
-          formatter: function (e) {
-            return "";
-          },
-        },
-      },
-      marker: {
-        show: false,
-      },
-    },
-  }).render();
+  },
+},
+};
 };
 
 
@@ -2096,528 +2111,14 @@ let handleTopicClicked = () =>{
   $(".topic-card").click(function () {
     $("#bigPieChartParent").html('')
     const buttonData = $(this).data();
-    
-    if (buttonData.id == "Civil_Service") {
-      $("#category-title").html('Civil Service');
-      categoryCard = ` 
-      <link
-      rel="stylesheet"
-      href="{% static 'dashoboard_assets/assets/css/male_female.css' %}"
-      />  
-    <link
-      rel="stylesheet"
-      href="{% static 'dashoboard_assets/assets/css/map_style.css' %}"
-    />  
-    <script src="{% static 'dashoboard_assets/assets/js/pages/dashboard-default.js' %}"></script>
-   
-          <div class="col-lg-7 card table-responsive">
-            <h3 class="text-center p-3">Regional Civil servant (2014 EFY)</h3>
-            <table class="table table-bordered">
-            <thead>
-              <tr>
-                <th>Job Grade</th>
-                <th>Number of Civil Servants</th>
-                <th>Share from the Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Professional Science (PS)</td>
-                <td>39,767</td>
-                <td>1.7</td>
-              </tr>
-              <tr>
-                <td>Administrative (AD)</td>
-                <td>38,736</td>
-                <td>1.7</td>
-              </tr>
-              <tr>
-                <td>Sub Professional (SP)</td>
-                <td>98,080</td>
-                <td>4.3</td>
-              </tr>
-              <tr>
-                <td>Clerical and Fiscal (CF)</td>
-                <td>71,895</td>
-                <td>3.2</td>
-              </tr>
-              <tr>
-                <td>Trades and Crafts (TC)</td>
-                <td>27,678</td>
-                <td>1.2</td>
-              </tr>
-              <tr>
-                <td>Custodial and Manual (CM)</td>
-                <td>58,892</td>
-                <td>2.6</td>
-              </tr>
-              <tr>
-                <td>Teachers</td>
-                <td>78,776</td>
-                <td>3.5</td>
-              </tr>
-              <tr>
-                <td>Health Professionals</td>
-                <td>119,968</td>
-                <td>5.3</td>
-              </tr>
-              <tr>
-                <td>Appointment/Cariour</td>
-                <td>161,013</td>
-                <td>7.1</td>
-              </tr>
-              <tr>
-                <td>Agricultural professionals</td>
-                <td>202,566</td>
-                <td>8.9</td>
-              </tr>
-              <tr>
-                <td>Engineers</td>
-                <td>234,279</td>
-                <td>10.3</td>
-              </tr>
-              <tr>
-                <td>ICT Professionals</td>
-                <td>163,389</td>
-                <td>7.2</td>
-              </tr>
-              <tr>
-                <td>Special Classification (SC)</td>
-                <td>123,020</td>
-                <td>5.4</td>
-              </tr>
-              <tr>
-                <td>Job grade (XV-XXII)</td>
-                <td>163,153</td>
-                <td>7.2</td>
-              </tr>
-              <tr>
-                <td>Not Stated (NS)</td>
-                <td>536,884</td>
-                <td>23.6</td>
-              </tr>
-              <tr>
-                <td>Total</td>
-                <td>2,278,770</td>
-                <td>100.0</td>
-              </tr>
-            </tbody>
-          </table>
-  </div>
-  <div class="col-lg-5 mt-4 mt-lg-0">
-      <div class="card">
-          <div class="card-body">
-              <div class="d-flex align-items-center">
-                  <div class="flex-shrink-0">
-                      <div class="avatar avatar-s bg-light-primary">
-                          <!-- avatar icon -->
-                      </div>
-                  </div>
-                  <div class="flex-grow-1 ms-3">
-                      <h6 class="mb-0">Civil Service</h6>
-                  </div>
-                  <div class="flex-shrink-0 ms-3">
-                      <div class="dropdown">
-                          <!-- dropdown menu -->
-                      </div>
-                  </div>
-              </div>
-              <div class="bg-body p-3 mt-3 rounded">
-                  <div class="mt-3 row align-items-center">
-                      <div class="col-12 col-lg-7">
-                          <div id="all-earnings-graph3"></div>
-                      </div>
-                      
-                  </div>
-              </div>
-          </div> <hr>
-          <div id="bar_civil_servant"></div> <hr>
-          <div id="pie_civil_servant" class="mt-5"></div>
-      </div>
-  </div>
-
-  <div id="ethio_map"></div>
-  
-  
-  <script>
-  new ApexCharts(document.querySelector("#all-earnings-graph3"), {
-    chart: { type: "bar", height: 80, sparkline: { enabled: !0 } },
-    colors: ["#2CA87F"],
-    plotOptions: { bar: { columnWidth: "80%" } },
-    series: [{ data: [
-      { x: "Label 1", y: 1.7 },
-      { x: "Label 2", y: 1.9 },
-      { x: "Label 3", y: 2.1 },
-      { x: "Label 4", y: 2.2 },
-      { x: "Label 5", y: 2.3 }
-    ], }],
-    xaxis: { crosshairs: { width: 1 } },
-    tooltip: {
-      fixed: { enabled: !1 },
-      x: { show: !1 },
-      y: {
-        title: {
-          formatter: function (e) {
-            return "";
-          },
-        },
-      },
-      marker: { show: !1 },
-    },
-  }).render() 
-  
-  Highcharts.chart('bar_civil_servant', {
-    chart: {
-      type: 'bar'
-    },
-    title: {
-      text: 'Number of Civil Servants by Region and gender'
-    },
-    xAxis: {
-      categories: ['Tigray', 'Afar', 'Amhara', 'Oromia', 'Somali', 'Benishangul Gumuz', 'SNNP', 'Gambella', 'Harari', 'Sidama', 'South West', 'Addis Ababa', 'Dire Dawa', 'የክልል ድምር']
-    },
-    yAxis: {
-      title: {
-        text: 'Number of Civil Servants'
-      }
-    },
-    series: [{
-      name: 'Male',
-      data: [63880, 28220, 241539, 397643, 102641, 22380, 188063, 19364, 6343, 66744, 49024, 72137, 6106, 1264084]
-    }, {
-      name: 'Female',
-      data: [50757, 11966, 178514, 218781, 30120, 13405, 103864, 8455, 4884, 30497, 24615, 90290, 3888, 770036]
-    }]
-  });
-  Highcharts.chart('pie_civil_servant', {
-    chart: {
-      type: 'pie'
-    },
-    title: {
-      text: 'Civil Servants by Salary Category'
-    },
-    plotOptions: {
-      pie: {
-        innerSize: '50%',
-        dataLabels: {
-          enabled: true,
-          format: '{point.name}: {point.y} ({point.percentage:.1f}%)'
-        }
-      }
-    },
-    series: [{
-      name: 'Number of Civil Servants',
-      data: [
-        ['<1000', 15247],
-        ['1000-1999', 229914],
-        ['2000-2999', 154014],
-        ['3000-3999', 253189],
-        ['4000-4999', 252463],
-        ['5000-5999', 251688],
-        ['6000-6999', 255935],
-        ['7000-7999', 263504],
-        ['8000-8999', 200100],
-        ['9000-9999', 155200],
-        ['>10000', 189905],
-        ['Not Stated', 57611]
-      ]
-    }]
-  });
-  
-  Highcharts.Templating.helpers.abs = value => Math.abs(value);
-  
-  
-  
-  Highcharts.chart('male_female', {
-      chart: {
-          type: 'bar'
-      },
-      title: {
-          text: 'Population pyramid for Somalia, 2021',
-          align: 'left'
-      },
-      subtitle: {
-          text: 'Source: <a ' +
-              'href="https://countryeconomy.com/demography/population-structure/somalia"' +
-              'target="_blank">countryeconomy.com</a>',
-          align: 'left'
-      },
-      accessibility: {
-          point: {
-              valueDescriptionFormat: '{index}. Age {xDescription}, {value}%.'
-          }
-      },
-      xAxis: [{
-          categories: categories,
-          reversed: false,
-          labels: {
-              step: 1
-          },
-          accessibility: {
-              description: 'Age (male)'
-          }
-      }, { // mirror axis on right side
-          opposite: true,
-          reversed: false,
-          categories: categories,
-          linkedTo: 0,
-          labels: {
-              step: 1
-          },
-          accessibility: {
-              description: 'Age (female)'
-          }
-      }],
-      yAxis: {
-          title: {
-              text: null
-          },
-          labels: {
-              format: '{abs value}%'
-          },
-          accessibility: {
-              description: 'Percentage population',
-              rangeDescription: 'Range: 0 to 5%'
-          }
-      },
-  
-      plotOptions: {
-          series: {
-              stacking: 'normal',
-              borderRadius: '50%'
-          }
-      },
-  
-      tooltip: {
-          format: '<b>{series.name}, age {point.category}</b><br/>' +
-              'Population: {(abs point.y):.1f}%'
-      },
-  
-      series: [{
-          name: 'Male',
-          data:  [
-            63,880,
-            28,220,
-            241,539,
-            397,643,
-            102,641,
-            22,380,
-            188,063,
-            19,364,
-            6,343,
-            66,744,
-            49,024,
-            72,137,
-            6,106
-        ]
-      }, {
-          name: 'Female',
-          data: [
-            50,757,
-            11,966,
-            178,514,
-            218,781,
-            30,120,
-            13,405,
-            103,864,
-            8,455,
-            4,884,
-            30,497,
-            24,615,
-            90,290,
-            3,888
-        ]
-      }]
-  });
-  </script>
-  <script>
-      (async () => {
-
-        const topology = await fetch(
-            'https://code.highcharts.com/mapdata/countries/et/et-all.topo.json'
-        ).then(response => response.json());
-    
-        // Prepare demo data. The data is joined to map using value of 'hc-key'
-        // property by default. See API docs for 'joinBy' for more info on linking
-        // data and map.
-        const data = [
-            ['et-be', 35785 ], ['et-2837', 162427 ], ['et-ha', 11227 ], ['et-sn', 291927],
-            ['et-ga', 27819 ], ['et-aa', 616424  ], ['et-so', 132761], ['et-dd', 9994 ],
-            ['et-ti', 114637 ], ['et-af', 40186 ], ['et-am', 420053]
-        ];
-    
-        // Create the chart
-        Highcharts.mapChart('ethio_map', {
-            chart: {
-                map: topology
-            },
-    
-            title: {
-                text: 'Highcharts Maps basic demo'
-            },
-    
-            subtitle: {
-                text: 'Source map: <a href="http://code.highcharts.com/mapdata/countries/et/et-all.topo.json">Ethiopia</a>'
-            },
-    
-            mapNavigation: {
-                enabled: true,
-                buttonOptions: {
-                    verticalAlign: 'bottom'
-                }
-            },
-    
-            colorAxis: {
-                min: 0
-            },
-    
-            series: [{
-                data: data,
-                name: 'Civil Servant',
-                states: {
-                    hover: {
-                        color: '#BADA55'
-                    }
-                },
-                dataLabels: {
-                    enabled: true,
-                    format: '{point.name}'
-                }
-            }]
-        });
-    
-    })();
-    
-    </script> 
-  
-
-                    
-  `
-      $("#category-card-list").html(categoryCard);
-      hideLoadingSkeletonCategory()
-    }
-    else  if(buttonData.id == "project"){
-      $("#category-title").html('Project');
-      let dashboardItem = [
-        {
-        name: 'Number of Projects',
-        value: 360,
-        icon: '<i class="bi bi-gear-fill"></i>'
-        },
-        {
-        name: 'Length of Road in thousand KM',
-        value: 21,
-        icon : '<i class="bi bi-rulers"></i>'
-        },
-        {
-        name: 'Total Cost (original) in billion birr',
-        value: 779,
-        icon : '<i class="bi bi-cash-coin"></i>'
-        },
-        {
-        name: 'Total Cost (revised) in billion birr',
-        value: 781,
-        icon : '<i class="bi bi-coin"></i>'
-        },
-        {
-        name: 'Expenditure to date',
-        value: 306.7,
-        icon : '<i class="bi bi-calendar-fill"></i>'
-        },
-        {
-        name: 'Total budget required to complete the project',
-        value: 475,
-        icon : '<i class="bi bi-cart-check-fill"></i>'
-        },
-        {
-        name: 'Performance in percent to date (average)',
-        value: 29,
-        icon : '<i class="bi bi-percent"></i>'
-        },
-        {
-        name: 'Planned average physical performance in percent for 2017 FY',
-        value: 7,
-        icon : '<i class="bi bi-send-fill"></i>'
-        },
-        {
-        name: 'Budget request for 2017 FY in billion birr',
-        value: 78.7,
-        icon : '<i class="bi bi-wallet2"></i>'
-        },
-        {
-        name: 'Number of Projects Not Yet Started',
-        value: 137,
-        icon : '<i class="bi bi-signpost"></i>'
-        },
-        {
-        name: 'Total Estimated Cost of Projects Not Yet Started (in billion birr)',
-        value: 412,
-        icon : '<i class="bi bi-person-walking"></i>'
-        },
-        {
-        name: 'Total Length of Projects Not Yet Started (in thousand KM)',
-        value: 10.8,
-        icon : '<i class="bi bi-easel"></i>'
-        },
-        {
-        name: 'Budget Request for Projects Not Yet Started in the 2017 Fiscal Year (in billion birr)',
-        value: 15.3,
-        icon : '<i class="bi bi-cash"></i>'
-        }
-        ];
-        let roadSummaryItem = 
-          {
-           project : [
-            
-               ["Total", 380.0, 562.8, 27.2, 240.6, 78.7, 72.1],
-               ["Trunk Road Rehabilitation",4.0, 2.7, 0.2, 2.9, 1.3, 0.3],
-               ["Trunk Road Upgrading", 81.0, 152.0, 6.1, 43.6, 18.6, 19.5],
-               ["New Road Project", 238.0, 392.3, 16.2, 115.1, 54.2, 50.2],
-               ["Road Heavy Maintenance", 51.0, 15.8, 4.6, 2.3, 2.6, 2.0],
-               ["Bridge Construction and Rehabilitation",6.0, 0.0, 0.0, 76.7, 2.0, 0.0]
-           ]
-          }
-       let energyCard = {
-         energey : [
-          ['GERD', 'Benishangul', '12/30/10', '09/08/25', '5150 MW', '92.15', '96.15', '95.79', '234.97', '193.30', '48.89'],
-          ['Koyisha', 'South west', '03/28/16', '05/18/28', '1800MW', '61.39', '67.13', '66.42', '143.90', '50.13', '78.20'],
-          ['Ayisha', 'Somali', '02/25/16', '09/27/25', '120 MW', '82.05', '84.14', '83.41', '10.32', '4.18', '4.02'],
-          ['Aluto', 'Oromiya', '10/01/14', '09/30/24', '72 MW', '98.58', '100.22', '99.39', '5.91', '5.38', '1.71'],
-          ['Assela', 'Oromiya', '12/17/20', '01/13/25', '100MW', '39.75', '60.41', '52.24', '8.08', '4.53', '4.58'],
-          ['BahirDar-Wolideya-Kombolicha', 'Amhara', '08/30/19', '02/28/25', '400kv', '89.49', '97.29', '93.88', '13.47', '6.80', '6.78'],
-          ['Bokoji and Debiretabor', 'Oromiya and Amhara', '03/03/23', '08/31/24', '230kv', '39.03', '76.72', '73.37', '1.94', '1.30', '0.61'],
-          ['Southern Eletric Grid', 'South/Sidama', '11/29/22', '11/28/25', '132kv', '22.11', '48.62', '45.45', '10.62', '4.15', '6.76'],
-          ['Forest Park', 'Addis Ababa', '07/04/23', '08/31/24', '132kv/230kv', '0', '99.2', '89.6', '0.20', '0.14', '0.38'],
-          ['Kotebe Gibi', 'Addis Ababa', '10/05/22', '05/08/24', '', '78.46', '98.46', '96.58', '0.74', '0.60', '0.43'],
-          ['GERD Coordination', 'Benishangul', '11/03/23', '06/27/24', '', '0', '51.6', '57.2', '0.15', '0.11', '0.15']
-
-         ]
-       }
-
-       let irrigationCard = {
-        irrigation : [
-          ['Total Numebr of Irrigation Projects', '54', '101.66', '31.41', '70.25'],
-          ['Irrigartion Projects with perforamnce >50%', '13', '6.43', '3.85', '2.59'],
-          ['Irrigartion Projects with perforamnce < 50%', '41', '95.23', '27.57', '67.66'],
-          ['Irrigation Projects has not started', '10', '53.48', '0.26', '53.22']
-        ]
-       }
-   
-      $("#category-card-list").html(projectHtml(dashboardItem,roadSummaryItem, energyCard, irrigationCard));
-      renderRoadProject() // render Graph
-      hideLoadingSkeletonCategory()
-    }
-    else {
 
     $("#category-card-list").html("");
     $("#sidebarHtml").addClass("d-none")
     $(".selected-card").removeClass("border border-secondary shadow-lg border-4")
-
-    const buttonData = $(this).data();
     $("#category-card-list").html("");
     $.ajax({
       type: "GET",
-      url: `/dashboard-api/category_list/${buttonData.id}`,
+      url: `/key_area_list/${buttonData.id}`,
       beforeSend: function () {
         hideLoadingSkeletonCategory();
         showLoadingSkeleton();
@@ -2625,86 +2126,37 @@ let handleTopicClicked = () =>{
       complete: function () {
         hideLoadingSkeletonCategory();
       }, success: function (data) {
-        if(data.categories.length > 0){
-          let category = ``;
-          try{ $("#category-title").html(data.categories[0].dashboard_topic__title_ENG);}
-          catch{ null}
-
-          data.categories_lists.forEach((cat) => {
-            let color = randomColor()
-            $("#category-card-list").append(
-              `
-              <h4 class="fw-bold text-${color} text-center pt-3" >${cat.name_ENG}</h4>
-              <hr class="shadow-lg p-1 rounded ">
-              `
-            )
-  
-            let filterCategoryIndicators = data.categories.filter((ind) => ind.id == cat.id)
-            filterCategoryIndicators.forEach((item) => {
-              const valueItem = [];
+        if (data.goal_list.length > 0) {
+          $("#choose_goal").html("");
+          $("#category-card-list").html("");
     
-              let value = data.values.filter(
-                (value) =>
-                  value.for_indicator_id == item.indicator__id
-              );
-      
-              
-              let seasonType = value.length > 0 ? (value[0].for_indicator__type_of == "monthly" ? 'Month' : (value[0].for_indicator__type_of == "quarterly" ? "Quarter" : "Year") ) : 'None'
-      
-              for (val of value) {
-                if (String(val.for_indicator__type_of) == "monthly") {
-                  valueItem.push([
-                    val.for_datapoint_id__year_GC +
-                    " - " +
-                    val.for_month_id__month_AMH,
-                    val.value,
-                  ]);
-                }else if (String(val.for_indicator__type_of) == "quarterly") {
-                  valueItem.push([
-                    val.for_datapoint_id__year_GC +
-                    " - " +
-                    val.for_quarter_id__title_ENG,
-                    val.value,
-                  ]);
-                } else {
-                  valueItem.push([val.for_datapoint_id__year_GC, val.value]);
-                }
-              }
-      
-      
-      
-              let calculatePercentageDifference,
-                roundDifference,
-                difference = null;
-              try {
-                calculatePercentageDifference =
-                  ((value[value.length - 1].value - value[value.length - 2].value) /
-                    value[value.length - 2].value) *
-                  100;
-                roundDifference =
-                  Math.round(calculatePercentageDifference * 100) / 100;
-                difference = (
-                  value[value.length - 1].value - value[value.length - 2].value
-                ).toFixed(2);
-              } catch {
-                null;
-              }
-              
-              $("#category-card-list").append(indicatorCards(item, seasonType, value,color));
-              renderCategoryGraph(item.indicator__id, valueItem,color);
-            });
-  
-          })
-         
-          
-          handelCategoryDetail() //Call handle on category details
-        }else{
+          data.goal_list.forEach((goal) => {
+            let color = randomColor();
+            $("#choose_goal").append(`<option id="${goal.id}">${goal.goal_name_eng}</option>`);
+    
+            let filteredKeyResultAreas = data.KeyResultArea_list.filter(
+              (item) => item.goal_id === goal.id
+            );
+    
+            $("#category-card-list").append(`
+              <div class="card">
+                <div class="card-header">${goal.goal_name_eng}</div>
+                <div class="card-body">
+                  ${filteredKeyResultAreas
+                    .map((item) => `<p>${item.activity_name_eng}</p>`)
+                    .join("")}
+                </div>
+              </div>
+            `);
+          });
+        }
+        else{
           $("#category-title").html('<p class="text-center text-danger h3">No Data Found</p>')
         }
       },
 
     });
-    }
+   
    
   });
   
@@ -2715,7 +2167,7 @@ let defaultCategoryLists = ( search = null) => {
   $("#category-card-list").html("");
   $.ajax({
     type: "GET",
-    url: `/dashboard-api/category_list/2${search ? '?'+search : '' }`,
+    url: `/goal_list/1${search ? '?'+search : '' }`,
     beforeSend: function () {
       showLoadingSkeleton();
     },
@@ -2723,79 +2175,27 @@ let defaultCategoryLists = ( search = null) => {
       hideLoadingSkeletonCategory();
     },
     success: function (data) {
-      if(data.categories.length > 0){
+      console.log(data)
+
+      if(data.goal_list.length > 0){
+        $("#choose_goal").html("")
+              data.goal_list.forEach((cat) => {
+                let color = randomColor()
+                  $("#choose_goal").append(
+                    `<option selected>${cat.goal_name_eng}</option>
+                    `
+                  )
+          })
+         
         let category = ``;
-        try{ $("#category-title").html(data.categories[0].dashboard_topic__title_ENG);}
+        try{ $("#category-title").html(data.goal_list[0].goal_name_eng);}
         catch{ null}
 
 
-        data.categories_lists.forEach((cat) => {
-          let color = randomColor()
-            $("#category-card-list").append(
-              `
-              <h4 class="fw-bold text-${color} text-center pt-3" >${cat.name_ENG}</h4>
-              <hr class="shadow-lg p-1 rounded ">
-              `
-            )
-
-          let filterCategoryIndicators = data.categories.filter((ind) => ind.id == cat.id)
-          filterCategoryIndicators.forEach((item) => {
-            const valueItem = [];
-  
-            let value = data.values.filter(
-              (value) =>
-                value.for_indicator_id == item.indicator__id
-            );
-    
-            
-            let seasonType = value.length > 0 ? (value[0].for_indicator__type_of == "monthly" ? 'Month' : (value[0].for_indicator__type_of == "quarterly" ? "Quarter" : "Year") ) : 'None'
-    
-            for (val of value) {
-              if (String(val.for_indicator__type_of) == "monthly") {
-                valueItem.push([
-                  val.for_datapoint_id__year_GC +
-                  " - " +
-                  val.for_month_id__month_AMH,
-                  val.value,
-                ]);
-              }else if (String(val.for_indicator__type_of) == "quarterly") {
-                valueItem.push([
-                  val.for_datapoint_id__year_GC +
-                  " - " +
-                  val.for_quarter_id__title_ENG,
-                  val.value,
-                ]);
-              } else {
-                valueItem.push([val.for_datapoint_id__year_GC, val.value]);
-              }
-            }
-    
-    
-    
-            let calculatePercentageDifference,
-              roundDifference,
-              difference = null;
-            try {
-              calculatePercentageDifference =
-                ((value[value.length - 1].value - value[value.length - 2].value) /
-                  value[value.length - 2].value) *
-                100;
-              roundDifference =
-                Math.round(calculatePercentageDifference * 100) / 100;
-              difference = (
-                value[value.length - 1].value - value[value.length - 2].value
-              ).toFixed(2);
-            } catch {
-              null;
-            }
-            $("#category-card-list").append(indicatorCards(item, seasonType, value,color));
-            renderCategoryGraph(item.indicator__id, valueItem,color);
-          });
-
-        })
-       
+        $("#category-card-list").append(indicatorCards(item, seasonType, value,color));
+        renderCategoryGraph(item.indicator__id, valueItem , color);
+        handelCategoryDetail()
         
-        handelCategoryDetail() //Call handle on category details
       }else{
         $("#category-title").html('<p class="text-center text-danger h3">No Data Found</p>')
       }
@@ -3022,8 +2422,8 @@ $(document).ready(function () {
       goals_list = `
       <div class="row justify-content-center">
         <div class="col-5">
-          <label for="selectOption" class="form-label h5">Select a goal</label>
-          <select id="selectOption" class="form-select form-select-md" aria-label=".form-select-sm example">
+          <label for="choose_goal" class="form-label h5">Select a goal</label>
+          <select id="choose_goal" class="form-select form-select-md" aria-label=".form-select-sm example">
             <option selected>Open this select menu</option>
             <option value="1">One</option>
             <option value="2">Two</option>
@@ -3047,6 +2447,7 @@ $(document).ready(function () {
   });
 
   //Default 
+  defaultCategoryLists()
 
   
 });

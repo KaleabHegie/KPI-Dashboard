@@ -3,8 +3,8 @@ from mptt.models import MPTTModel, TreeForeignKey
 # Create your models here.
 
 class Year(models.Model):
-    year_eng = models.IntegerField()
-    year_amh = models.IntegerField()
+    year_eng = models.IntegerField(blank=True, null=True)
+    year_amh = models.IntegerField(blank=True, null=True)
     visible = models.BooleanField(default=True)
 
     def __str__(self):
@@ -14,6 +14,8 @@ class Year(models.Model):
         ordering = ['year_amh']
         
 class Quarter(models.Model):
+    year = models.ForeignKey(
+        Year, on_delete=models.SET_NULL, blank=True, null=True)
     quarter_eng = models.CharField(max_length=100, blank=True, null=True)
     quarter_amharic = models.CharField(max_length=100, blank=True, null=True)
 
@@ -22,10 +24,10 @@ class Quarter(models.Model):
 
 
 class Month(models.Model):
-    quarter = models.ForeignKey(
-        Quarter, on_delete=models.SET_NULL, blank=True, null=True)
-    month_amh = models.CharField(max_length=100)
-    month_english = models.CharField(max_length=100)
+    year = models.ForeignKey(
+        Year, on_delete=models.SET_NULL, blank=True, null=True)
+    month_amh = models.CharField(max_length=100 , blank=True, null=True)
+    month_english = models.CharField(max_length=100, blank=True, null=True)
     month_ranked = models.IntegerField()
 
     def __str__(self):
