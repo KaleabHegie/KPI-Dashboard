@@ -8,11 +8,10 @@ admin.site.register(Quarter)
 admin.site.register(Month)
 admin.site.register(NationalPlan)
 admin.site.register(DashboardCategory)
-admin.site.register(DashboardSetting)
 admin.site.register(Category)
 admin.site.register(KpiAggregation)
 admin.site.register(QuarterProgress)
-admin.site.register(AnnualPlan)
+
 admin.site.register(MonthProgress)
 
 @admin.register(KeyResultArea)
@@ -28,13 +27,23 @@ class IndicatorAdmin(ImportExportModelAdmin):
     search_fields = (
         "kpi_name_eng",)
 
-from import_export.resources import ModelResource
-
 class GoalAdmin(ImportExportModelAdmin):
     list_display = ('goal_name_eng', 'goal_name_amh',
                     'goal_weight', 'goal_is_shared', 'national_plan')
     list_filter = ('responsible_ministries',)
     
-
-    
 admin.site.register(StrategicGoal,GoalAdmin)
+
+class AnnualAdmin(ImportExportModelAdmin):
+    autocomplete_fields = ["indicator"]
+
+admin.site.register(AnnualPlan,AnnualAdmin)
+
+
+class DashboardSettingAdmin(ImportExportModelAdmin):
+    filter_horizontal = ('indicator', )
+
+admin.site.register(DashboardSetting,DashboardSettingAdmin)
+
+
+#

@@ -1,11 +1,14 @@
 from django.urls import path
 
 from .views import (
-    index , ministries_lists , goal_list , key_area_list
+    index , 
+    ministries_lists,
+    ministry_goal,
+    indicator_lists
 ) 
 urlpatterns = [
     path('', index, name='dashboard-api'),
-    path('ministries_lists/',ministries_lists, name="ministries_lists"),
-    path('goal_list/<int:id>',goal_list, name="goal_list"),
-    path('key_area_list/<int:id>',key_area_list, name="key_area_list"),
+    path('ministries_lists/',ministries_lists, name="dashboard-ministries_lists"),
+    path('ministry-goal/<str:id>/',ministry_goal, name="dashboard-ministries_lists"),
+    path('indicator_lists/<str:id>/',indicator_lists, name="dashboard-indicator_lists"),
 ]

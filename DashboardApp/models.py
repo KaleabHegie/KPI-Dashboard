@@ -137,16 +137,16 @@ class DashboardCategory(models.Model):
 
 
 class DashboardSetting(models.Model):
-    year = models.ForeignKey(Year , on_delete=models.CASCADE)
+    year = models.ForeignKey(Year, on_delete=models.CASCADE)
     performance = models.BooleanField(default=False)
     target = models.BooleanField(default=False)
     indicator = models.ManyToManyField(Indicator)
-    month = models.ForeignKey(Month, on_delete=models.CASCADE)
-    quarter = models.ForeignKey(Quarter, on_delete=models.CASCADE)
-    dashboard_category = models.ForeignKey(DashboardCategory , on_delete=models.CASCADE)
+    month = models.ForeignKey(Month, null=True, blank=True, on_delete=models.CASCADE)
+    quarter = models.ForeignKey(Quarter, null=True, blank=True,  on_delete=models.CASCADE)
+
     
     def __str__(self):
-        return self.indicator
+        return str(self.year)
 
 
 
@@ -226,7 +226,7 @@ class MonthProgress(models.Model):
     sub_indicator = models.ForeignKey(
         KpiAggregation, on_delete=models.SET_NULL, blank=True, null=True, related_name='month_sub_indicators')
 
-    monthly_target = models.FloatField(blank=True)
+    month_target = models.FloatField(blank=True)
     month = models.ForeignKey(
         Month, on_delete=models.CASCADE, related_name='months')
     year = models.ForeignKey(Year, on_delete=models.CASCADE)
