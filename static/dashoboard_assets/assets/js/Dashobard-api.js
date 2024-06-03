@@ -197,7 +197,7 @@ $(`#all-earnings-graph${id}`).html("")
   
 };
 
- function indicatorCards (item, score) {
+ function indicatorCards (item, score, score_card) {
   let performance = score.annual_performance ? score.annual_performance :( score.month_performance ? score.month_performance : (score.quarter_performance ? score.quarter_performance : null ))
   let target =  score.annual_target ?  score.annual_target :( score.month_target ? score.month_target : (score.quarter_target ? score.quarter_target : null ) )
   let scoreResult = ''
@@ -217,7 +217,7 @@ $(`#all-earnings-graph${id}`).html("")
     // Ensure score is between 0 and 100
     scoreResult = Math.min(Math.max(scoreResult, 0), 100)
   }
-    //olorCode = data.score_card.find((colorCode) => scoreResult >= colorCode.starting && scoreResult <= colorCode.ending)
+   let colorCode = score_card.find((colorCode) => scoreResult >= colorCode.starting && scoreResult <= colorCode.ending)
    return `<div class="col-md-6 col-xxl-4 col-12">
    <div class="card border-{randomBgColor} ">
        <div class="card-body">
@@ -262,7 +262,7 @@ $(`#all-earnings-graph${id}`).html("")
 
                   ${
                     scoreResult ? ` <div class="col-3 ">
-                    <span class="badge rounded-pil p-3 bg-primary">${parseFloat(scoreResult).toFixed(2)}</span>
+                    <span class="badge rounded-pil p-3 text-dark" style="background-color:${colorCode.color};">${parseFloat(scoreResult).toFixed(2)}</span>
                    </div>` : '' 
                   }
 
@@ -287,6 +287,7 @@ let keyResultArea = () =>{
          //hideLoadingSkeletonCategory();
      },
      success: function(data){
+ 
       if(data.kra.length > 0){
         $("#kra-card-list").html("")
         data.kra.forEach((kra) =>{
@@ -353,8 +354,9 @@ let keyResultArea = () =>{
                   }
                 }
                 
-              }              
-              $("#kra-card-list").append( indicatorCards(item)); // append Card
+              }   
+                   
+              $("#kra-card-list").append( indicatorCards(item, data.score_card)); // append Card
               renderCategoryGraph(item.id, chartData,randomColor(), randomColor() ); //render graph
              
             })
@@ -598,7 +600,7 @@ let defaultKra = () => {
 
             
 
-              $("#kra-card-list").append(indicatorCards(item, score)); // append Card
+              $("#kra-card-list").append(indicatorCards(item, score, data.score_card)); // append Card
               renderCategoryGraph(item.id, chartData,randomColor(), randomColor()); //render graph
 
               

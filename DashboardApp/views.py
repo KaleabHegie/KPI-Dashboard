@@ -20,10 +20,10 @@ from django.db.models import Q
 
 # Create your views here.
 def index(request):
-    indidcator = Indicator.objects.all()
-    for i in DashboardSetting.objects.all():
-        i.indicator.add(*indidcator)
-        i.save()
+    # indidcator = Indicator.objects.all()
+    # for i in DashboardSetting.objects.all():
+    #     i.indicator.add(*indidcator)
+    #     i.save()
 
     return render(request, 'dashboard-app/dashboard-index.html')
 
@@ -116,6 +116,7 @@ def indicator_lists(request, id):
             'kpi_weight',
             'kpi_characteristics',
             )
+        score_card =  list(ScoreCardRange.objects.all().values())
 
 
 
@@ -128,17 +129,11 @@ def indicator_lists(request, id):
             'value_annual' : value_annual,
             'value_quarter' : value_quarter,
             'value_month' : value_month,
+             'score_card' : score_card,
         }
         #time.sleep(1)
         return JsonResponse(context)
 
 
-@api_view(['GET'])
-def score_card(request):
-    score_card =  list(ScoreCardRange.objects.all().values())
-    context = {
-         'score_card' : score_card,
-    }
-    return JsonResponse(context)
 
 
