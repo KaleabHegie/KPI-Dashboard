@@ -228,7 +228,7 @@ class MonthProgress(models.Model):
     sub_indicator = models.ForeignKey(
         KpiAggregation, on_delete=models.SET_NULL, blank=True, null=True, related_name='month_sub_indicators')
 
-    monthly_target = models.FloatField(blank=True)
+    month_target = models.FloatField(blank=True)
     month = models.ForeignKey(
         Month, on_delete=models.CASCADE, related_name='months')
     year = models.ForeignKey(Year, on_delete=models.CASCADE)

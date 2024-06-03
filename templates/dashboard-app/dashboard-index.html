@@ -186,9 +186,9 @@
         
 
         <!--
-            ===   Topic Lists ===
+            ===   Ministry Lists ===
             -->
-        <div class="row" id="topic-card-lists"></div>
+        <div class="row" id="ministry-card-lists"></div>
 
         <!--Loading Skeleton-->
         <div class="row" id="loading-skeleton-topic"></div>
@@ -199,23 +199,34 @@
         <div class="row container-fluid justify-content-center">
           <div class="container-fluid m-3 p-2 ">
             <form id="searchItemForm">
-              <div class="row justify-content-center ">
-                <div class="col-9 col-md-6 mb-2">
-                  <input id="searchItemValue" list="autocomplete" type="text" name="q" class="form-control  rounded-pill"
-                    placeholder="Enter Key Word" />
-                  <datalist id="autocomplete"> </datalist>
+              <div class="row justify-content-center">
+                <div class="col-md-10">
+                  <div class="input-group mb-3">
+                    <select id="goalDropDownOption"  class="form-control text-center">
+                    </select>
+                     <input id="searchItemValue" list="autocomplete" type="text" name="q" class="form-control"
+                      placeholder="Enter Key Word" />
+                      <button type="submit" class="btn btn-primary "> <i class="bi bi-search"></i></button>
+                  </div>
                 </div>
-                <div class="col-3 col-md-2 mb-2">
-                  <button type="submit" class="btn btn-primary rounded-circle">
-                    <i class="bi bi-search"></i>
-                  </button>
-                </div>
+              
               </div>
             </form>
           </div>
+        <div>
+
+          <div class="row container-fluid justify-content-center">
+            <div class="container-fluid m-3 p-2 ">
+              <form id="searchItemForm">
+                <div class="row justify-content-start">
+                  
+                </div>
+              </form>
+            </div>
           <div>
+
             <p class="text-success">
-              <strong id="category-title"></strong>
+              <strong id="kra-title"></strong>
             </p>
           </div>
 
@@ -224,7 +235,7 @@
           <!--
             ===   Category Lists ===
             -->
-          <div class="row container-fluid justify-content-start" id="category-card-list"></div>
+          <div class="row container-fluid justify-content-start" id="kra-card-list"></div>
 
           <!--Loading Skeleton-->
           <div class="row justify-content-center" id="loading-skeleton-category"></div>
