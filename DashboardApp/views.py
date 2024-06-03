@@ -3,7 +3,7 @@ from rest_framework.decorators import api_view
 from .serializers import MinistrySerializers , GoalSerializers
 from django.http import JsonResponse
 from userManagement.models import ResponsibleMinistry
-from .models import StrategicGoal , Indicator , KeyResultArea
+from .models import StrategicGoal , Indicator , KeyResultArea , DashboardSetting
 from django.db.models import Count
 from django.core import serializers
 from django.db.models import Q
@@ -46,6 +46,8 @@ def key_area_list(request, id):
         "KeyResultArea_list" : KeyResultArea_list,
         "goal_list" :goal_list
     })
+
+
 
 
 

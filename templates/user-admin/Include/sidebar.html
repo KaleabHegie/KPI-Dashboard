@@ -49,7 +49,7 @@ rel="stylesheet"
         data-accordion="false"
       >
         <li class="nav-item">
-          <a href="#" class="nav-link {% if request.path == '/user-admin/' %}active{% endif %}">
+          <a href="#" class="nav-link {% if request.path == '/' %}active{% endif %}">
             <i class="nav-icon bi bi-speedometer2"></i>
             {% comment %} <i class="nav-icon bi bi-speedometer"></i> {% endcomment %}
             <p>Dashboard</p>
@@ -157,6 +157,12 @@ rel="stylesheet"
           <a href="#" class="nav-link {% if request.path == '/user-admin/dashbord_topic/' %}active{% endif %}">
             <i class="nav-icon fas fa-users"></i>
             <p>Dashboard Topic</p>
+          </a>
+        </li>   
+        <li class="nav-item ">
+          <a href="{% url "user-admin-dashboard-setting" %}" class="nav-link {% if request.path == '/user-admin/' %}active{% endif %}">
+            <i class="nav-icon fas  fa-gear"></i>
+            <p>Dashboard KPI Setting</p>
           </a>
         </li>   
                      

@@ -137,16 +137,18 @@ class DashboardCategory(models.Model):
 
 
 class DashboardSetting(models.Model):
+    name = models.CharField(max_length=50,blank=True,null=True)
     year = models.ForeignKey(Year , on_delete=models.CASCADE)
-    performance = models.BooleanField(default=False)
-    target = models.BooleanField(default=False)
-    indicator = models.ManyToManyField(Indicator)
-    month = models.ForeignKey(Month, on_delete=models.CASCADE)
-    quarter = models.ForeignKey(Quarter, on_delete=models.CASCADE)
-    dashboard_category = models.ForeignKey(DashboardCategory , on_delete=models.CASCADE)
+    performance = models.BooleanField( blank=True,null=True)
+    target = models.BooleanField( blank=True,null=True)
+    indicator = models.ManyToManyField(Indicator, blank=True,null=True)
+    month = models.ForeignKey(Month, on_delete=models.CASCADE , blank=True,null=True)
+    quarter = models.ForeignKey(Quarter, on_delete=models.CASCADE, blank=True,null=True)
+   
     
     def __str__(self):
-        return self.indicator
+        return self.name
+
 
 
 
