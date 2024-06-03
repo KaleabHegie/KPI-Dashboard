@@ -11,7 +11,8 @@ from .models import (
     AnnualPlan,
     MonthProgress,
     QuarterProgress,
-    Year
+    Year,
+    ScoreCardRange
 )
 from django.db.models import Count
 import time
@@ -19,6 +20,11 @@ from django.db.models import Q
 
 # Create your views here.
 def index(request):
+    indidcator = Indicator.objects.all()
+    for i in DashboardSetting.objects.all():
+        i.indicator.add(*indidcator)
+        i.save()
+
     return render(request, 'dashboard-app/dashboard-index.html')
 
 
@@ -54,7 +60,6 @@ def indicator_lists(request, id):
         indicators = Indicator.objects.filter(keyResultArea__in = kra)
 
 
-
         value_annual = list(AnnualPlan.objects.filter( Q(indicator__in=indicators)).select_related("year", "indicator").values(
             'annual_target',
             'annual_performance',
@@ -63,7 +68,8 @@ def indicator_lists(request, id):
             'year__year_amh'
         ))
 
-        value_quarter = list(QuarterProgress.objects.filter( Q(indicator__in=indicators)).select_related("year", "indicator").values(
+        value_quarter = list(QuarterProgress.objects.filter( Q(indicator__in=indicators)).select_related("year", "indicator", 'quarter').values(
+            'quarter__quarter_eng',
             'quarter_target',
             'quarter_performance',
             'indicator__id',
@@ -71,7 +77,8 @@ def indicator_lists(request, id):
             'year__year_amh'
         ))
 
-        value_month = list(MonthProgress.objects.filter( Q(indicator__in=indicators)).select_related("year", "indicator").values(
+        value_month = list(MonthProgress.objects.filter( Q(indicator__in=indicators)).select_related("year", "indicator", "month").values(
+            'month__month_english',
             'month_target',
             'month_performance',
             'indicator__id',
@@ -90,6 +97,7 @@ def indicator_lists(request, id):
                 'year__year_amh' : setting.year.year_amh,
                 'month_id' : setting.month.id if setting.month else None,
                 'quarter_id' : setting.quarter.id if setting.quarter else None,
+                'is_score_card' : setting.is_score_card,
                 'indicator_id' : list(setting.indicator.filter(id__in=indicators).values_list('id', flat=True))
             })
 
@@ -106,6 +114,7 @@ def indicator_lists(request, id):
             'keyResultArea_id',
             'kpi_name_eng',
             'kpi_weight',
+            'kpi_characteristics',
             )
 
 
@@ -119,11 +128,17 @@ def indicator_lists(request, id):
             'value_annual' : value_annual,
             'value_quarter' : value_quarter,
             'value_month' : value_month,
-
         }
         #time.sleep(1)
         return JsonResponse(context)
 
 
+@api_view(['GET'])
+def score_card(request):
+    score_card =  list(ScoreCardRange.objects.all().values())
+    context = {
+         'score_card' : score_card,
+    }
+    return JsonResponse(context)
 
 

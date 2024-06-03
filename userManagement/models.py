@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
+from django.utils.html import mark_safe
 
 # Create your models here.
 
@@ -62,6 +63,7 @@ class ResponsibleMinistry(models.Model):
     def __str__(self):
         return f"{self.responsible_ministry_eng}"
 
+    
 
 class UserSector(models.Model):
     user = models.OneToOneField(
