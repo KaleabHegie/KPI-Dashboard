@@ -36,6 +36,7 @@ admin.site.register(StrategicGoal,GoalAdmin)
 
 class AnnualAdmin(ImportExportModelAdmin):
     autocomplete_fields = ["indicator"]
+    search_fields = ['indicator__kpi_name_eng']
 
 admin.site.register(AnnualPlan,AnnualAdmin)
 

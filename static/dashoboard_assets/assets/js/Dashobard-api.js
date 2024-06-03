@@ -79,61 +79,81 @@ let renderCategoryGraph = (id, dataArray, bootstrapColorsCode) => {
 
 
   
-  const seriesData = dataArray.map((dataPoint) => {
-    return {
-      x: dataPoint[0], // Year
-      y: dataPoint[1], // Value
-    };
-  });
+let year = dataArray.map((yr) => {
+  return "" + yr[2]
+})
+
+let target = dataArray.map((tgt) => {
+  return "" + tgt[0]
+})
+
+let performance = dataArray.map((perf) => {
+  return "" + perf[1]
+})
+
+
 $(`#all-earnings-graph${id}`).html("")
-new ApexCharts(document.querySelector(`#all-earnings-graph${id}`), {
+
+  var options = {
+    series: [{
+    name: 'Target',
+    data: target
+  }, {
+    name: 'Performance',
+    data: performance
+  }],
     chart: {
-      type: "bar",
-      height: 50,
-      sparkline: {
-        enabled: true,
-      },
+    type: 'bar',
+    height: 150,
+    toolbar: {
+      show: false
+    }
+  },
+  grid: {
+    show: false
+  },
+  plotOptions: {
+    bar: {
+      horizontal: false,
+      columnWidth: '90%',
+      endingShape: 'rounded'
     },
-    colors: [
-      `${ColorsCode[bootstrapColorsCode]}`,
-    ],
-    plotOptions: {
-      bar: {
-        columnWidth: "80%",
-      },
+  },
+  dataLabels: {
+    enabled: false
+  },
+  stroke: {
+    show: true,
+    width: 2,
+    colors: ['transparent']
+  },
+  xaxis: {
+    labels: {
+      rotate: -45
     },
-    series: [
-      {
-        data: seriesData,
-      },
-    ],
-    xaxis: {
-      crosshairs: {
-        width: 1,
-      },
-    },
-    tooltip: {
-      fixed: {
-        enabled: true,
-      },
-      x: {
-        show: true,
-        formatter: function (val) {
-          return `Year: ${val}`; // Access x value (year) directly
-        },
-      },
-      y: {
-        title: {
-          formatter: function (e) {
-            return "";
-          },
-        },
-      },
-      marker: {
-        show: false,
-      },
-    },
-  }).render();
+    categories: year,
+  },
+  yaxis: {
+    labels: {
+      show: false,
+    }
+  },
+  fill: {
+    opacity: 1,
+  },
+  tooltip: {
+    y: {
+      formatter: function (val) {
+        return val
+      }
+    }
+  }
+  };
+
+  var chart = new ApexCharts(document.querySelector(`#all-earnings-graph${id}`), options);
+  chart.render();
+
+  
 };
 
 let indicatorCards = (item) =>{
@@ -175,9 +195,9 @@ let indicatorCards = (item) =>{
                             </div>
                         </div>
                     </div>
-                    <div class="bg-body p-3 mt-3 rounded" style="height: 100px;">
+                    <div class="bg-body p-3 mt-3 rounded" style="height: 190px;">
                         <div class="mt-3 row align-items-center">
-                            <div class="col-7">
+                            <div class="col-9">
                                 <div id="all-earnings-graph${item.id}"></div>
                             </div>
                         </div>
@@ -210,7 +230,7 @@ let keyResultArea = () =>{
               let filterKraIndicators = data.indicators.filter((indicator) => indicator.keyResultArea_id == kra.id)  //filter Indicator 
               filterKraIndicators.forEach((item) => {
                 $("#kra-card-list").append(indicatorCards(item)); // append Card
-                renderCategoryGraph(item.id, [],'primary'); //render graph
+                //renderCategoryGraph(item.id,  [[2020,7],[2021,7],[2022,7]],'primary'); //render graph
               })
           })
 
@@ -259,7 +279,7 @@ let handleDropDown = (ministryId) => {
                   let filterKraIndicators = data.indicators.filter((indicator) => indicator.keyResultArea_id == kra.id)  //filter Indicator 
                   filterKraIndicators.forEach((item) => {
                     $("#kra-card-list").append(indicatorCards(item)); // append Card
-                    renderCategoryGraph(item.id, [],'primary'); //render graph
+                    //renderCategoryGraph(item.id,  [[2020,7],[2021,7],[2022,7]],'primary'); //render graph
                   })
        
               })
@@ -291,7 +311,7 @@ let handleOnMinistryClicked = () =>{
 let defaultKra = () => {
   $.ajax({
     type: "GET",
-    url: `/indicator_lists/2/`,
+    url: `/indicator_lists/109/`,
     beforeSend: function () {
       //showLoadingSkeletonCategory();
    },
@@ -308,9 +328,32 @@ let defaultKra = () => {
 
 
             let filterKraIndicators = data.indicators.filter((indicator) => indicator.keyResultArea_id == kra.id)  //filter Indicator 
+            
             filterKraIndicators.forEach((item) => {
+              let chartData = []
+              let dashboardSetting = data.dashboardSetting.filter((dashboard) => dashboard.indicator_id.includes(item.id))
+
+              for (setting of dashboardSetting){
+
+                if(setting.quarter_id == null && setting.month_id == null ){
+                  let filterindicatorValue = data.value_annual.filter((value) => value.indicator__id == item.id && value.year__year_eng == setting.year__year_eng)
+                  if(filterindicatorValue){
+                    for(value of filterindicatorValue){
+                      chartData.push(
+                      [
+                        setting.target ? value.annual_target : null, 
+                        setting.performance ? value.annual_performance : null, 
+                        value.year__year_amh
+                    ]
+                    )
+                  }
+                  }
+                }
+                
+              }              
               $("#kra-card-list").append(indicatorCards(item)); // append Card
-              renderCategoryGraph(item.id, [],'primary'); //render graph
+              renderCategoryGraph(item.id, chartData,'primary'); //render graph
+             
             })
  
         })
@@ -399,8 +442,8 @@ $(document).ready(function () {
 
   //Default 
   defaultKra()
-  handleDropDown(3)
-  keyResultArea()
+  //handleDropDown(3)
+  //keyResultArea()
 
   
 });

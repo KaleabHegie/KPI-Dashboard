@@ -11,6 +11,7 @@ from .models import (
     AnnualPlan,
     MonthProgress,
     QuarterProgress,
+    Year
 )
 from django.db.models import Count
 import time
@@ -58,34 +59,40 @@ def indicator_lists(request, id):
             'annual_target',
             'annual_performance',
             'indicator__id',
-            'year__year_eng'
+            'year__year_eng',
+            'year__year_amh'
         ))
 
         value_quarter = list(QuarterProgress.objects.filter( Q(indicator__in=indicators)).select_related("year", "indicator").values(
             'quarter_target',
             'quarter_performance',
             'indicator__id',
-            'year__year_eng'
+            'year__year_eng',
+            'year__year_amh'
         ))
 
         value_month = list(MonthProgress.objects.filter( Q(indicator__in=indicators)).select_related("year", "indicator").values(
             'month_target',
             'month_performance',
             'indicator__id',
-            'year__year_eng'
-        ))
-
-
-
-
-        dashboardSetting = list(DashboardSetting.objects.filter().prefetch_related('year__set').values(
-            'id',
-            'performance',
-            'target',
             'year__year_eng',
-            'month_id',
-            'quarter_id'
+            'year__year_amh'
         ))
+
+
+        dashboardSetting = []
+        for setting in DashboardSetting.objects.select_related():
+            dashboardSetting.append({
+                'id' : setting.id,
+                'performance' : setting.performance,
+                'target' : setting.target,
+                'year__year_eng' : setting.year.year_eng,
+                'year__year_amh' : setting.year.year_amh,
+                'month_id' : setting.month.id if setting.month else None,
+                'quarter_id' : setting.quarter.id if setting.quarter else None,
+                'indicator_id' : list(setting.indicator.filter(id__in=indicators).values_list('id', flat=True))
+            })
+
 
         kra = kra.values(
             'id',
@@ -93,13 +100,15 @@ def indicator_lists(request, id):
             'activity_weight',
         )
 
-        indicators = indicators.prefetch_related('dashboardsetting__set').values(
+
+        indicators = indicators.values(
             'id',
             'keyResultArea_id',
             'kpi_name_eng',
             'kpi_weight',
-            'dashboardsetting__id',
-        )
+            )
+
+
 
        
 
@@ -112,7 +121,7 @@ def indicator_lists(request, id):
             'value_month' : value_month,
 
         }
-        time.sleep(1)
+        #time.sleep(1)
         return JsonResponse(context)
 
 
