@@ -106,6 +106,10 @@
 
       <div class="ms-auto">
         <ul class="list-unstyled">
+          <li class="dropdown pc-h-item">
+            <input id="searchItemValue" list="autocomplete" type="text" name="q" class="form-control" style="min-width: 500px;" placeholder="Enter Key Word" />
+            <button type="submit" class="btn btn-primary ms-2"> <i class="bi bi-search"></i></button>
+          </li>
           <li class="dropdown pc-h-item"><a class="pc-head-link dropdown-toggle arrow-none me-0"
               data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false"><svg
                 class="pc-icon">
@@ -128,16 +132,14 @@
                 <use xlink:href="#custom-setting-2"></use>
               </svg></a>
             <div class="dropdown-menu dropdown-menu-end pc-h-dropdown">
-              <!-- <a href="#!" class="dropdown-item"><i class="ti ti-user"></i> <span>My Account</span> </a>
-              <a href="#!" class="dropdown-item"><i class="ti ti-settings"></i> <span>Settings</span> </a>
-              <a href="#!" class="dropdown-item"><i class="ti ti-headset"></i> <span>Support</span></a>
-              <a href="#!" class="dropdown-item"><i class="ti ti-lock"></i> <span>Lock Screen</span></a> -->
               <a href="#" class="dropdown-item"><i class="ti ti-power"></i>
                 <span>Logout</span></a>
             </div>
           </li>
+          
         </ul>
       </div>
+      
     </div>
   </header>
 
@@ -194,6 +196,7 @@
             ===   Ministry Lists ===
             -->
         <div class="row" id="ministry-card-lists"></div>
+        <img src="" alt="" >
         <!--Loading Skeleton-->
         <div class="row" id="loading-skeleton-topic"></div>
         <!-- end -->
@@ -204,20 +207,19 @@
           <div class="container-fluid m-3 p-2 ">
             <form id="searchItemForm">
               <div class="row justify-content-center">
-                <div class="col-md-10">
-                  <div class="input-group mb-3">
-                    <select id="goalDropDownOption"  class="form-control text-center">
-                    </select>
-                     <input id="searchItemValue" list="autocomplete" type="text" name="q" class="form-control"
-                      placeholder="Enter Key Word" />
-                      <button type="submit" class="btn btn-primary "> <i class="bi bi-search"></i></button>
-                  </div>
-                </div>
-              
+                <div class="col-md-8" id="arrow">
+                  <label for="goalDropDownOption" class="fw-bold h2">Goal</label>
+                  <select id="goalDropDownOption"  class="form-control text-center p-4 shadow">
+                  </select>
               </div>
             </form>
           </div>
         <div>
+
+
+        <script>
+
+        </script>
 
           <div class="row container-fluid justify-content-center">
             <div class="container-fluid m-3 p-2 ">

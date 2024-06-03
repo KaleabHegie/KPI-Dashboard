@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Year, Quarter, Month, NationalPlan, StrategicGoal, KeyResultArea, Indicator, DashboardCategory, DashboardSetting, Category, KpiAggregation, QuarterProgress, AnnualPlan, MonthProgress
+from .models import Year, Quarter, Month, ScoreCardRange,NationalPlan, StrategicGoal, KeyResultArea, Indicator, DashboardCategory, DashboardSetting, Category, KpiAggregation, QuarterProgress, AnnualPlan, MonthProgress
 from import_export.admin import ImportExportModelAdmin
 from .resource import GoalResource
 
@@ -10,12 +10,13 @@ admin.site.register(NationalPlan)
 admin.site.register(DashboardCategory)
 admin.site.register(Category)
 admin.site.register(KpiAggregation)
-admin.site.register(QuarterProgress)
+admin.site.register(ScoreCardRange)
 
-admin.site.register(MonthProgress)
 
 @admin.register(KeyResultArea)
 class KeyResultAreaAdmin(ImportExportModelAdmin):
+    search_fields = (
+        "activity_name_eng", "id",)
     list_display = ('activity_name_eng', 'activity_name_amh',
                     'activity_weight', 'activity_is_shared', 'goal')
    
@@ -39,6 +40,20 @@ class AnnualAdmin(ImportExportModelAdmin):
     search_fields = ['indicator__kpi_name_eng']
 
 admin.site.register(AnnualPlan,AnnualAdmin)
+
+
+class QuarterProgressAdmin(ImportExportModelAdmin):
+    autocomplete_fields = ["indicator"]
+    search_fields = ['indicator__kpi_name_eng']
+
+admin.site.register(QuarterProgress,QuarterProgressAdmin)
+
+
+class MonthProgressAdmin(ImportExportModelAdmin):
+    autocomplete_fields = ["indicator"]
+    search_fields = ['indicator__kpi_name_eng']
+
+admin.site.register(MonthProgress,MonthProgressAdmin)
 
 
 class DashboardSettingAdmin(ImportExportModelAdmin):

@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-_8h9od@40yx$6%#wws$u0c+t701cti8gwtw3igpitx-sjzl(fq
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'import_export',
     'fontawesome_5',
     'User_Admin',
+    'colorfield'
 ]
 
 MIDDLEWARE = [

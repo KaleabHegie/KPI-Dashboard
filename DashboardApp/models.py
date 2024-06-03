@@ -1,10 +1,24 @@
 from django.db import models
 from mptt.models import MPTTModel, TreeForeignKey
+from colorfield.fields import ColorField
 # Create your models here.
 
+class ScoreCardRange(models.Model):
+    name = models.CharField(max_length=100)
+    color = ColorField(default='#FF0000')
+    starting = models.DecimalField(max_digits=5, decimal_places=2)
+    ending = models.DecimalField(max_digits=5, decimal_places=2)
+
+    def __str__(self):
+        return self.name
+
+    def __str__(self):
+        return self.name
+    
+
 class Year(models.Model):
-    year_eng = models.IntegerField(blank=True, null=True)
-    year_amh = models.IntegerField(blank=True, null=True)
+    year_eng = models.IntegerField()
+    year_amh = models.IntegerField()
     visible = models.BooleanField(default=True)
 
     def __str__(self):
@@ -14,20 +28,18 @@ class Year(models.Model):
         ordering = ['year_amh']
         
 class Quarter(models.Model):
-    year = models.ForeignKey(
-        Year, on_delete=models.SET_NULL, blank=True, null=True)
     quarter_eng = models.CharField(max_length=100, blank=True, null=True)
     quarter_amharic = models.CharField(max_length=100, blank=True, null=True)
-    
+
     def __str__(self):
         return self.quarter_eng
 
 
 class Month(models.Model):
-    year = models.ForeignKey(
-        Year, on_delete=models.SET_NULL, blank=True, null=True)
-    month_amh = models.CharField(max_length=100 , blank=True, null=True)
-    month_english = models.CharField(max_length=100, blank=True, null=True)
+    quarter = models.ForeignKey(
+        Quarter, on_delete=models.SET_NULL, blank=True, null=True)
+    month_amh = models.CharField(max_length=100)
+    month_english = models.CharField(max_length=100)
     month_ranked = models.IntegerField()
 
     def __str__(self):
@@ -139,19 +151,20 @@ class DashboardCategory(models.Model):
 class DashboardSetting(models.Model):
     name = models.CharField(max_length=50,blank=True,null=True)
     year = models.ForeignKey(Year , on_delete=models.CASCADE)
-    performance = models.BooleanField( blank=True,null=True)
-    target = models.BooleanField( blank=True,null=True)
+    performance = models.BooleanField( blank=True,null=True,default=False)
+    target = models.BooleanField( blank=True,null=True, default=False)
     indicator = models.ManyToManyField(Indicator)
     month = models.ForeignKey(Month, on_delete=models.CASCADE , blank=True,null=True)
     quarter = models.ForeignKey(Quarter, on_delete=models.CASCADE, blank=True,null=True)
-   
+    rank = models.IntegerField(null=True, blank=True)
+    is_score_card = models.BooleanField( blank=True,null=True, default=False)
     
     def __str__(self):
         return self.name
 
     
     class Meta:
-      ordering = ['year__year_amh']
+      ordering = ['rank']
 
 
 
