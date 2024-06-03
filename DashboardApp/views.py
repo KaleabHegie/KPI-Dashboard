@@ -15,6 +15,7 @@ from .models import (
 from django.db.models import Count
 import time
 from django.db.models import Q
+
 # Create your views here.
 def index(request):
     return render(request, 'dashboard-app/dashboard-index.html')

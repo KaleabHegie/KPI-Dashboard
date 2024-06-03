@@ -55,6 +55,9 @@ class ResponsibleMinistry(models.Model):
     responsible_ministry_amh = models.CharField(
         max_length=350, blank=True, null=True)
     code = models.CharField(max_length=200)
+    image = models.ImageField(upload_to='ministryImage' , blank=True , null = True)
+
+    
 
     def __str__(self):
         return f"{self.responsible_ministry_eng}"
