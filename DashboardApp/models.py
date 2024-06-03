@@ -107,7 +107,7 @@ class Indicator(models.Model):
     responsible_ministries = models.ForeignKey(
         "userManagement.ResponsibleMinistry", on_delete=models.SET_NULL, null=True)
     keyResultArea = models.ForeignKey(
-        KeyResultArea, on_delete=models.SET_NULL, null=True)
+        KeyResultArea, on_delete=models.SET_NULL, null=True , related_name= 'indicators')
     # kpi = models.ForeignKey("Indicator", on_delete=models.SET_NULL, null=True)
 
     def __str__(self):

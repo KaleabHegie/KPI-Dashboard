@@ -23,7 +23,7 @@ class DashboardSettingForm(forms.ModelForm):
             'target': forms.NumberInput(attrs={'class': 'form-control'}),
             'month': forms.Select(attrs={'class': 'form-control'}),
             'quarter': forms.Select(attrs={'class': 'form-control'}),
-           'indicator': forms.SelectMultiple(attrs={'class': 'select2 form-control', 'data-mdb-select-init': '', 'multiple': 'multiple'}) ,
+           'indicator': forms.SelectMultiple(attrs={ 'multiple': 'multiple' , 'size':"10"}) ,
            'target' : forms.CheckboxInput(attrs={'class': 'form-check-input ml-2'}),
             'performance' : forms.CheckboxInput(attrs={'class': 'form-check-input ml-2'}),
                }
