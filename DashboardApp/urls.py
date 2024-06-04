@@ -7,7 +7,8 @@ from .views import (
     indicator_lists,
     indicator_details_json,
     ministry_goal_front,
-    filter_indicators_by_kra
+    filter_indicators_by_kra,
+    auto_complete_search_indicator
 ) 
 urlpatterns = [
     path('', index, name='dashboard-api'),
@@ -17,5 +18,5 @@ urlpatterns = [
     path('indicator_lists/<str:id>/',indicator_lists, name="dashboard-indicator_lists"),
     path('indicator-details/<int:indicator_id>/', indicator_details_json, name='indicator_details_json'),
     path('kra/<int:kra_id>/', filter_indicators_by_kra, name='filter_indicators_by_kra'),
-
+    path('search_autocomplete_indicator_list/', auto_complete_search_indicator, name='dashboard-indicator-lists-auto-complete'),
 ]

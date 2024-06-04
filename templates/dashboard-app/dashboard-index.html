@@ -107,8 +107,15 @@
       <div class="ms-auto">
         <ul class="list-unstyled">
           <li class="dropdown pc-h-item">
-            <input id="searchItemValue" list="autocomplete" type="text" name="q" class="form-control" style="min-width: 500px;" placeholder="Enter Key Word" />
-            <button type="submit" class="btn btn-primary ms-2"> <i class="bi bi-search"></i></button>
+            <form class="d-flex" id="searchItemForm">
+              <input class="form-control me-2" style="width: 500px;" id="searchItemValue"  list="autocomplete"  type="text" name="q" type="search" placeholder="Search" aria-label="Search"  placeholder="Enter Key Word" >
+              <button type="submit" class="btn btn-primary rounded-circle">
+                <i class="bi bi-search"></i>
+              </button>
+              <datalist id="autocomplete"> </datalist>
+            </form>
+
+
           </li>
           <li class="dropdown pc-h-item"><a class="pc-head-link dropdown-toggle arrow-none me-0"
               data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false"><svg
@@ -208,32 +215,24 @@
             <form id="searchItemForm">
               <div class="row justify-content-center">
                 <div class="col-md-8" id="arrow">
-                  <label for="goalDropDownOption" class="fw-bold h2">Goal</label>
-                  <select id="goalDropDownOption"  class="form-control text-center p-4 shadow">
+                  <label id="goalDropDownOptionLabel" for="goalDropDownOption" class="fw-bold h2">Goal</label>
+                  <select id="goalDropDownOption"   class="form-control text-center p-4 shadow">
                   </select>
               </div>
             </form>
           </div>
         <div>
 
-
-        <script>
-
-        </script>
-
+          <h2 id="ministry_name"></h2>
           <div class="row container-fluid justify-content-center">
             <div class="container-fluid m-3 p-2 ">
-              <form id="searchItemForm">
-                <div class="row justify-content-start">
-                  
-                </div>
-              </form>
+              
             </div>
           <div>
 
-            <p class="text-success">
+            <h2 class="text-success">
               <strong id="kra-title"></strong>
-            </p>
+            </h2>
           </div>
 
       
@@ -249,69 +248,93 @@
         <!-- [ Main Content ] end -->
 
         <!-- Modal -->
-         <!-- Modal -->
-         <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-          <div class="modal-dialog modal-xl modal-fullscreen-lg-down modal-dialog-scrollable">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel"></h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <div class="modal-body">
-                <!--Navigation-->
-                <ul class="nav nav-tabs analytics-tab ms-3" id="myTab" role="tablist">
-                  <li class="nav-item" role="presentation">
-                    <h4 id="analytics-tab-1" class="text-success text-center"></h4>
-                  </li>
-                </ul>
-                <div class="tab-content" id="myTabContent">
-                  <div class="tab-pane fade show active" id="analytics-tab-1-pane" role="tabpanel"
-                    aria-labelledby="analytics-tab-1" tabindex="0">
-                    <div id="spinnerLoading"></div>
-
-                    <!--Render Data from Js-->
-                    <div class=" mt-3 container">
-                      <h5 class="text-center" id="Year-table"></h5>
-                      <div class="col-12 ml-5" id="Year-detail-table"></div>
-                    </div>
-                    
-                    <div class="row mt-1 container">
-                      <h5 class="text-center" id="Quarter-table"></h5>
-                      <div class="col-12" id="Quarter-detail-table"></div>
-                    </div>
-
-                    <div class="row mt-1 container">
-                      <h5 class="text-center" id="Month-table"></h5>
-                      <div class="col-12" id="Month-detail-table"></div>
-                    </div>
-                    
-                    <div class="row">
-                      <div class="col-md-6 pt-5">
-                        <figure class="highcharts-figure">
-                          <div id="bar"></div>
-                        </figure>
-                      </div>
-                      <div class="col-md-6" id="quarter-chart">
-                        <select class="form-select form-select-sm mt-1" id="yearSelect"></select>
-                        <figure class="highcharts-figure">
-                          <div id="QuarterBar"></div>
-                        </figure>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-12" id="month-chart">
-                        <select class="form-select form-select-sm" id="yearMonthSelect"></select>
-                        <figure class="highcharts-figure mt-1">
-                          <div id="area"></div>
-                        </figure>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-fullscreen-lg-down modal-dialog-scrollable">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel"></h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
-        </div>
+          <div class="modal-body">
+              <div class="tab-content" id="myTabContent">
+                  <div class="tab-pane fade show active" id="analytics-tab-1-pane" role="tabpanel"
+                      aria-labelledby="analytics-tab-1" tabindex="0">
+                      <div id="spinnerLoading"></div>
+
+                      <div class="row">
+                          <div class="col-md-4">
+                              <div class="card" style="width: 22rem;">
+                                  <div class="card-header bg-success text-white" id="kpi-name">Header</div>
+                                  <ul class="list-group list-group-flush">
+                                      <li class="list-group-item  d-flex justify-content-between "><span>KPI
+                                              Measurment</span><span class="badge bg-success text-wrap"
+                                              id="kpi-measure"></span></li>
+                                      <li class="list-group-item  d-flex justify-content-between"><span>KPI
+                                              Charcteristics</span><span class="badge bg-success text-wrap"
+                                              id="kpi-char"> </span></li>
+                                      <li class="list-group-item  d-flex justify-content-between"><span>KPI Weight
+                                          </span><span class="badge bg-success text-wrap" id="kpi-Weight"></span></li>
+                                      <li class="list-group-item  d-flex justify-content-between"><span
+                                              class="me-5">KRA</span><span class="badge bg-success text-wrap"
+                                              id="kpi-KRA"></span></li>
+                                      <li class="list-group-item  d-flex justify-content-between"><span
+                                              class="me-5">Goal</span><span class="badge bg-success text-wrap"
+                                              id="kpi-Goal"></span></li>
+                                      <li class="list-group-item  d-flex justify-content-between">
+                                          <span>Ministry</span><span class="badge bg-success text-wrap"
+                                              id="kpi-Minstry"></span></li>
+                                  </ul>
+                              </div>
+                          </div>
+                          <div class="col-md-8">
+                              <h5 class="text-center" id="Year-table"></h5>
+                              <div id="Year-detail-table"></div>
+                              <div class="card">
+
+
+                              </div>
+
+                          </div>
+                      </div>
+                      <div class="mt-1 container">
+                          <h5 class="text-center" id="Quarter-table"></h5>
+                          <div class="col-12" id="Quarter-detail-table"></div>
+
+                      </div>
+
+                      <div class="row mt-1 container">
+                          <h5 class="text-center" id="Month-table"></h5>
+                          <div class="col-12" id="Month-detail-table"></div>
+                      </div>
+
+                      <div class="row">
+                          <div class="col-md-6 pt-5" id="bar-container">
+                              <figure class="highcharts-figure">
+                                  <div id="bar"></div>
+                              </figure>
+                          </div>
+                          <div class="col-md-6" id="quarter-chart">
+                              <select class="form-select form-select-sm mt-1" id="yearSelect"></select>
+                              <figure class="highcharts-figure">
+                                  <div id="QuarterBar"></div>
+                              </figure>
+                          </div>
+                      </div>
+                      <div class="row">
+                          <div class="col-12" id="month-chart">
+                              <select class="form-select form-select-sm" id="yearMonthSelect"></select>
+                              <figure class="highcharts-figure mt-1">
+                                  <div id="area"></div>
+                              </figure>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
 
       </div>
 
@@ -372,19 +395,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script src="https://code.highcharts.com/maps/modules/exporting.js"></script>
 
-<script type="text/javascript" src="/admin/jsi18n/"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}admin/js/core.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}admin/js/jquery.min.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}admin/js/jquery.init.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}admin/js/SelectFilter2.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}admin/js/SelectBox.js"></script>
 
-
-
-
-<script type="text/javascript">
-  addEvent(window, "load", function(e) { SelectFilter.init("id_pricetags", "pricetags", 0, "{{ STATIC_URL }}admin/"); });
-</script>
 
 
 </html>

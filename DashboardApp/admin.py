@@ -1,9 +1,9 @@
 from django.contrib import admin
 from .models import Year, Quarter, Month, ScoreCardRange,NationalPlan, StrategicGoal, KeyResultArea, Indicator, DashboardCategory, DashboardSetting, Category, KpiAggregation, QuarterProgress, AnnualPlan, MonthProgress
 from import_export.admin import ImportExportModelAdmin
-from .resource import GoalResource
+from .resource import GoalResource,YearResource, AnnualPlanResource
 
-admin.site.register(Year)
+
 admin.site.register(Quarter)
 admin.site.register(Month)
 admin.site.register(NationalPlan)
@@ -32,12 +32,14 @@ class GoalAdmin(ImportExportModelAdmin):
     list_display = ('goal_name_eng', 'goal_name_amh',
                     'goal_weight', 'goal_is_shared', 'national_plan')
     list_filter = ('responsible_ministries',)
+    resource_classes = [GoalResource]
     
 admin.site.register(StrategicGoal,GoalAdmin)
 
 class AnnualAdmin(ImportExportModelAdmin):
     autocomplete_fields = ["indicator"]
     search_fields = ['indicator__kpi_name_eng']
+    resource_classes = [AnnualPlanResource]
 
 admin.site.register(AnnualPlan,AnnualAdmin)
 
@@ -60,6 +62,12 @@ class DashboardSettingAdmin(ImportExportModelAdmin):
     filter_horizontal = ('indicator', )
 
 admin.site.register(DashboardSetting,DashboardSettingAdmin)
+
+
+class YearAdmin(ImportExportModelAdmin):
+    resource_classes = [YearResource]
+
+admin.site.register(Year,YearAdmin)
 
 
 #

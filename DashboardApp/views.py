@@ -23,11 +23,6 @@ from django.db.models import Q
 
 # Create your views here.
 def index(request):
-    # indidcator = Indicator.objects.all()
-    # for i in DashboardSetting.objects.all():
-    #     i.indicator.add(*indidcator)
-    #     i.save()
-
     return render(request, 'dashboard-app/dashboard-index.html')
 
 
@@ -75,6 +70,12 @@ def indicator_lists(request, id):
     if request.method == 'GET':
         kra = KeyResultArea.objects.filter(goal__id = id)
         indicators = Indicator.objects.filter(keyResultArea__in = kra)
+
+        if 'q' in request.GET:
+            q = request.GET['q']
+            indicators = Indicator.objects.filter(Q(kpi_name_eng__contains=q) | Q(kpi_name_amh__contains=q) | Q(responsible_ministries__responsible_ministry_eng__contains=q) | Q(responsible_ministries__code__contains=q) )
+            kra_id = indicators.filter().values_list('keyResultArea__id', flat=True)
+            kra = KeyResultArea.objects.filter(id__in = kra_id)
 
 
         value_annual = list(AnnualPlan.objects.filter( Q(indicator__in=indicators)).select_related("year", "indicator").values(
@@ -171,7 +172,7 @@ def ministry_goal_front(request, id):
 
 
 
-
+@api_view(['GET'])
 def indicator_details_json(request, indicator_id):
     # Fetch the specific Indicator by ID using select_related
     indicator = get_object_or_404(Indicator.objects.select_related(
@@ -228,3 +229,132 @@ def indicator_details_json(request, indicator_id):
     time.sleep(3)
     return JsonResponse(data)
 
+
+
+@api_view(['GET'])
+def auto_complete_search_indicator(request):
+    queryset = []
+    if 'search' in request.GET:
+            q = request.GET['search']
+            queryset = Indicator.objects.filter(Q(kpi_name_eng__contains=q) | Q(kpi_name_amh__contains=q) | Q(responsible_ministries__responsible_ministry_eng__contains=q) | Q(responsible_ministries__code__contains=q) ).values(
+                'kpi_name_eng',
+            )[:15]
+    return JsonResponse({'indicators': list(queryset)})
+
+
+
+
+#============================================
+#               Mine
+#============================================
+def get_previous_year_performance(chrx, year,Previndicator,per, target,national_plan):
+        # Calculate and return the change in performance compared to the previous year
+        previous_year = year.year_amh - 1
+        try:
+            previous_year_plan = AnnualPlan.objects.get(
+                year__year_amh=previous_year,
+                national_plan= national_plan,
+                indicator= Previndicator,
+            )
+            if previous_year_plan.annual_performance is not None and per is not None:
+                performance_change = per - \
+                    previous_year_plan.annual_performance
+
+
+                performance_change_percent = (
+                    (per - previous_year_plan.annual_performance)/previous_year_plan.annual_performance) * 100
+
+                if Previndicator.kpi_characteristics == 'inc':
+                    # For increasing KPIs, positive change is good, and negative change is bad
+                    return [performance_change, performance_change_percent]
+                elif Previndicator.kpi_characteristics == 'dec':
+                    # For decreasing KPIs, negative change is good, and positive change is bad
+                    return [-performance_change, -performance_change_percent]
+                else:
+                    # For constant KPIs, return the change without modifying its sign
+                    return [performance_change, performance_change_percent]
+            else:
+                return None
+        except AnnualPlan.DoesNotExist:
+            return None
+
+
+def indicator_details_json(request, indicator_id):
+    # Fetch the specific Indicator by ID using select_related
+    indicator = get_object_or_404(Indicator.objects.select_related(
+        'keyResultArea__goal', 'responsible_ministries'
+    ), pk=indicator_id)
+
+    # Access the related StrategicGoal
+    goal_name_eng = None
+    kra_activity_name_eng = None
+
+    if indicator.keyResultArea:
+        kra_activity_name_eng = indicator.keyResultArea.activity_name_eng
+    if indicator.keyResultArea and indicator.keyResultArea.goal:
+        goal_name_eng = indicator.keyResultArea.goal.goal_name_eng
+
+    # Prepare data structure
+    data = {
+        "indicator_id": indicator.id,
+        "kpi_name_eng": indicator.kpi_name_eng,
+        "kpi_name_amh": indicator.kpi_name_amh,
+        "kpi_weight": indicator.kpi_weight,
+        "kpi_measurement_units": indicator.kpi_measurement_units,
+        "kpi_characteristics": indicator.kpi_characteristics,
+        "responsible_ministries__code": indicator.responsible_ministries.code,
+        "kra_activity_name_eng": kra_activity_name_eng,
+        "goal_name_eng": goal_name_eng,
+        "quarter_progress": [],
+        "month_progress": [],
+        "annual_plans": [],
+        "score_card_ranges": []
+    }
+
+    # Fetch quarter progress data related to the indicator and order by year and quarter
+    quarter_progress = QuarterProgress.objects.filter(indicator=indicator).order_by('year', 'quarter__quarter_eng')
+    for quarter in quarter_progress:
+        data["quarter_progress"].append({
+            "quarter": quarter.quarter.quarter_eng,
+            "year": quarter.year.year_amh,
+            "quarter_target": quarter.quarter_target,
+            "quarter_performance": quarter.quarter_performance,
+            "quarter_date": quarter.quarter_date
+        })
+
+    # Fetch month progress data related to the indicator
+    month_progress = MonthProgress.objects.filter(indicator=indicator)
+    for month in month_progress:
+        data["month_progress"].append({
+            "month": month.month.month_english,
+            "year": month.year.year_amh,
+            "monthly_target": month.month_target,
+            "month_performance": month.month_performance,
+            "date": month.date
+        })
+
+    # Fetch annual plan data related to the indicator and order by year
+    annual_plans = AnnualPlan.objects.filter(indicator=indicator).order_by('year')
+    for plan in annual_plans:
+        performance_per = get_previous_year_performance(plan.indicator.kpi_characteristics, plan.year, plan.indicator, plan.annual_performance, plan.annual_target, plan.national_plan)
+        data["annual_plans"].append({
+            "year": plan.year.year_amh,
+            "annual_target": plan.annual_target,
+            "annual_performance": plan.annual_performance,
+            "target_state": plan.target_state,
+            "annual_date": plan.annual_date,
+            'perfomance_comp': performance_per
+        })
+
+    # Fetch score card range data
+    score_card_ranges = ScoreCardRange.objects.all()
+    for range_obj in score_card_ranges:
+        data["score_card_ranges"].append({
+            "name": range_obj.name,
+            "color": range_obj.color,
+            "starting": range_obj.starting,
+            "ending": range_obj.ending
+        })
+
+    return JsonResponse(data)
+#============================================

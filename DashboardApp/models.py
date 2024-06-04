@@ -104,8 +104,8 @@ class Indicator(models.Model):
     kpi_name_eng = models.CharField(max_length=100)
     kpi_name_amh = models.CharField(max_length=100, blank=True)
     kpi_weight = models.DecimalField(
-        max_digits=10, decimal_places=3, blank=True)
-    kpi_measurement_units = models.CharField(max_length=50)
+        max_digits=10, decimal_places=3, blank=True, null=True)
+    kpi_measurement_units = models.CharField(max_length=50, null=True, blank=True)
     kpi_characteristics = models.CharField(
         max_length=10,
         choices=KPI_CHARACTERISTIC_CHOICES,
