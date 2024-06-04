@@ -13,17 +13,18 @@
   <style>
     /* Hide sidebar for tablets and desktops */
     @media (min-width: 800px) {
-        .pc-sidebar {
-            display: none;
-        }
+      .pc-sidebar {
+        display: none;
+      }
     }
-</style>
+  </style>
   <title>Home | National dashboard</title>
   <!-- [Meta] -->
   <meta charset="utf-8" />
   <meta name="viewport" content="width=800">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="description" content="Ethiopian National Aggregated Data Dashboard: Real-Time Data Visualization and Sectoral Insights">
+  <meta name="description"
+    content="Ethiopian National Aggregated Data Dashboard: Real-Time Data Visualization and Sectoral Insights">
   <meta name="author" content="MoPD">
   <!-- [Favicon] icon -->
   <link rel="icon" href="https://ableproadmin.com/assets/images/favicon.svg" type="image/x-icon" />
@@ -48,9 +49,9 @@
     crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 
-  <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}admin/css/widgets.css"/>
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}admin/css/base.css"/>
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}admin/css/forms.css"/>
+  <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}admin/css/widgets.css" />
+  <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}admin/css/base.css" />
+  <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}admin/css/forms.css" />
 
   {% fontawesome_5_static %}
   <script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
@@ -95,8 +96,7 @@
                 class="ti ti-menu-2"></i></a>
           </li>
           <div class="m-header">
-            <a href="#"
-              class="b-brand text-primary"><!-- ========   Change your logo from here   ============ --> <img
+            <a href="#" class="b-brand text-primary"><!-- ========   Change your logo from here   ============ --> <img
                 src="{% static 'dashoboard_assets/assets/images/logo-dark.svg' %}" class="img-fluid logo-lg" alt="logo">
               <span class="badge bg-light-success rounded-pill ms-2 ">Ministry of Planning and
                 Development</span></a>
@@ -108,7 +108,9 @@
         <ul class="list-unstyled">
           <li class="dropdown pc-h-item">
             <form class="d-flex" id="searchItemForm">
-              <input class="form-control me-2" style="width: 500px;" id="searchItemValue"  list="autocomplete"  type="text" name="q" type="search" placeholder="Search" aria-label="Search"  placeholder="Enter Key Word" >
+              <input class="form-control me-2" style="width: 500px;" id="searchItemValue" list="autocomplete"
+                type="text" name="q" type="search" placeholder="Search" aria-label="Search"
+                placeholder="Enter Key Word">
               <button type="submit" class="btn btn-primary rounded-circle">
                 <i class="bi bi-search"></i>
               </button>
@@ -143,10 +145,10 @@
                 <span>Logout</span></a>
             </div>
           </li>
-          
+
         </ul>
       </div>
-      
+
     </div>
   </header>
 
@@ -163,7 +165,8 @@
                 <div class="col-lg-6 col-12">
                   <div class="p-4">
                     <h2 class="text-white">
-                      National Dashboard <img class="img-fluid" style="width: 40px;" src="{% static 'dashoboard_assets/assets/images/ethiopia.png'%}" alt="">
+                      National Dashboard <img class="img-fluid" style="width: 40px;"
+                        src="{% static 'dashoboard_assets/assets/images/ethiopia.png'%}" alt="">
                     </h2>
                     <p class="text-white">
                       The Ethiopian National Dashboard is a comprehensive and dynamic platform designed to provide the
@@ -185,183 +188,175 @@
                   </div>
                 </div>
 
-
-                
-                
-
               </div>
             </div>
-
-            
           </div>
-          
         </div>
+      </div>
 
-        
+      <!-- ===   Ministry Lists === -->
+      <div class="row" id="ministry-card-lists"></div>
+      <img src="" alt="">
+      <!--Loading Skeleton-->
+      <div class="row" id="loading-skeleton-topic"></div>
+      <!-- end -->
 
-        <!--
-            ===   Ministry Lists ===
-            -->
-        <div class="row" id="ministry-card-lists"></div>
-        <img src="" alt="" >
-        <!--Loading Skeleton-->
-        <div class="row" id="loading-skeleton-topic"></div>
-        <!-- end -->
 
-        
-
-        <div class="row container-fluid justify-content-center">
-          <div class="container-fluid m-3 p-2 ">
-            <form id="searchItemForm">
-              <div class="row justify-content-center">
-                <div class="col-md-8" id="arrow">
-                  <label id="goalDropDownOptionLabel" for="goalDropDownOption" class="fw-bold h2">Goal</label>
-                  <select id="goalDropDownOption"   class="form-control text-center p-4 shadow">
-                  </select>
+      <div class="row container-fluid justify-content-center">
+        <div class="container-fluid m-3 p-2 ">
+          <form id="searchItemForm">
+            <div class="row justify-content-center">
+              <div class="col-md-8" id="arrow">
+                <label id="goalDropDownOptionLabel" for="goalDropDownOption" class="fw-bold h2">Goal</label>
+                <select id="goalDropDownOption" class="form-control text-center p-4 shadow">
+                </select>
               </div>
-            </form>
-          </div>
+          </form>
+        </div>
         <div>
 
           <h2 id="ministry_name"></h2>
           <div class="row container-fluid justify-content-center">
             <div class="container-fluid m-3 p-2 ">
-              
+
             </div>
-          <div>
+            <div>
 
-            <h2 class="text-success">
-              <strong id="kra-title"></strong>
-            </h2>
-          </div>
+              <h2 class="text-success">
+                <strong id="kra-title"></strong>
+              </h2>
+            </div>
 
-      
 
-          <!--
+
+            <!--
             ===   Category Lists ===
             -->
-          <div class="row container-fluid justify-content-start" id="kra-card-list"></div>
+            <div class="row container-fluid justify-content-start" id="kra-card-list"></div>
 
-          <!--Loading Skeleton-->
-          <div class="row justify-content-center" id="loading-skeleton-category"></div>
-        </div>
-        <!-- [ Main Content ] end -->
-
-        <!-- Modal -->
-<!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-xl modal-fullscreen-lg-down modal-dialog-scrollable">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel"></h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <!--Loading Skeleton-->
+            <div class="row justify-content-center" id="loading-skeleton-category"></div>
           </div>
-          <div class="modal-body">
-              <div class="tab-content" id="myTabContent">
-                  <div class="tab-pane fade show active" id="analytics-tab-1-pane" role="tabpanel"
+          <!-- [ Main Content ] end -->
+
+          <!-- Modal -->
+          <!-- Modal -->
+          <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-fullscreen-lg-down modal-dialog-scrollable">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel"></h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="analytics-tab-1-pane" role="tabpanel"
                       aria-labelledby="analytics-tab-1" tabindex="0">
                       <div id="spinnerLoading"></div>
 
                       <div class="row">
-                          <div class="col-md-4">
-                              <div class="card" style="width: 22rem;">
-                                  <div class="card-header bg-success text-white" id="kpi-name">Header</div>
-                                  <ul class="list-group list-group-flush">
-                                      <li class="list-group-item  d-flex justify-content-between "><span>KPI
-                                              Measurment</span><span class="badge bg-success text-wrap"
-                                              id="kpi-measure"></span></li>
-                                      <li class="list-group-item  d-flex justify-content-between"><span>KPI
-                                              Charcteristics</span><span class="badge bg-success text-wrap"
-                                              id="kpi-char"> </span></li>
-                                      <li class="list-group-item  d-flex justify-content-between"><span>KPI Weight
-                                          </span><span class="badge bg-success text-wrap" id="kpi-Weight"></span></li>
-                                      <li class="list-group-item  d-flex justify-content-between"><span
-                                              class="me-5">KRA</span><span class="badge bg-success text-wrap"
-                                              id="kpi-KRA"></span></li>
-                                      <li class="list-group-item  d-flex justify-content-between"><span
-                                              class="me-5">Goal</span><span class="badge bg-success text-wrap"
-                                              id="kpi-Goal"></span></li>
-                                      <li class="list-group-item  d-flex justify-content-between">
-                                          <span>Ministry</span><span class="badge bg-success text-wrap"
-                                              id="kpi-Minstry"></span></li>
-                                  </ul>
-                              </div>
+                        <div class="col-md-4">
+                          <div class="card" style="width: 22rem;">
+                            <div class="card-header bg-success text-white" id="kpi-name">Header</div>
+                            <ul class="list-group list-group-flush">
+                              <li class="list-group-item  d-flex justify-content-between "><span>KPI
+                                  Measurment</span><span class="badge bg-success text-wrap" id="kpi-measure"></span>
+                              </li>
+                              <li class="list-group-item  d-flex justify-content-between"><span>KPI
+                                  Charcteristics</span><span class="badge bg-success text-wrap" id="kpi-char"> </span>
+                              </li>
+                              <li class="list-group-item  d-flex justify-content-between"><span>KPI Weight
+                                </span><span class="badge bg-success text-wrap" id="kpi-Weight"></span></li>
+                              <li class="list-group-item  d-flex justify-content-between"><span
+                                  class="me-5">KRA</span><span class="badge bg-success text-wrap" id="kpi-KRA"></span>
+                              </li>
+                              <li class="list-group-item  d-flex justify-content-between"><span
+                                  class="me-5">Goal</span><span class="badge bg-success text-wrap" id="kpi-Goal"></span>
+                              </li>
+                              <li class="list-group-item  d-flex justify-content-between">
+                                <span>Ministry</span><span class="badge bg-success text-wrap" id="kpi-Minstry"></span>
+                              </li>
+                            </ul>
                           </div>
-                          <div class="col-md-8">
-                              <h5 class="text-center" id="Year-table"></h5>
-                              <div id="Year-detail-table"></div>
-                              <div class="card">
+                        </div>
+                        <div class="col-md-8">
+                          <h5 class="text-center" id="Year-table"></h5>
+                          <div id="Year-detail-table"></div>
+                          <div class="card">
 
-
-                              </div>
 
                           </div>
+
+                        </div>
                       </div>
                       <div class="mt-1 container">
-                          <h5 class="text-center" id="Quarter-table"></h5>
-                          <div class="col-12" id="Quarter-detail-table"></div>
+                        <h5 class="text-center" id="Quarter-table"></h5>
+                        <div class="col-12" id="Quarter-detail-table"></div>
 
                       </div>
 
                       <div class="row mt-1 container">
-                          <h5 class="text-center" id="Month-table"></h5>
-                          <div class="col-12" id="Month-detail-table"></div>
+                        <h5 class="text-center" id="Month-table"></h5>
+                        <div class="col-12" id="Month-detail-table"></div>
                       </div>
 
                       <div class="row">
-                          <div class="col-md-6 pt-5" id="bar-container">
-                              <figure class="highcharts-figure">
-                                  <div id="bar"></div>
-                              </figure>
-                          </div>
-                          <div class="col-md-6" id="quarter-chart">
-                              <select class="form-select form-select-sm mt-1" id="yearSelect"></select>
-                              <figure class="highcharts-figure">
-                                  <div id="QuarterBar"></div>
-                              </figure>
-                          </div>
+                        <div class="col-md-6 pt-5" id="bar-container">
+                          <figure class="highcharts-figure">
+                            <div id="bar"></div>
+                          </figure>
+                        </div>
+                        <div class="col-md-6" id="quarter-chart">
+                          <select class="form-select form-select-sm mt-1" id="yearSelect"></select>
+                          <figure class="highcharts-figure">
+                            <div id="QuarterBar"></div>
+                          </figure>
+                        </div>
                       </div>
                       <div class="row">
-                          <div class="col-12" id="month-chart">
-                              <select class="form-select form-select-sm" id="yearMonthSelect"></select>
-                              <figure class="highcharts-figure mt-1">
-                                  <div id="area"></div>
-                              </figure>
-                          </div>
+                        <div class="col-12" id="month-chart">
+                          <select class="form-select form-select-sm" id="yearMonthSelect"></select>
+                          <figure class="highcharts-figure mt-1">
+                            <div id="area"></div>
+                          </figure>
+                        </div>
                       </div>
+                    </div>
                   </div>
+                </div>
               </div>
+            </div>
           </div>
-      </div>
-  </div>
-</div>
 
-      </div>
+        </div>
 
-      <!-- Pagination -->
-      <div class="m-5" id="Pagination"></div>
+        <!-- Pagination -->
+        <div class="m-5" id="Pagination"></div>
+      </div>
     </div>
-    <!-- [ Main Content ] end -->
+  </div>
+  <!-- [ Main Content ] end -->
 
-    <footer class="pc-footer">
-      <div class="footer-wrapper container-fluid">
-        <div class="row">
-          <div class="col my-1">
-            <p class="m-0">
-              Dashboard &#9829; crafted by Team
-              <a href="#">MoPD</a>
-            </p>
-          </div>
-          <div class="col-auto my-1">
-            <ul class="list-inline footer-link mb-0">
-              <li class="list-inline-item">
-                <a href="https://mopd.gov.et/en/" target="_blank">Home</a>
-              </li>
-            </ul>
-          </div>
+  <footer class="pc-footer">
+    <div class="footer-wrapper container-fluid">
+      <div class="row">
+        <div class="col my-1">
+          <p class="m-0">
+            Dashboard &#9829; crafted by Team
+            <a href="#">MoPD</a>
+          </p>
+        </div>
+        <div class="col-auto my-1">
+          <ul class="list-inline footer-link mb-0">
+            <li class="list-inline-item">
+              <a href="https://mopd.gov.et/en/" target="_blank">Home</a>
+            </li>
+          </ul>
         </div>
       </div>
-    </footer>
+    </div>
+  </footer>
 
 
 

@@ -86,33 +86,44 @@ let renderCategoryGraph = (id, dataArray, color1) => {
     "info" : "#20c997",
 };
 
-console.log(dataArray)
 
 
-  
-let year = dataArray.map((yr) => {
-  return "" + yr[2]
-})
+
+
 
 let target = dataArray.map((tgt) => {
-  return "" + tgt[0]
+  return{
+    x : `${tgt[2]}`,
+    yr : `${tgt[3]}`, 
+    y: tgt[0]
+  }
 })
 
 let performance = dataArray.map((perf) => {
-  return "" + perf[1]
+  return{
+    x : `${perf[2]}`, 
+    yr : `${perf[3]}`, 
+    y: perf[1]
+  }
 })
+
+console.log(performance)
 
 
 $(`#all-earnings-graph${id}`).html("")
 
   var options = {
-    series: [{
-    name: 'Target',
-    data: target,
-  },{
-    name: 'Performance',
-    data: performance
-  }],
+
+    series: [
+      {
+        name : 'Target',
+        data: target,
+    },{
+      name : 'Performance',
+      data: performance,
+  },
+],
+
     chart: {
     type: 'bar',
     height: 150,
@@ -126,7 +137,7 @@ $(`#all-earnings-graph${id}`).html("")
   plotOptions: {
     bar: {
       horizontal: false,
-      columnWidth: '90%',
+      columnWidth: '100%',
       endingShape: 'rounded'
     },
   },
@@ -143,7 +154,7 @@ $(`#all-earnings-graph${id}`).html("")
     labels: {
       rotate: -45
     },
-    categories: year,
+    type: 'category',
   },
   yaxis: {
     labels: {
@@ -155,8 +166,13 @@ $(`#all-earnings-graph${id}`).html("")
   },
   tooltip: {
     y: {
-      formatter: function (val) {
-        return val
+      formatter: function(value, { series, seriesIndex, dataPointIndex, w }) {
+        var data = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
+        return '<ul>' +
+        '<li><b>Ethiopian Year</b>: ' + data.x + '</li>' +
+        '<li><b>Gregorian Year</b>: ' + data.yr + '</li>' +
+        '<li><b>Value</b>: ' + parseFloat(data.y).toFixed(2) + '</li>' +
+        '</ul>';
       }
     }
   }
@@ -408,7 +424,7 @@ let indicatorSearchResult = (search) =>{
       $("#kra-card-list").html("")
       data.kra.forEach((kra) =>{
         $("#kra-card-list").append(`
-          <h4 class="fw-bold  text-center pt-3"></h4>
+          <h4 class="fw-bold  text-center pt-3" ></h4>
           <hr class="shadow-lg p-1 rounded ">`) // Append Single KRA
 
 
@@ -430,7 +446,8 @@ let indicatorSearchResult = (search) =>{
                       [
                         setting.target ? value.annual_target : null, 
                         setting.performance ? value.annual_performance : null, 
-                        value.year__year_amh
+                        value.year__year_amh,
+                        value.year__year_eng
                      ]
                     )
 
@@ -455,7 +472,8 @@ let indicatorSearchResult = (search) =>{
                         [
                           setting.target ? value.quarter_target : null, 
                           setting.performance ? value.quarter_performance : null, 
-                          value.year__year_amh + " " + value.quarter__quarter_eng
+                          value.year__year_amh + " " + value.quarter__quarter_eng,
+                          value.year__year_eng + " " + value.quarter__quarter_eng,
                       ]
                       )
 
@@ -479,7 +497,8 @@ let indicatorSearchResult = (search) =>{
                         [
                           setting.target ? value.month_target : null, 
                           setting.performance ? value.month_performance : null, 
-                          value.year__year_amh + " " + value.month__month_english
+                          value.year__year_amh + " " + value.month__month_english,
+                          value.year__year_eng + " " + value.month__month_english
                       ]
                       )
 
@@ -537,7 +556,8 @@ let handleDropDown = (ministryId) => {
          },
           complete: function () {
             //hideLoadingSkeletonCategory();
-          },     success: function(data){
+          },     
+          success: function(data){
             if(data.kra.length > 0){
               $("#kra-card-list").html("")
               data.kra.forEach((kra) =>{
@@ -564,7 +584,8 @@ let handleDropDown = (ministryId) => {
                               [
                                 setting.target ? value.annual_target : null, 
                                 setting.performance ? value.annual_performance : null, 
-                                value.year__year_amh
+                                value.year__year_amh,
+                                value.year__year_eng
                              ]
                             )
       
@@ -589,7 +610,8 @@ let handleDropDown = (ministryId) => {
                                 [
                                   setting.target ? value.quarter_target : null, 
                                   setting.performance ? value.quarter_performance : null, 
-                                  value.year__year_amh + " " + value.quarter__quarter_eng
+                                  value.year__year_amh + " " + value.quarter__quarter_eng,
+                                  value.year__year_eng + " " + value.quarter__quarter_eng,
                               ]
                               )
       
@@ -613,7 +635,8 @@ let handleDropDown = (ministryId) => {
                                 [
                                   setting.target ? value.month_target : null, 
                                   setting.performance ? value.month_performance : null, 
-                                  value.year__year_amh + " " + value.month__month_english
+                                  value.year__year_amh + " " + value.month__month_english,
+                                  value.year__year_eng + " " + value.month__month_english
                               ]
                               )
       
