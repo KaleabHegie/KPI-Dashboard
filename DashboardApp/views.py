@@ -1,11 +1,14 @@
-from django.shortcuts import render
+from django.shortcuts import render , redirect
 from rest_framework.decorators import api_view
 from .serializers import MinistrySerializers , GoalSerializers  ,  ResponsibleMinistrySerializer , KeyResultAreaSerializer2
 from django.http import JsonResponse
 from userManagement.models import ResponsibleMinistry
 from django.shortcuts import get_object_or_404
 from django.db.models import F
+from django.contrib.auth import login,authenticate,logout
 import time
+from django.contrib.auth.decorators import login_required
+from userManagement.forms import LoginFormDashboard
 from .models import (
     StrategicGoal , 
     Indicator , 
@@ -22,11 +25,13 @@ import time
 from django.db.models import Q
 
 # Create your views here.
+@login_required(login_url='dashboard-login')
 def index(request):
     return render(request, 'dashboard-app/dashboard-index.html')
 
 
 
+@login_required(login_url='dashboard-login')
 @api_view(['GET'])
 def ministries_lists(request):
     if request.method == 'GET':
@@ -36,6 +41,7 @@ def ministries_lists(request):
         return JsonResponse({'ministries':serializer.data})
 
 
+@login_required(login_url='dashboard-login')
 @api_view(['GET'])
 def ministry_goal(request, id):
     if request.method == 'GET':
@@ -53,6 +59,7 @@ def ministry_goal(request, id):
 
 
 
+@login_required(login_url='dashboard-login')
 @api_view(['GET'])
 def filter_indicators_by_kra(request, kra_id):
     try:
@@ -65,6 +72,7 @@ def filter_indicators_by_kra(request, kra_id):
 
 
 
+@login_required(login_url='dashboard-login')
 @api_view(['GET'])
 def indicator_lists(request, id):
     if request.method == 'GET':
@@ -154,6 +162,8 @@ def indicator_lists(request, id):
 
 
 
+
+@login_required(login_url='dashboard-login')
 @api_view(['GET'])
 def ministry_goal_front(request, id):
     if request.method == 'GET':
@@ -172,6 +182,7 @@ def ministry_goal_front(request, id):
 
 
 
+@login_required(login_url='dashboard-login')
 @api_view(['GET'])
 def indicator_details_json(request, indicator_id):
     # Fetch the specific Indicator by ID using select_related
@@ -231,6 +242,7 @@ def indicator_details_json(request, indicator_id):
 
 
 
+@login_required(login_url='dashboard-login')
 @api_view(['GET'])
 def auto_complete_search_indicator(request):
     queryset = []
@@ -247,6 +259,7 @@ def auto_complete_search_indicator(request):
 #============================================
 #               Mine
 #============================================
+@login_required(login_url='dashboard-login')
 def get_previous_year_performance(chrx, year,Previndicator,per, target,national_plan):
         # Calculate and return the change in performance compared to the previous year
         previous_year = year.year_amh - 1
@@ -279,6 +292,7 @@ def get_previous_year_performance(chrx, year,Previndicator,per, target,national_
             return None
 
 
+@login_required(login_url='dashboard-login')
 def indicator_details_json(request, indicator_id):
     # Fetch the specific Indicator by ID using select_related
     indicator = get_object_or_404(Indicator.objects.select_related(
@@ -358,3 +372,30 @@ def indicator_details_json(request, indicator_id):
 
     return JsonResponse(data)
 #============================================
+
+
+
+
+##### Login ######
+def dashboard_login(request):
+    form = LoginFormDashboard(request.POST or None)
+    if form.is_valid():
+        email = form.cleaned_data['email']
+        password = form.cleaned_data['password']
+        user = authenticate(request,email=email,password=password)
+        if user is not None and user.is_admin:
+            login(request, user)
+            return redirect('dashboard-api')
+        else:
+            messages.error(request, 'Invalid Password or Email')
+        form = LoginFormDashboard()
+    context = {
+        'form' : form
+    }
+    return render(request, 'dashboard-app/authentication/login.html', context=context)
+
+
+@login_required(login_url='dashboard-login')
+def dashboard_logout(request):
+    logout(request)
+    return redirect('dashboard-login')
