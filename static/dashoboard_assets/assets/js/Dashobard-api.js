@@ -131,6 +131,18 @@ $(`#all-earnings-graph${id}`).html("")
       show: false
     }
   },
+  noData: {
+    text: "No Data",
+    align: 'center',
+    verticalAlign: 'top',
+    offsetX: 0,
+    offsetY: 0,
+    style: {
+      color: "#dc3545",
+      fontSize: '20px',
+      fontFamily: undefined
+    }
+  },
   grid: {
     show: false
   },
@@ -159,7 +171,7 @@ $(`#all-earnings-graph${id}`).html("")
   yaxis: {
     labels: {
       show: false,
-    }
+    },
   },
   fill: {
     opacity: 1,
@@ -751,13 +763,13 @@ $(document).ready(function () {
       data.ministries.forEach((item) => {
         cardMinistry += `
         <!-- custom cards -->
-          <div class="col-md-3 col-xl-1 d-none d-md-block ministry-card"
+          <div class="col-lg-3 col-xl-1 d-none d-md-block ministry-card"
              data-id = ${item.id}
              data-name = "${item.code}"
              >
-                <div class="card ${ item.id == 3 ? selectedCard : '' } selected-card social-widget-card text-dark">
+                <div  class="card ${ item.id == 3 ? selectedCard : '' } selected-card social-widget-card text-dark">
                     <div class="card-body d-flex justify-content-start align-items-center p-2">
-                    <img src="${item.image}" class="img-fluid rounded-circle"  style="width: 37px; height: 37spx;" alt="ministry image">
+                    <img src="${item.image}" class="img-fluid rounded-circle me-1"  style="width: 37px; height: 37px;" alt="ministry image">
                     <span class=" ">${item.code}</span>
                     </div>
                 </div>
