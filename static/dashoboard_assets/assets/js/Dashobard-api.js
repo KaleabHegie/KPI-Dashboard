@@ -76,7 +76,7 @@ let hideLoadingSkeletonCategory = () => {
   $("#kra-card-list").html("");
 };
 
-let renderCategoryGraph = (id, dataArray, color1, color2) => {
+let renderCategoryGraph = (id, dataArray, color1) => {
   const ColorsCode = {
     "primary" : "#0d6efd",
     "secondary" : "#6610f2",
@@ -85,6 +85,8 @@ let renderCategoryGraph = (id, dataArray, color1, color2) => {
     "warning" : "#ffc107",
     "info" : "#20c997",
 };
+
+console.log(dataArray)
 
 
   
@@ -300,7 +302,8 @@ let keyResultArea = () =>{
                         [
                           setting.target ? value.annual_target : null, 
                           setting.performance ? value.annual_performance : null, 
-                          value.year__year_amh
+                          value.year__year_amh,
+                          value.year__year_eng
                        ]
                       )
 
@@ -325,7 +328,8 @@ let keyResultArea = () =>{
                           [
                             setting.target ? value.quarter_target : null, 
                             setting.performance ? value.quarter_performance : null, 
-                            value.year__year_amh + " " + value.quarter__quarter_eng
+                            value.year__year_amh + " " + value.quarter__quarter_eng,
+                            value.year__year_eng + " " + value.quarter__quarter_eng,
                         ]
                         )
 
@@ -349,7 +353,8 @@ let keyResultArea = () =>{
                           [
                             setting.target ? value.month_target : null, 
                             setting.performance ? value.month_performance : null, 
-                            value.year__year_amh + " " + value.month__month_english
+                            value.year__year_amh + " " + value.month__month_english,
+                            value.year__year_eng + " " + value.month__month_english
                         ]
                         )
 

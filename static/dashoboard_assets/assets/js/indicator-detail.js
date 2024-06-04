@@ -1,12 +1,33 @@
-function fetchData(tableContainer) {
+$('#yearSelect').hide()
+$('#yearMonthSelect').hide();
+
+
+let showLoadingSpinnerDetail = (div) => {
+    $(`#${div}`).html(
+      `
+      <div class="text-center">
+    <div class="spinner-grow text-success" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+      `
+    )
+  }
+  
+  let hideLoadingSpinnerDetail = (div) =>{
+    $(`#${div}`).html('')
+  }
+
+function fetchData(indicatorId,tableContainer) {
+    document.getElementById("Quarter-detail-table").innerHTML = ""
+document.getElementById("Year-detail-table").innerHTML = ""
+document.getElementById("Month-detail-table").innerHTML = ""
     // AJAX request to fetch data
     $.ajax({
-        url: `indicator-details/2268/`, // Endpoint URL
+        url: `indicator-details/${indicatorId}/`, // Endpoint URL
         type: "GET",
         beforeSend: function () {
             showDetailLoadingSpinner('spinnerLoading')
-            $('#yearSelect').hide()
-            $('#yearMonthSelect').hide();
 
         },
         complete: function () {
@@ -81,6 +102,7 @@ function fetchData(tableContainer) {
             // Check if data is available
             if (recentAnnualPlans && recentAnnualPlans.length > 0) {
                 // Populate the table with recent annual plans data
+                console.log(data.score_card_ranges)
                 drawTable(recentAnnualPlans, tableContainer, data.score_card_ranges);
 
                 // Draw the chart
@@ -210,7 +232,7 @@ function fetchData(tableContainer) {
 }
 
 // Function to draw the table
-function drawTable(data, tableContainer, color) {
+function drawTable(data, tableContainer, ) {
     document.getElementById("Year-table").innerHTML = "Year Table";
 
     // Create table element
@@ -228,7 +250,7 @@ function drawTable(data, tableContainer, color) {
         <th >Performance</th>
         <th class="text-wrap">Target State</th>
         <th>Score</th>
-        <th class="text-wrap" style="width:12px";>Change in absolute number from Previous Year</th>
+        <th class="text-wrap";>Change in absolute number from Previous Year</th>
         <th class="text-wrap">Change in absolute percent from Previous Year</th>`;
     thead.appendChild(tr);
     table.appendChild(thead);
@@ -476,8 +498,12 @@ function getQuarterName(quarter) {
             return quarter;
     }
 }
-// Call fetchData function to fetch and draw the table
-fetchData(document.getElementById('Year-detail-table'));
+
+$(document).on('click', '.detail-category', function () {
+    console.log("called");
+    var indicatorId = $(this).data('id'); // Get the indicator ID from data attribute
+    fetchData(indicatorId, document.getElementById('Year-detail-table')); // Call fetchData function with indicator ID
+});
 
 function populateDropdown(data) {
     var select = document.getElementById('yearSelect');
@@ -662,6 +688,8 @@ function updateMonthlyChart(selectedYear, data) {
         console.error("No data available for the selected year.");
     }
 }
+
+
 
 
 
