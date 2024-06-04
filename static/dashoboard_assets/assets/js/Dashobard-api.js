@@ -763,7 +763,7 @@ $(document).ready(function () {
       data.ministries.forEach((item) => {
         cardMinistry += `
         <!-- custom cards -->
-          <div class="col-lg-3 col-xl-1 d-none d-md-block ministry-card"
+          <div class="col-2 col-xl-1  ministry-card"
              data-id = ${item.id}
              data-name = "${item.code}"
              >
