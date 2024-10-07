@@ -23,6 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('DashboardApp.urls')),
     path('user-admin/', include('User_Admin.urls')),
+    path('api-auth/', include('rest_framework.urls'))
 ]
 
 

@@ -1,16 +1,68 @@
 from import_export import fields, resources
 
 from userManagement.models import ResponsibleMinistry
-from .models import StrategicGoal, KeyResultArea, Year, AnnualPlan, NationalPlan, Indicator
+from .models import StrategicGoal, KeyResultArea, Year, PolicyArea ,Quarter,AnnualPlan, NationalPlan, Indicator
 from import_export.widgets import ForeignKeyWidget
 
 class GoalResource(resources.ModelResource):
+    national_plan = fields.Field(
+        column_name='national_plan',
+        attribute='national_plan',
+        widget=ForeignKeyWidget(NationalPlan, field='np_name_eng'))
+    policy_area = fields.Field(
+        column_name='policy_area',
+        attribute='policy_area',
+        widget=ForeignKeyWidget(PolicyArea, field='policyAreaEng'))
     responsible_ministries = fields.Field(
         column_name='responsible_ministries',
         attribute='responsible_ministries',
         widget=ForeignKeyWidget(ResponsibleMinistry, field='responsible_ministry_eng'))
     class Meta:
         model = StrategicGoal
+
+
+class KeyResultAreaResource(resources.ModelResource):
+    goal = fields.Field(
+        column_name='goal',
+        attribute='goal',
+        widget=ForeignKeyWidget(StrategicGoal, field='goal_name_eng'))
+    class Meta:
+        model = KeyResultArea
+
+
+class IndicatorResource(resources.ModelResource):
+    responsible_ministries = fields.Field(
+        column_name='responsible_ministries',
+        attribute='responsible_ministries',
+        widget=ForeignKeyWidget(ResponsibleMinistry, field='responsible_ministry_eng'))
+    keyResultArea = fields.Field(
+        column_name='keyResultArea',
+        attribute='keyResultArea',
+        widget=ForeignKeyWidget(KeyResultArea, field='activity_name_eng'))
+    goal = fields.Field(
+        column_name='goal',
+        attribute='goal',
+        widget=ForeignKeyWidget(StrategicGoal, field='goal_name_eng'))
+    class Meta:
+        model = Indicator
+
+
+
+
+class QuarterResource(resources.ModelResource):
+    class Meta:
+        model = Quarter
+
+
+class NationalPlanResource(resources.ModelResource):
+    class Meta:
+        model = NationalPlan
+
+
+class PolicyAreaResource(resources.ModelResource):
+    class Meta:
+        model = PolicyArea
+
 
 
 

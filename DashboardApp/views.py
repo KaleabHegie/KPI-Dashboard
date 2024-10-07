@@ -1,6 +1,8 @@
 from django.shortcuts import render , redirect
+
+
 from rest_framework.decorators import api_view
-from .serializers import MinistrySerializers , GoalSerializers  ,  ResponsibleMinistrySerializer , KeyResultAreaSerializer2
+from .serializers import *
 from django.http import JsonResponse
 from userManagement.models import ResponsibleMinistry
 from django.shortcuts import get_object_or_404
@@ -11,21 +13,11 @@ from django.contrib import messages
 
 from django.contrib.auth.decorators import login_required
 from userManagement.forms import LoginFormDashboard
-from .models import (
-    StrategicGoal , 
-    Indicator , 
-    KeyResultArea,
-    DashboardSetting,
-    AnnualPlan,
-    MonthProgress,
-    QuarterProgress,
-    Year ,StrategicGoal, Indicator, AnnualPlan, QuarterProgress, MonthProgress,
-    ScoreCardRange
-)
+from .models import *
 from django.db.models import Count
-import time
 from django.db.models import Q
-
+from rest_framework.response import Response
+from rest_framework import status
 # Create your views here.
 @login_required(login_url='dashboard-login')
 def index(request):
@@ -401,3 +393,7 @@ def dashboard_login(request):
 def dashboard_logout(request):
     logout(request)
     return redirect('dashboard-login')
+
+
+
+
