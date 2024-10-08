@@ -157,7 +157,6 @@ class PolicyArea(models.Model):
                 else:
                     goal_percent = float(goal.ministry_strategic_goal_score_card(year=year , indicator_id = indicator_id , kras_ids = kra_id)['avg_score']) * float(goal_weight/100)
                     sum = sum + goal_percent
-                    print('goal_percent---------',goal_percent)
 
             avg_score = sum 
 
