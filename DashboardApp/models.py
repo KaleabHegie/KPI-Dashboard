@@ -119,7 +119,7 @@ class PolicyArea(models.Model):
                 else:
                     goal_percent = float(goal.strategic_goal_score_card(year=year)['avg_score']) * float(goal_weight/100)
                     sum = sum + goal_percent
-                    
+
             avg_score = sum 
 
             score_card_ranges = cache.get('score_card_ranges')
@@ -194,7 +194,7 @@ class StrategicGoal(models.Model):
 
     def strategic_goal_score_card(self, quarter=None, year=None):
         cache_key = f"strategic_goal_score_card_{self.pk}_{quarter}_{year}"
-        result = None
+        result = cache.get(cache_key)
         if result is None:
             key_result_areas = self.kra_goal.all()
             sum = 0
