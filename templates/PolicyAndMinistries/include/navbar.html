@@ -1,0 +1,21 @@
+<ul class="nav nav-tabs mb-3" id="myTab" role="tablist">
+
+    <li class="nav-item" role="presentation">
+        <a class="nav-link text-uppercase {% if request.resolver_match.url_name == 'policy_area' %}active{% endif %}"  href="{% url "policy_area" %}" role="tab" aria-controls="home"  aria-selected="true">Home</a>
+    </li>
+
+
+    <li class="nav-item" role="presentation">
+        <a class="nav-link text-uppercase  {% if request.resolver_match.url_name == 'ministry_index' %}active{% endif %}" href="{% url "ministry_index" %}">Ministry</a>
+    </li>
+
+
+    <li class="nav-item" role="presentation"><a class="nav-link text-uppercase {% if request.resolver_match.url_name == 'info' %}active{% endif %}" id="info-tab" href="{% url "info" %}" role="tab" aria-controls="info" aria-selected="false" tabindex="-1">info</a>
+    </li>
+
+
+    <li class="nav-item" role="presentation"><a class="nav-link text-uppercase {% if request.resolver_match.url_name == 'search' %}active{% endif %}" id="Search-tab" href="{% url "search" %}" role="tab" aria-controls="Search" aria-selected="false" tabindex="-1">Search</a>
+    </li>
+
+
+</ul>

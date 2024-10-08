@@ -1,5 +1,6 @@
 {% load static %}
 <!doctype html>
+<<<<<<< HEAD
 <html lang="en"><!-- [Head] start -->
 <!-- Mirrored from ableproadmin.com/dashboard/index.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 16 May 2024 06:39:22 GMT -->
 
@@ -43,10 +44,16 @@
     </style>
 
 </head><!-- [Head] end --><!-- [Body] Start -->
+=======
+<html lang="en">
+<!-- [Body] Start -->
+{% include 'PolicyAndMinistries/include/head.html' %}
+>>>>>>> 23e74ab493c2efcf85d7bb8aa292325e5d36cb31
 
 <body data-pc-preset="preset-1" data-pc-sidebar-caption="true" data-pc-layout="vertical" data-pc-direction="ltr"
     data-pc-theme_contrast="" data-pc-theme="light">
 
+<<<<<<< HEAD
     <!-- [ Pre-loader ] start -->
     <div class="page-loader">
         <div class="bar"></div>
@@ -551,6 +558,94 @@
     }]
   }]
 });
+=======
+    {% include 'PolicyAndMinistries/include/header.html'%}
+
+
+
+    <div class="pc-container">
+        <div class="pc-content container-sm">
+            <!-- [ Main Content ] start -->
+            <div class="">
+
+                <div class="card-body pc-component">
+                    {% include 'PolicyAndMinistries/include/navbar.html' %}
+                    <!--Chart - 1-->
+                    <div class="mt-5">
+                        <h3>SDG</h3>
+
+                        <div class="d-flex w-full ps-4 pe-4 mt-4 justify-content-between">
+                            <h6 class="text-start">Policy Area</h6>
+                            <h6 class="text-end">SDG</h6>
+                        </div>
+
+                        <div class="border-0" id="goalShareTreeMapUpdated"></div>
+                    </div>
+
+                    <div class="mt-5">
+                        <h3>Timeline</h3>
+                        <div id="container"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+
+    {% include "PolicyAndMinistries/include/script.html" %}
+    <script src="{% static 'dashoboard_assets/assets//js//pages//policyArea.js' %}"></script>
+
+
+    <script>
+
+
+        Highcharts.chart('container', {
+            chart: {
+                type: 'timeline'
+            },
+            xAxis: {
+                visible: false
+            },
+            yAxis: {
+                visible: false
+            },
+            title: {
+                text: 'Timeline of Space Exploration'
+            },
+            subtitle: {
+                text: 'Info source: <a href="https://en.wikipedia.org/wiki/Timeline_of_space_exploration">www.wikipedia.org</a>'
+            },
+            series: [{
+                dataLabels: {
+                    connectorColor: 'silver',
+                    connectorWidth: 2
+                },
+                data: [{
+                    name: 'First dogs',
+                    label: '1951: First dogs in space',
+                    description: '22 July 1951 First dogs in space (Dezik and Tsygan) '
+                }, {
+                    name: 'Sputnik 1',
+                    label: '1957: First artificial satellite',
+                    description: '4 October 1957 First artificial satellite. First ' +
+                        'signals from space.'
+                }, {
+                    name: 'First human spaceflight',
+                    label: '1961: First human spaceflight (Yuri Gagarin)',
+                    description: 'First human spaceflight (Yuri Gagarin), and the ' +
+                        'first human-crewed orbital flight'
+                }, {
+                    name: 'First human on the Moon',
+                    label: '1969: First human on the Moon',
+                    description: 'First human on the Moon, and first space launch ' +
+                        'from a celestial body other than the Earth. First sample ' +
+                        'return from the Moon'
+                }]
+            }]
+        });
+>>>>>>> 23e74ab493c2efcf85d7bb8aa292325e5d36cb31
 
 
 

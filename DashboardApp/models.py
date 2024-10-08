@@ -79,9 +79,6 @@ class NationalPlan(models.Model):
     def __str__(self):
         return self.np_name_eng
 
-
-
-
 class SDG(models.Model):
     code = models.IntegerField( unique=True)
     title = models.CharField(max_length=100)
@@ -106,7 +103,6 @@ class PolicyArea(models.Model):
 
     def policy_area_score_card(self, quarter=None, year=None):
         cache_key = f"policy_area_score_card_{self.pk}_{quarter}_{year}"
-        #result = cache.get(cache_key)
         result = cache.get(cache_key)
         if result is None:
             # Perform calculations if not cached
@@ -116,7 +112,8 @@ class PolicyArea(models.Model):
             for goal in goals:
                 goal_weight = goal.goal_weight
                 if quarter and year:
-                    sum = sum + goal.strategic_goal_score_card(quarter=quarter, year=year)['avg_score']
+                    goal_percent = float(goal.strategic_goal_score_card(quarter=quarter, year=year)['avg_score']) * float(goal_weight/100)
+                    sum = sum + goal_percent
                 else:
                     goal_percent = float(goal.strategic_goal_score_card(year=year)['avg_score']) * float(goal_weight/100)
                     sum = sum + goal_percent
@@ -144,7 +141,7 @@ class PolicyArea(models.Model):
     
     def ministry_policy_area_score_card(self, quarter=None, year=None , goal_ids = None , kra_id = None,indicator_id= None):
         cache_key = f"policy_area_score_card_{self.pk}_{quarter}_{year}"
-        result = None
+        result = cache.get(cache_key)
         if result is None:
             # Perform calculations if not cached
             goals = self.policy_area_goal.filter(id__in = goal_ids)
@@ -198,8 +195,6 @@ class StrategicGoal(models.Model):
     responsible_ministries = models.ForeignKey(
         "userManagement.ResponsibleMinistry", on_delete=models.SET_NULL, null=True, related_name="ministry_goal", blank=True)
     
-
-
     goal_is_visable = models.BooleanField(default=False)
     def __str__(self):
         return self.goal_name_eng
@@ -215,7 +210,8 @@ class StrategicGoal(models.Model):
             for kra in key_result_areas:
                 kra_weight =  kra.activity_weight
                 if quarter and year:
-                    sum = sum +kra.key_result_area_score_card(year=year, quarter=quarter)['avg_score']
+                    kra_percent = float(kra.key_result_area_score_card(year=year, quarter=quarter)['avg_score']) * float(kra_weight/100)
+                    sum = sum + kra_percent
                 elif year:
                    kra_percent = float(kra.key_result_area_score_card(year=year)['avg_score']) * float(kra_weight/100)
                    sum = sum + kra_percent
@@ -243,7 +239,7 @@ class StrategicGoal(models.Model):
     
     def ministry_strategic_goal_score_card(self, quarter=None, year=None , kras_ids=None , indicator_id=None):
         cache_key = f"ministry_strategic_goal_score_card_{self.pk}_{quarter}_{year}"
-        result = None
+        result = cache.get(cache_key)
         if result is None:
             key_result_areas = self.kra_goal.filter(id__in=kras_ids).distinct()
             sum = 0
@@ -303,17 +299,44 @@ class KeyResultArea(models.Model):
 
             if quarter:
                 quarter_scores = QuarterProgress.objects.filter(
-                    indicator__in=indicators,
-                    year__year_amh=year,
-                    quarter__quarter_eng=quarter
-                ).exclude(
-                    quarter_target__isnull=True
+                    Q(quarter_target__isnull=False),  
+                    Q(indicator__in=indicators),
+                    Q(year__year_amh=year),
+                    Q(quarter__quarter_eng=quarter)
+                ).annotate(
+                    # Replace null performance values with 0 using Coalesce
+                    performance_value=Coalesce('quarter_performance', Value(0)),
+                    
+                    # Calculate the percentage of performance over target for each row
+                    raw_performance_percentage=ExpressionWrapper(
+                        F('performance_value') * 100.0 / F('quarter_target'),
+                        output_field=FloatField()
+                    ),
+                    
+                    # Cap the performance percentage at 100 if it exceeds 100
+                    performance_percentage=Case(
+                        When(raw_performance_percentage__gt=100, then=Value(100.0)),
+                        default=F('raw_performance_percentage'),
+                        output_field=FloatField()
+                    ),
+
+                    kpi_weight_value=F('indicator__kpi_weight'),
+
+                    weighted_performance=ExpressionWrapper(
+                        F('performance_percentage') * (F('kpi_weight_value') / 100.0), 
+                        output_field=FloatField()
+                    )
+                ).values('weighted_performance', 'kpi_weight_value'
                 ).aggregate(
-                    total_score=Sum('score'),
-                    avg_score=Avg('score')
+                    total_score=Sum('weighted_performance'),
+                    total_indicator_weight=Sum('kpi_weight_value'),
                 )
+
                 sum_score = quarter_scores['total_score'] or 0
-                avg_score = quarter_scores['avg_score'] or 0
+                try: 
+                    avg_score = float(quarter_scores['total_score'] * 100) / float(quarter_scores['total_indicator_weight']) 
+                except: 
+                    avg_score = 0
             else:
                 annual_scores = AnnualPlan.objects.filter(
                     Q(annual_target__isnull=False),  
@@ -374,7 +397,7 @@ class KeyResultArea(models.Model):
 
     def ministry_key_result_area_score_card(self ,quarter=None, year=None , indicators_id=None):
         cache_key = f"ministry_key_result_area_score_card_{self.pk}_{quarter}_{year}"
-        result = None
+        result = cache.get(cache_key)
         if result is None:
             indicators = self.indicators.filter(id__in=indicators_id).values_list('id', flat=True)
 

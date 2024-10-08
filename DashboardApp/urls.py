@@ -14,6 +14,11 @@ urlpatterns = [
 
 
     path('', policy_area, name='policy_area'),
+    path('info/',info, name="info"),
+    path('search/', search, name='search'),
+
+
+
     path('ministry_index/', ministry_index, name='ministry_index'),
     path('ministries_lists/',ministries_lists, name="dashboard-ministries_lists"),
     path('ministry-goal/<str:id>/',ministry_goal, name="dashboard-ministries_lists"),
