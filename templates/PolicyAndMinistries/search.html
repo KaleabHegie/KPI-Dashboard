@@ -1,4 +1,3 @@
-
 {% load static %}
 <!doctype html>
 <html lang="en">
@@ -20,9 +19,9 @@
                 <div class="card-body pc-component">
                     {% include 'PolicyAndMinistries/include/navbar.html' %}
                     <div class="container">
-                        <form  id="search" class="d-flex ">
-                            <input id="searchValue" list="datalistOptions" class="form-control me-2" id="tags" type="search"
-                                placeholder="Type to search" aria-label="Search">
+                        <form id="search" class="d-flex ">
+                            <input id="searchValue" list="datalistOptions" class="form-control me-2" id="tags"
+                                type="search" placeholder="Type to search" aria-label="Search">
                             <button class="btn btn-sm btn-outline-success" type="submit">Search</button>
                         </form>
 
@@ -34,46 +33,55 @@
                     <div class="mt-5" id="searchResult"></div>
                 </div>
 
+
+                <!-- Modal  Search Kra-->
+                <div class="modal fade" id="searchKraDetail" tabindex="-1" aria-labelledby="searchKraDetailLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-xl">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="searchKraDetailLabel">Key Result Area Details</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body" id="searchKeyResultAreaDetails">
+                                ...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Modal  Search Goal-->
+                <div class="modal fade" id="searchGoalDetail" tabindex="-1" aria-labelledby="searchGoalDetailLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-xl">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="searchGoalDetailLabel">Goal Details</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body" id="searchGoalDetails">
+                                ...
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
+
+
+
         </div>
+    </div>
 
     </div>
 
 
 
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-
-    <!-- Required Js -->
-    <script src="{% static 'dashoboard_assets/assets/js/plugins/popper.min.js' %}"></script>
-    <script src="{% static 'dashoboard_assets/assets/js/plugins/simplebar.min.js' %}"></script>
-    <script src="{% static 'dashoboard_assets/assets/js/plugins/bootstrap.min.js' %}"></script>
-    <script src="{% static 'dashoboard_assets/assets/js/fonts/custom-font.js' %}"></script>
-    <script src="{% static 'dashoboard_assets/assets/js/pcoded.js' %}"></script>
-    <script src="{% static 'dashoboard_assets/assets/js/plugins/feather.min.js' %}"></script>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-
-
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    {% include "PolicyAndMinistries/include/script.html" %}
     <script src="{% static 'dashoboard_assets/assets//js//pages//policyArea.js' %}"></script>
-
-    <script src="https://cdn.jsdelivr.net/npm/apexsankey@1.1.2/apexsankey.min.js"></script>
-    <script src="https://code.highcharts.com/highcharts.js"></script>
-    <script src="https://code.highcharts.com/modules/timeline.js"></script>
-
-    <script>layout_change('false');</script>
-    <script>layout_theme_contrast_change('false');</script>
-    <script>change_box_container('false');</script>
-    <script>layout_caption_change('true');</script>
-    <script>layout_rtl_change('false');</script>
-    <script>preset_change('preset-1');</script>
-    <script>main_layout_change('vertical');</script>
 
 </body>
 
 </html>
-
-
-

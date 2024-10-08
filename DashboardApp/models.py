@@ -194,8 +194,6 @@ class StrategicGoal(models.Model):
     responsible_ministries = models.ForeignKey(
         "userManagement.ResponsibleMinistry", on_delete=models.SET_NULL, null=True, related_name="ministry_goal", blank=True)
     
-
-
     goal_is_visable = models.BooleanField(default=False)
     def __str__(self):
         return self.goal_name_eng
