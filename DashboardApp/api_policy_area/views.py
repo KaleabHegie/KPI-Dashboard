@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from DashboardApp.models import *
 from rest_framework import status
+import random
 
 @api_view(['GET'])
 def dashboard(request):

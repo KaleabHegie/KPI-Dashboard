@@ -7,6 +7,9 @@ from datetime import datetime
 from mptt.models import MPTTModel, TreeForeignKey
 from colorfield.fields import ColorField
 from django.db.models import Avg, Sum
+from django.db.models import Q, F, ExpressionWrapper, FloatField, Avg, Value
+from django.db.models.functions import Coalesce
+from django.db.models import Case, When
 from fontawesome_5.fields import IconField
 from django.core.cache import cache
 from django.conf import settings
@@ -292,6 +295,47 @@ class KeyResultArea(models.Model):
                 )
                 sum_score = annual_scores['total_score'] or 0
                 avg_score = annual_scores['avg_score'] or 0
+
+
+
+
+
+                annual_scores2 = AnnualPlan.objects.filter(
+                    Q(annual_target__isnull=False),  
+                    Q(indicator__in=indicators),
+                    Q(year__year_amh=year)
+                ).annotate(
+                    # Replace null performance values with 0 using Coalesce
+                    performance_value=Coalesce('annual_performance', Value(0)),
+                    
+                    # Calculate the percentage of performance over target for each row
+                    raw_performance_percentage=ExpressionWrapper(
+                        F('performance_value') * 100.0 / F('annual_target'),
+                        output_field=FloatField()
+                    ),
+
+                    
+                    # Cap the performance percentage at 100 if it exceeds 100
+                    performance_percentage=Case(
+                        When(raw_performance_percentage__gt=100, then=Value(100.0)),
+                        default=F('raw_performance_percentage'),
+                        output_field=FloatField()
+                    ),
+
+                    kpi_weight_value=F('indicator__kpi_weight'),
+
+                    weighted_performance=ExpressionWrapper(
+                        F('performance_percentage') * (F('kpi_weight_value') / 100.0), 
+                        output_field=FloatField()
+                    )
+                ).values('weighted_performance'
+                ).aggregate(
+                    avg_weighted_performance=Sum('weighted_performance')  # Get the average weighted performance percentage
+                )
+                
+                print(annual_scores2)
+
+
 
 
             score_card_ranges = cache.get('score_card_ranges')
