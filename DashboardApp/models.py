@@ -1,6 +1,4 @@
 from audioop import reverse
-
-
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from datetime import datetime
@@ -10,6 +8,9 @@ from django.db.models import Avg, Sum
 from fontawesome_5.fields import IconField
 from django.core.cache import cache
 from django.conf import settings
+from django.db.models import Q, F, ExpressionWrapper, FloatField, Avg, Value
+from django.db.models.functions import Coalesce
+from django.db.models import Case, When
 # Create your models here.
 CACHE_TIMEOUT = getattr(settings, 'CACHE_TIMEOUT', 300)
 
@@ -137,26 +138,39 @@ class PolicyArea(models.Model):
     
     def ministry_policy_area_score_card(self, quarter=None, year=None , goal_ids = None , kra_id = None,indicator_id= None):
         cache_key = f"policy_area_score_card_{self.pk}_{quarter}_{year}"
-        result = cache.get(cache_key)
+        result = None
         if result is None:
             # Perform calculations if not cached
             goals = self.policy_area_goal.filter(id__in = goal_ids)
             goal_avg_score = 0
+            sum = 0
             for goal in goals:
-                goal_score = goal.ministry_strategic_goal_score_card(quarter , year , kra_id ,indicator_id)
-               
-                goal_avg_score = goal_avg_score + int(goal_score['avg_score'])
+                goal_weight = goal.goal_weight
+                if quarter and year:
+                    sum = sum + goal.ministry_strategic_goal_score_card(quarter=quarter, year=year , indicator_id = indicator_id , kras_ids = kra_id)['avg_score']
+                else:
+                    goal_percent = float(goal.ministry_strategic_goal_score_card(year=year , indicator_id = indicator_id , kras_ids = kra_id)['avg_score']) * float(goal_weight/100)
+                    sum = sum + goal_percent
+                    print('goal_percent---------',goal_percent)
 
-            goal_avg_score = int(goal_avg_score/len(goals))
-            score_card_ranges = list(ScoreCardRange.objects.all())
+            avg_score = sum 
 
-            card = next((range for range in score_card_ranges if range.starting <= goal_avg_score <= range.ending), None)
+            score_card_ranges = cache.get('score_card_ranges')
+
+            if score_card_ranges is None:
+                score_card_ranges = list(ScoreCardRange.objects.all())
+                cache.set('score_card_ranges', score_card_ranges, CACHE_TIMEOUT)
+
+            card = next((range for range in score_card_ranges if range.starting <= avg_score <= range.ending), None)
             scorecard_color = card.color if card else "#4680ff"
 
             result = {
-                'avg_score': goal_avg_score,
+                'sum_score': sum,
+                'avg_score': avg_score,
                 'scorecard_color': scorecard_color,
             }
+            cache.set(cache_key, result, CACHE_TIMEOUT)
+
 
         return result
 
@@ -221,28 +235,40 @@ class StrategicGoal(models.Model):
     
     def ministry_strategic_goal_score_card(self, quarter=None, year=None , kras_ids=None , indicator_id=None):
         cache_key = f"ministry_strategic_goal_score_card_{self.pk}_{quarter}_{year}"
-        result = cache.get(cache_key)
+        result = None
         if result is None:
             key_result_areas = self.kra_goal.filter(id__in=kras_ids).distinct()
-            kra_avg_score = 0
-
+            sum = 0
             for kra in key_result_areas:
-                score = kra.ministry_key_result_area_score_card(quarter , year , indicator_id)
-                kra_avg_score = kra_avg_score + score['avg_score'] 
+                kra_weight =  kra.activity_weight
+                if quarter and year:
+                    sum = sum +kra.ministry_key_result_area_score_card(year=year, quarter=quarter , indicators_id = indicator_id)['avg_score']
+                elif year:
+                   kra_percent = float(kra.ministry_key_result_area_score_card(year=year , indicators_id=indicator_id)['avg_score']) * float(kra_weight/100)
+                   sum = sum + kra_percent
 
-            kra_avg_score = int(kra_avg_score/len(key_result_areas))
-            score_card_ranges = list(ScoreCardRange.objects.all())
+            goal_score = float(sum) * float(self.goal_weight/100)
+            avg_score = (goal_score * 100) / float(self.goal_weight)
+            
 
-            card = next((range for range in score_card_ranges if range.starting <= kra_avg_score <= range.ending), None)
+            score_card_ranges = cache.get('score_card_ranges')
+
+            if score_card_ranges is None:
+                score_card_ranges = list(ScoreCardRange.objects.all())
+                cache.set('score_card_ranges', score_card_ranges, CACHE_TIMEOUT)
+
+            card = next((range for range in score_card_ranges if range.starting <= avg_score <= range.ending), None)
             scorecard_color = card.color if card else "#4680ff"
 
             result = {
-                'avg_score': kra_avg_score,
+                'sum_score': sum,
+                'avg_score': avg_score,
                 'scorecard_color': scorecard_color,
             }
+            cache.set(cache_key, result, CACHE_TIMEOUT)
 
+     
         return result
-
 
 class KeyResultArea(models.Model):
     activity_name_eng = models.CharField(max_length=350)
@@ -310,10 +336,10 @@ class KeyResultArea(models.Model):
             cache.set(cache_key, result, CACHE_TIMEOUT)
 
         return result
-    
+
     def ministry_key_result_area_score_card(self ,quarter=None, year=None , indicators_id=None):
         cache_key = f"ministry_key_result_area_score_card_{self.pk}_{quarter}_{year}"
-        result = cache.get(cache_key)
+        result = None
         if result is None:
             indicators = self.indicators.filter(id__in=indicators_id).values_list('id', flat=True)
 
@@ -332,16 +358,46 @@ class KeyResultArea(models.Model):
                 avg_score = quarter_scores['avg_score'] or 0
             else:
                 annual_scores = AnnualPlan.objects.filter(
-                    indicator__in=indicators,
-                    year__year_amh=year
-                ).exclude(
-                    annual_target__isnull=True
+                    Q(annual_target__isnull=False),  
+                    Q(indicator__in=indicators),
+                    Q(year__year_amh=year)
+                ).annotate(
+                    # Replace null performance values with 0 using Coalesce
+                    performance_value=Coalesce('annual_performance', Value(0)),
+                    
+                    # Calculate the percentage of performance over target for each row
+                    raw_performance_percentage=ExpressionWrapper(
+                        F('performance_value') * 100.0 / F('annual_target'),
+                        output_field=FloatField()
+                    ),
+
+                    
+                    # Cap the performance percentage at 100 if it exceeds 100
+                    performance_percentage=Case(
+                        When(raw_performance_percentage__gt=100, then=Value(100.0)),
+                        default=F('raw_performance_percentage'),
+                        output_field=FloatField()
+                    ),
+
+                    kpi_weight_value=F('indicator__kpi_weight'),
+
+                    weighted_performance=ExpressionWrapper(
+                        F('performance_percentage') * (F('kpi_weight_value') / 100.0), 
+                        output_field=FloatField()
+                    )
+                ).values('weighted_performance', 'kpi_weight_value'
                 ).aggregate(
-                    total_score=Sum('score'),
-                    avg_score=Avg('score')
+                    total_score=Sum('weighted_performance'),
+                    total_indicator_weight=Sum('kpi_weight_value'),
                 )
+
                 sum_score = annual_scores['total_score'] or 0
-                avg_score = annual_scores['avg_score'] or 0
+                try: 
+                    avg_score = float(annual_scores['total_score'] * 100) / float(annual_scores['total_indicator_weight']) 
+                except: 
+                    avg_score = 0
+                    
+
 
             score_card_ranges = cache.get('score_card_ranges')
             if score_card_ranges is None:
@@ -357,8 +413,8 @@ class KeyResultArea(models.Model):
                 'scorecard_color': scorecard_color,
             }
             cache.set(cache_key, result, CACHE_TIMEOUT)
-        return result
 
+        return result
 
 class IndicatorTempo(models.Model):
     responsible_ministries = models.ForeignKey(
@@ -421,8 +477,6 @@ class Indicator(models.Model):
         indexes = [
             models.Index(fields=['kpi_name_eng', 'kpi_measurement_units']),
         ]
-
-
 class Category(models.Model):
     name_eng = models.CharField(max_length=200)
     name_amh = models.CharField(max_length=200, blank=True)

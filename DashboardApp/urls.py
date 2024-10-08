@@ -46,6 +46,7 @@ urlpatterns = [
     path('dashboard/' ,MinistryDashboard.dashboard),
     path('dashboard_ministries/<str:ministry_id>',MinistryDashboard.dashboard_ministries),
     path('indicatorsInGoal/<str:id>',MinistryDashboard.indicatorsInGoal),
+    path('kra_with_indicator/<str:id>' , MinistryDashboard.kra_with_indicator),
 
      #### RESET PASSWORD
     #dashboard-pages/authentication/

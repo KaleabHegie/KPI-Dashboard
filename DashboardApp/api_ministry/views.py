@@ -3,10 +3,10 @@ from .serializers import *
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from django.db.models import Q
+from django.db.models import Q 
 
 
-
+import random
 
 m_id = None
 def get_selected_ministry(id):
