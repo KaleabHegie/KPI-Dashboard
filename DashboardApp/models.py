@@ -106,7 +106,6 @@ class PolicyArea(models.Model):
 
     def policy_area_score_card(self, quarter=None, year=None):
         cache_key = f"policy_area_score_card_{self.pk}_{quarter}_{year}"
-        #result = cache.get(cache_key)
         result = cache.get(cache_key)
         if result is None:
             # Perform calculations if not cached
@@ -144,7 +143,7 @@ class PolicyArea(models.Model):
     
     def ministry_policy_area_score_card(self, quarter=None, year=None , goal_ids = None , kra_id = None,indicator_id= None):
         cache_key = f"policy_area_score_card_{self.pk}_{quarter}_{year}"
-        result = None
+        result = cache.get(cache_key)
         if result is None:
             # Perform calculations if not cached
             goals = self.policy_area_goal.filter(id__in = goal_ids)
@@ -242,7 +241,7 @@ class StrategicGoal(models.Model):
     
     def ministry_strategic_goal_score_card(self, quarter=None, year=None , kras_ids=None , indicator_id=None):
         cache_key = f"ministry_strategic_goal_score_card_{self.pk}_{quarter}_{year}"
-        result = None
+        result = cache.get(cache_key)
         if result is None:
             key_result_areas = self.kra_goal.filter(id__in=kras_ids).distinct()
             sum = 0
@@ -373,7 +372,7 @@ class KeyResultArea(models.Model):
 
     def ministry_key_result_area_score_card(self ,quarter=None, year=None , indicators_id=None):
         cache_key = f"ministry_key_result_area_score_card_{self.pk}_{quarter}_{year}"
-        result = None
+        result = cache.get(cache_key)
         if result is None:
             indicators = self.indicators.filter(id__in=indicators_id).values_list('id', flat=True)
 
