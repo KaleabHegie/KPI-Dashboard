@@ -285,22 +285,6 @@ class KeyResultArea(models.Model):
                 avg_score = quarter_scores['avg_score'] or 0
             else:
                 annual_scores = AnnualPlan.objects.filter(
-                    indicator__in=indicators,
-                    year__year_amh=year
-                ).exclude(
-                    annual_target__isnull=True
-                ).aggregate(
-                    total_score=Sum('score'),
-                    avg_score=Avg('score')
-                )
-                sum_score = annual_scores['total_score'] or 0
-                avg_score = annual_scores['avg_score'] or 0
-
-
-
-
-
-                annual_scores2 = AnnualPlan.objects.filter(
                     Q(annual_target__isnull=False),  
                     Q(indicator__in=indicators),
                     Q(year__year_amh=year)
@@ -328,14 +312,17 @@ class KeyResultArea(models.Model):
                         F('performance_percentage') * (F('kpi_weight_value') / 100.0), 
                         output_field=FloatField()
                     )
-                ).values('weighted_performance'
+                ).values('weighted_performance', 'kpi_weight_value'
                 ).aggregate(
-                    avg_weighted_performance=Sum('weighted_performance')  # Get the average weighted performance percentage
+                    total_score=Sum('weighted_performance'),
+                    total_indicator_weight=Sum('kpi_weight_value'),
                 )
-                
-                print(annual_scores2)
 
-
+                sum_score = annual_scores['total_score'] or 0
+                try: 
+                    avg_score = float(annual_scores['total_score'] * 100) / float(annual_scores['total_indicator_weight']) 
+                except: 
+                    avg_score = 0
 
 
             score_card_ranges = cache.get('score_card_ranges')
