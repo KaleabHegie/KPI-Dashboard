@@ -13,7 +13,8 @@ urlpatterns = [
 
 
 
-    path('', index, name='dashboard-api'),
+    path('', policy_area, name='policy_area'),
+    path('ministry_index/', ministry_index, name='ministry_index'),
     path('ministries_lists/',ministries_lists, name="dashboard-ministries_lists"),
     path('ministry-goal/<str:id>/',ministry_goal, name="dashboard-ministries_lists"),
     path('ministry_goal_front/<str:id>/',ministry_goal_front, name="ministry_goal_front"),

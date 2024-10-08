@@ -397,3 +397,10 @@ def dashboard_logout(request):
 
 
 
+
+def policy_area(request):
+    return render(request, 'PolicyAndMinistries/index.html')
+
+
+def ministry_index(request):
+    return render(request, 'PolicyAndMinistries/ministries_index.html')
