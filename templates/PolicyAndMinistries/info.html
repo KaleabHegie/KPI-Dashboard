@@ -1,16 +1,141 @@
-<!--Chart - 1-->
-<div class="mt-5">
-  <h3>SDG</h3>
+{% load static %}
+<!doctype html>
+<html lang="en">
+<!-- [Body] Start -->
+{% include 'PolicyAndMinistries/include/head.html' %}
 
-  <div class="d-flex w-full ps-4 pe-4 mt-4 justify-content-between">
-    <h6 class="text-start">Policy Area</h6>
-    <h6 class="text-end">SDG</h6>
-  </div>
+<body data-pc-preset="preset-1" data-pc-sidebar-caption="true" data-pc-layout="vertical" data-pc-direction="ltr"
+    data-pc-theme_contrast="" data-pc-theme="light">
 
-  <div class="border-0" id="goalShareTreeMapUpdated"></div>
-</div>
+    {% include 'PolicyAndMinistries/include/header.html'%}
 
-<div class="mt-5">
-  <h3>Timeline</h3>
-  <div id="container"></div>
-</div>
+
+
+    <div class="pc-container">
+        <div class="pc-content container-sm">
+            <!-- [ Main Content ] start -->
+            <div class="">
+
+                <div class="card-body pc-component">
+                    {% include 'PolicyAndMinistries/include/navbar.html' %}
+                    <!--Chart - 1-->
+                    <div class="mt-5">
+                        <h3>SDG</h3>
+
+                        <div class="d-flex w-full ps-4 pe-4 mt-4 justify-content-between">
+                            <h6 class="text-start">Policy Area</h6>
+                            <h6 class="text-end">SDG</h6>
+                        </div>
+
+                        <div class="border-0" id="goalShareTreeMapUpdated"></div>
+                    </div>
+
+                    <div class="mt-5">
+                        <h3>Timeline</h3>
+                        <div id="container"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+    <!-- Required Js -->
+    <script src="{% static 'dashoboard_assets/assets/js/plugins/popper.min.js' %}"></script>
+    <script src="{% static 'dashoboard_assets/assets/js/plugins/simplebar.min.js' %}"></script>
+    <script src="{% static 'dashoboard_assets/assets/js/plugins/bootstrap.min.js' %}"></script>
+    <script src="{% static 'dashoboard_assets/assets/js/fonts/custom-font.js' %}"></script>
+    <script src="{% static 'dashoboard_assets/assets/js/pcoded.js' %}"></script>
+    <script src="{% static 'dashoboard_assets/assets/js/plugins/feather.min.js' %}"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="{% static 'dashoboard_assets/assets//js//pages//policyArea.js' %}"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/apexsankey@1.1.2/apexsankey.min.js"></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/timeline.js"></script>
+
+    <script>layout_change('false');</script>
+    <script>layout_theme_contrast_change('false');</script>
+    <script>change_box_container('false');</script>
+    <script>layout_caption_change('true');</script>
+    <script>layout_rtl_change('false');</script>
+    <script>preset_change('preset-1');</script>
+    <script>main_layout_change('vertical');</script>
+
+    <script>
+
+
+        Highcharts.chart('container', {
+            chart: {
+                type: 'timeline'
+            },
+            xAxis: {
+                visible: false
+            },
+            yAxis: {
+                visible: false
+            },
+            title: {
+                text: 'Timeline of Space Exploration'
+            },
+            subtitle: {
+                text: 'Info source: <a href="https://en.wikipedia.org/wiki/Timeline_of_space_exploration">www.wikipedia.org</a>'
+            },
+            series: [{
+                dataLabels: {
+                    connectorColor: 'silver',
+                    connectorWidth: 2
+                },
+                data: [{
+                    name: 'First dogs',
+                    label: '1951: First dogs in space',
+                    description: '22 July 1951 First dogs in space (Dezik and Tsygan) '
+                }, {
+                    name: 'Sputnik 1',
+                    label: '1957: First artificial satellite',
+                    description: '4 October 1957 First artificial satellite. First ' +
+                        'signals from space.'
+                }, {
+                    name: 'First human spaceflight',
+                    label: '1961: First human spaceflight (Yuri Gagarin)',
+                    description: 'First human spaceflight (Yuri Gagarin), and the ' +
+                        'first human-crewed orbital flight'
+                }, {
+                    name: 'First human on the Moon',
+                    label: '1969: First human on the Moon',
+                    description: 'First human on the Moon, and first space launch ' +
+                        'from a celestial body other than the Earth. First sample ' +
+                        'return from the Moon'
+                }]
+            }]
+        });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </script>
+
+</body>
+
+</html>

@@ -401,6 +401,12 @@ def dashboard_logout(request):
 def policy_area(request):
     return render(request, 'PolicyAndMinistries/index.html')
 
+def info(request): 
+    return render(request, 'PolicyAndMinistries/info.html')
+
+def search(request):
+    return render(request, 'PolicyAndMinistries/search.html')
+
 
 def ministry_index(request):
     return render(request, 'PolicyAndMinistries/ministries_index.html')
