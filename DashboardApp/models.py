@@ -79,9 +79,6 @@ class NationalPlan(models.Model):
     def __str__(self):
         return self.np_name_eng
 
-
-
-
 class SDG(models.Model):
     code = models.IntegerField( unique=True)
     title = models.CharField(max_length=100)
@@ -115,7 +112,8 @@ class PolicyArea(models.Model):
             for goal in goals:
                 goal_weight = goal.goal_weight
                 if quarter and year:
-                    sum = sum + goal.strategic_goal_score_card(quarter=quarter, year=year)['avg_score']
+                    goal_percent = float(goal.strategic_goal_score_card(quarter=quarter, year=year)['avg_score']) * float(goal_weight/100)
+                    sum = sum + goal_percent
                 else:
                     goal_percent = float(goal.strategic_goal_score_card(year=year)['avg_score']) * float(goal_weight/100)
                     sum = sum + goal_percent
@@ -213,7 +211,8 @@ class StrategicGoal(models.Model):
             for kra in key_result_areas:
                 kra_weight =  kra.activity_weight
                 if quarter and year:
-                    sum = sum +kra.key_result_area_score_card(year=year, quarter=quarter)['avg_score']
+                    kra_percent = float(kra.key_result_area_score_card(year=year, quarter=quarter)['avg_score']) * float(kra_weight/100)
+                    sum = sum + kra_percent
                 elif year:
                    kra_percent = float(kra.key_result_area_score_card(year=year)['avg_score']) * float(kra_weight/100)
                    sum = sum + kra_percent
