@@ -113,11 +113,14 @@ class PolicyArea(models.Model):
 
             sum = 0
             for goal in goals:
+                goal_weight = goal.goal_weight
                 if quarter and year:
                     sum = sum + goal.strategic_goal_score_card(quarter=quarter, year=year)['avg_score']
                 else:
-                    sum = sum + goal.strategic_goal_score_card(year=year)['avg_score']
-            avg_score = sum / len(goals) if len(goals) > 0 else 0
+                    goal_percent = float(goal.strategic_goal_score_card(year=year)['avg_score']) * float(goal_weight/100)
+                    sum = sum + goal_percent
+                    
+            avg_score = sum 
 
             score_card_ranges = cache.get('score_card_ranges')
 
@@ -191,18 +194,20 @@ class StrategicGoal(models.Model):
 
     def strategic_goal_score_card(self, quarter=None, year=None):
         cache_key = f"strategic_goal_score_card_{self.pk}_{quarter}_{year}"
-        result = cache.get(cache_key)
+        result = None
         if result is None:
             key_result_areas = self.kra_goal.all()
-
             sum = 0
             for kra in key_result_areas:
+                kra_weight =  kra.activity_weight
                 if quarter and year:
                     sum = sum +kra.key_result_area_score_card(year=year, quarter=quarter)['avg_score']
                 elif year:
-                   sum = sum +kra.key_result_area_score_card(year=year)['avg_score']
+                   kra_percent = float(kra.key_result_area_score_card(year=year)['avg_score']) * float(kra_weight/100)
+                   sum = sum + kra_percent
 
-            avg_score = sum / len(key_result_areas) if len(key_result_areas) > 0 else 0
+            goal_score = float(sum) * float(self.goal_weight/100)
+            avg_score = (goal_score * 100) / float(self.goal_weight)
 
             score_card_ranges = cache.get('score_card_ranges')
 
@@ -297,7 +302,6 @@ class KeyResultArea(models.Model):
                         F('performance_value') * 100.0 / F('annual_target'),
                         output_field=FloatField()
                     ),
-
                     
                     # Cap the performance percentage at 100 if it exceeds 100
                     performance_percentage=Case(
