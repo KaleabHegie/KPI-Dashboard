@@ -5,6 +5,9 @@ from datetime import datetime
 from mptt.models import MPTTModel, TreeForeignKey
 from colorfield.fields import ColorField
 from django.db.models import Avg, Sum
+from django.db.models import Q, F, ExpressionWrapper, FloatField, Avg, Value
+from django.db.models.functions import Coalesce
+from django.db.models import Case, When
 from fontawesome_5.fields import IconField
 from django.core.cache import cache
 from django.conf import settings
@@ -111,11 +114,14 @@ class PolicyArea(models.Model):
 
             sum = 0
             for goal in goals:
+                goal_weight = goal.goal_weight
                 if quarter and year:
                     sum = sum + goal.strategic_goal_score_card(quarter=quarter, year=year)['avg_score']
                 else:
-                    sum = sum + goal.strategic_goal_score_card(year=year)['avg_score']
-            avg_score = sum / len(goals) if len(goals) > 0 else 0
+                    goal_percent = float(goal.strategic_goal_score_card(year=year)['avg_score']) * float(goal_weight/100)
+                    sum = sum + goal_percent
+
+            avg_score = sum 
 
             score_card_ranges = cache.get('score_card_ranges')
 
@@ -205,15 +211,17 @@ class StrategicGoal(models.Model):
         result = cache.get(cache_key)
         if result is None:
             key_result_areas = self.kra_goal.all()
-
             sum = 0
             for kra in key_result_areas:
+                kra_weight =  kra.activity_weight
                 if quarter and year:
                     sum = sum +kra.key_result_area_score_card(year=year, quarter=quarter)['avg_score']
                 elif year:
-                   sum = sum +kra.key_result_area_score_card(year=year)['avg_score']
+                   kra_percent = float(kra.key_result_area_score_card(year=year)['avg_score']) * float(kra_weight/100)
+                   sum = sum + kra_percent
 
-            avg_score = sum / len(key_result_areas) if len(key_result_areas) > 0 else 0
+            goal_score = float(sum) * float(self.goal_weight/100)
+            avg_score = (goal_score * 100) / float(self.goal_weight)
 
             score_card_ranges = cache.get('score_card_ranges')
 
@@ -308,16 +316,43 @@ class KeyResultArea(models.Model):
                 avg_score = quarter_scores['avg_score'] or 0
             else:
                 annual_scores = AnnualPlan.objects.filter(
-                    indicator__in=indicators,
-                    year__year_amh=year
-                ).exclude(
-                    annual_target__isnull=True
+                    Q(annual_target__isnull=False),  
+                    Q(indicator__in=indicators),
+                    Q(year__year_amh=year)
+                ).annotate(
+                    # Replace null performance values with 0 using Coalesce
+                    performance_value=Coalesce('annual_performance', Value(0)),
+                    
+                    # Calculate the percentage of performance over target for each row
+                    raw_performance_percentage=ExpressionWrapper(
+                        F('performance_value') * 100.0 / F('annual_target'),
+                        output_field=FloatField()
+                    ),
+                    
+                    # Cap the performance percentage at 100 if it exceeds 100
+                    performance_percentage=Case(
+                        When(raw_performance_percentage__gt=100, then=Value(100.0)),
+                        default=F('raw_performance_percentage'),
+                        output_field=FloatField()
+                    ),
+
+                    kpi_weight_value=F('indicator__kpi_weight'),
+
+                    weighted_performance=ExpressionWrapper(
+                        F('performance_percentage') * (F('kpi_weight_value') / 100.0), 
+                        output_field=FloatField()
+                    )
+                ).values('weighted_performance', 'kpi_weight_value'
                 ).aggregate(
-                    total_score=Sum('score'),
-                    avg_score=Avg('score')
+                    total_score=Sum('weighted_performance'),
+                    total_indicator_weight=Sum('kpi_weight_value'),
                 )
+
                 sum_score = annual_scores['total_score'] or 0
-                avg_score = annual_scores['avg_score'] or 0
+                try: 
+                    avg_score = float(annual_scores['total_score'] * 100) / float(annual_scores['total_indicator_weight']) 
+                except: 
+                    avg_score = 0
 
 
             score_card_ranges = cache.get('score_card_ranges')
