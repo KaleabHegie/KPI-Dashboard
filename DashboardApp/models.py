@@ -301,17 +301,44 @@ class KeyResultArea(models.Model):
 
             if quarter:
                 quarter_scores = QuarterProgress.objects.filter(
-                    indicator__in=indicators,
-                    year__year_amh=year,
-                    quarter__quarter_eng=quarter
-                ).exclude(
-                    quarter_target__isnull=True
+                    Q(quarter_target__isnull=False),  
+                    Q(indicator__in=indicators),
+                    Q(year__year_amh=year),
+                    Q(quarter__quarter_eng=quarter)
+                ).annotate(
+                    # Replace null performance values with 0 using Coalesce
+                    performance_value=Coalesce('quarter_performance', Value(0)),
+                    
+                    # Calculate the percentage of performance over target for each row
+                    raw_performance_percentage=ExpressionWrapper(
+                        F('performance_value') * 100.0 / F('quarter_target'),
+                        output_field=FloatField()
+                    ),
+                    
+                    # Cap the performance percentage at 100 if it exceeds 100
+                    performance_percentage=Case(
+                        When(raw_performance_percentage__gt=100, then=Value(100.0)),
+                        default=F('raw_performance_percentage'),
+                        output_field=FloatField()
+                    ),
+
+                    kpi_weight_value=F('indicator__kpi_weight'),
+
+                    weighted_performance=ExpressionWrapper(
+                        F('performance_percentage') * (F('kpi_weight_value') / 100.0), 
+                        output_field=FloatField()
+                    )
+                ).values('weighted_performance', 'kpi_weight_value'
                 ).aggregate(
-                    total_score=Sum('score'),
-                    avg_score=Avg('score')
+                    total_score=Sum('weighted_performance'),
+                    total_indicator_weight=Sum('kpi_weight_value'),
                 )
+
                 sum_score = quarter_scores['total_score'] or 0
-                avg_score = quarter_scores['avg_score'] or 0
+                try: 
+                    avg_score = float(quarter_scores['total_score'] * 100) / float(quarter_scores['total_indicator_weight']) 
+                except: 
+                    avg_score = 0
             else:
                 annual_scores = AnnualPlan.objects.filter(
                     Q(annual_target__isnull=False),  
