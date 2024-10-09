@@ -294,7 +294,7 @@ $(document).ready(() => {
     let type = $("#dataType").val()
     let typeValue = $("#dataTypeLists").val()
     
-    let url = ` /ministries${type == 'year' ? '?year='+typeValue : '?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`
+    let url = `/ministries${type == 'year' ? '?year='+typeValue : '?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`
   
     preLoading('ministryCardLists' , 8 , 3)
     let data = await fetchData(url);
@@ -370,7 +370,7 @@ $(document).ready(() => {
         let typeValue = $("#dataTypeLists").val()
 
         //check is year or quarter
-        let url = ` /policy_area_with_goal/${id}${type == 'year' ? '?year='+typeValue : '?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`
+        let url = `/policy_area_with_goal/${id}${type == 'year' ? '?year='+typeValue : '?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`
     
         let goals = await fetchData(url); 
 
@@ -404,7 +404,7 @@ $(document).ready(() => {
 
     //check is year or quarter
     
-    let url = ` /dashboard_ministries/${ministry_id}${type == 'year' ? '?year='+typeValue : '?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`
+    let url = `/dashboard_ministries/${ministry_id}${type == 'year' ? '?year='+typeValue : '?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`
     let ministry_dashboard = await fetchData(url)
     preLoading('ministryDashboard' , 8 , 2)
     data = await fetchData( ` /ministry_with_policy_area/${ministry_id}${type == 'year' ? '?year='+typeValue : '?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`)
@@ -615,7 +615,7 @@ $(document).ready(() => {
   let typeValue = $("#dataTypeLists").val()
 
   //check is year or quarter
-  let url = ` /ministry_with_policy_area/${ministry_id}?${type == 'year' ? '?year='+typeValue : '?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`
+  let url = `/ministry_with_policy_area/${ministry_id}?${type == 'year' ? '?year='+typeValue : '?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`
  
   let data = await fetchData(url)
   
@@ -633,7 +633,7 @@ $(document).ready(() => {
     let typeValue = $("#dataTypeLists").val()
 
     //check is year or quarter
-    let url = ` /ministry_with_policy_area/${ministry_id}${type == 'year' ? '?year='+typeValue : '?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`
+    let url = `/ministry_with_policy_area/${ministry_id}${type == 'year' ? '?year='+typeValue : '?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`
    
     let data = await fetchData(url)
   $('#kpiStatus').html(``)
@@ -701,7 +701,7 @@ $(document).ready(() => {
     preLoading('goalWithKraList', 3 , 4)
 
     //check is year or quarter
-    let url = ` /goal_with_kra/${goal_id}${type == 'year' ? '?year='+typeValue : '?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`
+    let url = `/goal_with_kra/${goal_id}${type == 'year' ? '?year='+typeValue : '?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`
    
     let goal = await fetchData(url)
 
@@ -906,7 +906,7 @@ $(document).ready(() => {
 // Dashboard top cards
   const dashboardCard = async() =>{
   preLoading('dashboardInfo', 5 , 2)
-  let data = await fetchData(' /dashboard/')
+  let data = await fetchData('/dashboard/')
 
   const icon = ['briefcase', 'bullseye', 'suitcase', 'chart-line' , 'building']
   
@@ -950,7 +950,7 @@ $(document).ready(() => {
     const indicatorName = $(this).data('indicatorName')
     const goal = $(this).data('goal')
 
-    let data = await fetchData(` /indicator/${indicatorId}/`)
+    let data = await fetchData(`/indicator/${indicatorId}/`)
 
     $('#kpi-goal').html(goal || 'None')
     indicatorModal(indicatorName, data)
@@ -959,7 +959,7 @@ $(document).ready(() => {
   })
 
   const filterDataOption = async() =>{
-    let data = await fetchData(` /time_series_year/`)
+    let data = await fetchData(`/time_series_year/`)
 
     const yearOption = () =>{
       return  data?.years?.map((year, index) => {

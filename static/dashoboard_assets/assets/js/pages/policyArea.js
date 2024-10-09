@@ -327,7 +327,7 @@ $(document).ready(()=>{
 
       let type = $("#dataType").val()
       let typeValue = $("#dataTypeLists").val()
-      let url = ` /api/policy-area/${type == 'year' ? '?year='+typeValue : '?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`
+      let url = `/api/policy-area/${type == 'year' ? '?year='+typeValue : '?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`
 
       preLoading('policyAreaCardLists', 12, 2)  //loading -> htmlId, num of repeat, num of column 
       let data = await fetchData(url)
@@ -566,7 +566,7 @@ $(document).ready(()=>{
     const dashboardCard = async() =>{
 
       preLoading('dashboardInfo', 4, 3)  //loading -> htmlId, num of repeat, num of column
-      let data = await fetchData(' /api/dashboard/')
+      let data = await fetchData('/api/dashboard/')
 
       const icon = ['briefcase', 'bullseye', 'suitcase', 'chart-line']
       let color = randomColor()
@@ -597,7 +597,7 @@ $(document).ready(()=>{
 
 
     const filterDataOption = async() =>{
-      let data = await fetchData(` /api/time_series_year/`)
+      let data = await fetchData(`/api/time_series_year/`)
 
       const yearOption = () =>{
         return  data?.years?.map((year, index) => {
@@ -883,7 +883,7 @@ $(document).ready(()=>{
         let typeValue = $("#dataTypeLists").val()
 
         //check is year or quarter
-        let url = ` /api/policy-area/${policyAreaId}/${type == 'year' ? '?year='+typeValue : '?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`
+        let url = `/api/policy-area/${policyAreaId}/${type == 'year' ? '?year='+typeValue : '?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`
        
 
         preLoading('policyAreaMainCard', 4, 3)  //loading -> htmlId, num of repeat, num of column
@@ -983,7 +983,7 @@ $(document).ready(()=>{
 
       let type = $("#dataType").val()
       let typeValue = $("#dataTypeLists").val()
-      let url = ` /api/goal_with_kra/${goalId}/${type == 'year' ? '?year='+typeValue : '?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`
+      let url = `/api/goal_with_kra/${goalId}/${type == 'year' ? '?year='+typeValue : '?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`
     
 
 
@@ -1029,7 +1029,7 @@ $(document).ready(()=>{
       const indicatorName = $(this).data('indicatorName')
       const goal = $(this).data('goal')
 
-      let data = await fetchData(` /api/indicator/${indicatorId}/`)
+      let data = await fetchData(`/api/indicator/${indicatorId}/`)
 
       $('#kpi-goal').html(goal || 'None')
       indicatorModal(indicatorName, data)
@@ -1240,7 +1240,7 @@ $(document).ready(()=>{
       $("[name=search-kra]").on("click", async function () {
         let kraId  = $(this).data("id")
 
-        let data = await fetchData(` /api/search/kra/${kraId}/`)
+        let data = await fetchData(`/api/search/kra/${kraId}/`)
         //update modal title
         $("#searchKraDetailLabel").html('Key Result Area Details - ' + data.kra.activity_name_eng)
 
@@ -1258,7 +1258,7 @@ $(document).ready(()=>{
       $("[name=search-goal]").on('click', async function () {
         let goalId = $(this).data("id")
 
-        let data = await(fetchData(` /api/search/goal/${goalId}/`))
+        let data = await(fetchData(`/api/search/goal/${goalId}/`))
 
         data?.goal?.kra_goal?.forEach((kra) => {
            //create table
@@ -1287,7 +1287,7 @@ $(document).ready(()=>{
     const handleAutoComplete = () => {
       $('#searchValue').on('keydown', async()=>{
        let value = $("#searchValue").val()
-       let data = await fetchData(` /api/search_auto_complete/?q=${value}`)
+       let data = await fetchData(`/api/search_auto_complete/?q=${value}`)
 
 
        $("#datalistOptions").html('') //update list to empty
