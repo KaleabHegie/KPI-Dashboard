@@ -1134,7 +1134,7 @@ $(document).ready(()=>{
       </div>`)
 
 
-      let search = await fetchData(` //api/search/?q=${value}`)
+      let search = await fetchData(`/api/search/?q=${value}`)
 
 
       if(search){

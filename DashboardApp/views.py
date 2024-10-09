@@ -151,7 +151,6 @@ def indicator_lists(request, id):
             'value_month' : value_month,
              'score_card' : score_card,
         }
-        #time.sleep(1)
         return JsonResponse(context)
 
 
@@ -231,7 +230,6 @@ def indicator_details_json(request, indicator_id):
             "annual_date": plan.annual_date
         })
 
-    time.sleep(3)
     return JsonResponse(data)
 
 
