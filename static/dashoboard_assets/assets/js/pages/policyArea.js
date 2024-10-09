@@ -37,7 +37,7 @@ $(document).ready(()=>{
       color = colorCOode[colorCode]
 
       new ApexCharts(document.querySelector("#piechart"), {
-        chart: { height: 450, type: "pie" },
+        chart: { height: 400, type: "pie" },
         labels: label,
         series: value,
         title: {
@@ -676,8 +676,7 @@ $(document).ready(()=>{
       })
       
      
-  $("#overAllPerformanceAnalysis").html(card)
-    }
+  $("#overAllPerformanceAnalysis").html(card)}
 
     const policyAreaWithSDGGraph = async() =>{
       let data = await fetchData('/api/policy_area_SDG/')
@@ -699,7 +698,7 @@ $(document).ready(()=>{
         })
       })
 
-      console.log(node)
+ 
 
 
       let edge = []
@@ -724,8 +723,6 @@ $(document).ready(()=>{
       })
 
 
-      console.log(edge)
-
 
       const chardData = {
         nodes: node,
@@ -745,6 +742,115 @@ $(document).ready(()=>{
 
       
     }
+
+
+    const ministrySharesPyramid = async (data) => {
+      const dataChart = [];
+      const categories = [];
+    
+      for (const [key, value] of Object.entries(data)) {
+        let sum = 0;
+        let len = 0;
+        let weight = 0
+        data[key].map((item) => {
+          sum += item?.goal_score_card?.avg_score ? item?.goal_score_card?.avg_score : 0;
+          weight+=item?.goal_weight
+          len++;
+        });
+
+        let avg = Math.floor((sum * weight)/(len*100));
+
+        dataChart.push({
+          data: avg || 0,
+          categories: `${key} (${avg || 0 })%`,
+        })
+      }
+
+
+      dataChart.sort((a,b) =>{
+        if(a.data < b.data) return -1
+        return 1
+      })
+
+    
+      // Check if the chart already exists
+      if (window.ministrySharesChart) {
+        // Update the series and categories dynamically
+        window.ministrySharesChart.updateOptions({
+          series: [
+            {
+              name: "",
+              data: dataChart.map((item) => item.data),
+            },
+          ],
+          xaxis: {
+            categories:  dataChart.map((item) => item.categories),
+          },
+        });
+      } else {
+        // Initial chart rendering
+        var options = {
+          series: [
+            {
+              name: "",
+              data: dataChart.map((item) => item.data),
+            },
+          ],
+          chart: {
+            type: 'bar',
+            height: 350,
+            toolbar: {
+              show: false,
+            },
+          },
+          plotOptions: {
+            bar: {
+              borderRadius: 0,
+              horizontal: true,
+              distributed: true,
+              barHeight: '80%',
+              isFunnel: true,
+            },
+          },
+          colors: [
+            '#F44F5E',
+            '#E55A89',
+            '#D863B1',
+            '#CA6CD8',
+            '#B57BED',
+            '#8D95EB',
+            '#62ACEA',
+            '#4BC3E6',
+          ],
+          dataLabels: {
+            enabled: true,
+            formatter: function (val, opt) {
+              return opt.w.globals.labels[opt.dataPointIndex];
+            },
+            dropShadow: {
+              enabled: true,
+            },
+          },
+          title: {
+            text: 'Shares of Ministries',
+            align: 'middle',
+          },
+          xaxis: {
+            categories: dataChart.map((item) => item.categories),
+          },
+          legend: {
+            show: false,
+          },
+        };
+    
+        window.ministrySharesChart = new ApexCharts(
+          document.querySelector("#ministrySharesPyramid"),
+          options
+        );
+        window.ministrySharesChart.render();
+      }
+    };
+    
 
     const main = async() =>{
        await filterDataOption()
@@ -783,6 +889,13 @@ $(document).ready(()=>{
 
         preLoading('policyAreaMainCard', 4, 3)  //loading -> htmlId, num of repeat, num of column
         let data = await fetchData(url); //fetch data
+
+
+        const ministriesShare = Object.groupBy(data.policy_area_goal, ({responsible_ministries})=>{
+          return responsible_ministries.code
+        });
+
+
 
         let policyAreaDashboardData = [
           {
@@ -836,6 +949,9 @@ $(document).ready(()=>{
         let shareGoalNameLists = data?.policy_area_goal?.map((goal)=> goal.goal_name_eng.slice(0,15)+"...")
         let shareGoalValueLists = data?.policy_area_goal?.map((goal)=>goal.goal_weight || 0)
 
+           //ministries share for policy area
+           ministrySharesPyramid(ministriesShare)
+
         
         //policy area dashboard
         policyAreaDashboard(policyAreaDashboardData, color)
@@ -847,6 +963,8 @@ $(document).ready(()=>{
 
         // Render selected policy area card and goal list
         selectedPolicyAreaCard(data, color, score);
+
+     
 
       } catch (error) {
           console.error("Error fetching or rendering data:", error);
