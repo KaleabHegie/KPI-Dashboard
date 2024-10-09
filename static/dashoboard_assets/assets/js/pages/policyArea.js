@@ -1,11 +1,4 @@
-$(document).ready(()=>{
-  /**
-   * 
-   * @param {string} divId
-   * @param {number} size
-   * @param {number} width
-   */
-  
+$(document).ready(()=>{  
     const colorList = ['green', 'blue', 'indigo', 'purple', 'pink', 'red', 'orange', 'yellow', 'green', 'teal', 'cyan']
     const colorCOode = ['#2ca87f', '#4680ff', '#6610f2', '#673ab7', '#e83e8c', '#dc2626', '#fd7e14', '#e58a00', '#2ca87f', '#008080', '#3ec9d6']
     
@@ -335,7 +328,7 @@ $(document).ready(()=>{
 
       let type = $("#dataType").val()
       let typeValue = $("#dataTypeLists").val()
-      let url = `http://127.0.0.1:8000/api/policy-area/${type == 'year' ? '?year='+typeValue : '?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`
+      let url = ` /api/policy-area/${type == 'year' ? '?year='+typeValue : '?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`
 
       preLoading('policyAreaCardLists', 12, 2)  //loading -> htmlId, num of repeat, num of column 
       let data = await fetchData(url)
@@ -574,7 +567,7 @@ $(document).ready(()=>{
     const dashboardCard = async() =>{
 
       preLoading('dashboardInfo', 4, 3)  //loading -> htmlId, num of repeat, num of column
-      let data = await fetchData('http://127.0.0.1:8000/api/dashboard/')
+      let data = await fetchData(' /api/dashboard/')
 
       const icon = ['briefcase', 'bullseye', 'suitcase', 'chart-line']
       let color = randomColor()
@@ -605,7 +598,7 @@ $(document).ready(()=>{
 
 
     const filterDataOption = async() =>{
-      let data = await fetchData(`http://127.0.0.1:8000/api/time_series_year/`)
+      let data = await fetchData(` /api/time_series_year/`)
 
       const yearOption = () =>{
         return  data?.years?.map((year, index) => {
@@ -687,7 +680,7 @@ $(document).ready(()=>{
     }
 
     const policyAreaWithSDGGraph = async() =>{
-      let data = await fetchData('http://127.0.0.1:8000/api/policy_area_SDG/')
+      let data = await fetchData('/api/policy_area_SDG/')
       let node = []
 
       data.policy_areas.forEach((item) => {
@@ -695,8 +688,18 @@ $(document).ready(()=>{
       })
 
       data.sdgs.forEach((item) => {
-        node.push({ id: 'sdg-'+item.code, title: `${item.title} (${item.code})`})
+        node.push(
+          { id: 'sdg-'+item.code, title: `${item.title} (${item.code})`})
       })
+
+      data.agendas.forEach((item) => {
+        node.push({
+          id : `agenda-${item.id}`,
+          title : item.title,
+        })
+      })
+
+      console.log(node)
 
 
       let edge = []
@@ -705,10 +708,23 @@ $(document).ready(()=>{
           edge.push( {
             source : 'pa-'+item.id,
             target : 'sdg-'+sdg,
-            value :Math.floor(Math.random() * (16 - 10 + 1)) + 10
+            value : item.num_of_goals * 2 > 5 ? item.num_of_goals * 2 : 5 || 5
           })
         })
       })
+
+      data.agendas.forEach((item) =>{
+        item.sdg.forEach((sdg) =>{
+          edge.push( {
+            source : 'sdg-'+sdg,
+            target : 'agenda-'+item.id,
+            value : item.num_of_sdg * 10 > 5 ? item.num_of_sdg * 10 : 5 || 5
+          })
+        })
+      })
+
+
+      console.log(edge)
 
 
       const chardData = {
@@ -718,9 +734,9 @@ $(document).ready(()=>{
     const graphOptions = {
       nodeWidth: 30,
       fontWeight: 600,
-      width: 1000,
-      fontSize: '8px',
-      height: 1300,
+      width: 1300,
+      fontSize: '13px',
+      height: 1100,
     
     };
     const s = new ApexSankey(document.getElementById('goalShareTreeMapUpdated'), graphOptions);
@@ -762,7 +778,7 @@ $(document).ready(()=>{
         let typeValue = $("#dataTypeLists").val()
 
         //check is year or quarter
-        let url = `http://127.0.0.1:8000/api/policy-area/${policyAreaId}/${type == 'year' ? '?year='+typeValue : '?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`
+        let url = ` /api/policy-area/${policyAreaId}/${type == 'year' ? '?year='+typeValue : '?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`
        
 
         preLoading('policyAreaMainCard', 4, 3)  //loading -> htmlId, num of repeat, num of column
@@ -850,7 +866,7 @@ $(document).ready(()=>{
 
       let type = $("#dataType").val()
       let typeValue = $("#dataTypeLists").val()
-      let url = `http://127.0.0.1:8000/api/goal_with_kra/${goalId}/${type == 'year' ? '?year='+typeValue : '?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`
+      let url = ` /api/goal_with_kra/${goalId}/${type == 'year' ? '?year='+typeValue : '?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`
     
 
 
@@ -896,7 +912,7 @@ $(document).ready(()=>{
       const indicatorName = $(this).data('indicatorName')
       const goal = $(this).data('goal')
 
-      let data = await fetchData(`http://127.0.0.1:8000/api/indicator/${indicatorId}/`)
+      let data = await fetchData(` /api/indicator/${indicatorId}/`)
 
       $('#kpi-goal').html(goal || 'None')
       indicatorModal(indicatorName, data)
@@ -1001,7 +1017,7 @@ $(document).ready(()=>{
       </div>`)
 
 
-      let search = await fetchData(`http://127.0.0.1:8000//api/search/?q=${value}`)
+      let search = await fetchData(` //api/search/?q=${value}`)
 
 
       if(search){
@@ -1107,7 +1123,7 @@ $(document).ready(()=>{
       $("[name=search-kra]").on("click", async function () {
         let kraId  = $(this).data("id")
 
-        let data = await fetchData(`http://127.0.0.1:8000/api/search/kra/${kraId}/`)
+        let data = await fetchData(` /api/search/kra/${kraId}/`)
         //update modal title
         $("#searchKraDetailLabel").html('Key Result Area Details - ' + data.kra.activity_name_eng)
 
@@ -1125,7 +1141,7 @@ $(document).ready(()=>{
       $("[name=search-goal]").on('click', async function () {
         let goalId = $(this).data("id")
 
-        let data = await(fetchData(`http://127.0.0.1:8000/api/search/goal/${goalId}/`))
+        let data = await(fetchData(` /api/search/goal/${goalId}/`))
 
         data?.goal?.kra_goal?.forEach((kra) => {
            //create table
@@ -1154,7 +1170,7 @@ $(document).ready(()=>{
     const handleAutoComplete = () => {
       $('#searchValue').on('keydown', async()=>{
        let value = $("#searchValue").val()
-       let data = await fetchData(`http://127.0.0.1:8000/api/search_auto_complete/?q=${value}`)
+       let data = await fetchData(` /api/search_auto_complete/?q=${value}`)
 
 
        $("#datalistOptions").html('') //update list to empty

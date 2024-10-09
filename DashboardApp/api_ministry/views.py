@@ -88,7 +88,7 @@ def indicator(request,id):
 def time_series_year(request):
     if request.method == 'GET':
         current_year = Year.objects.filter(is_current_year = True).first().year_amh
-        year = Year.objects.filter(Q(year_amh__lte = current_year+1))
+        year = Year.objects.filter(Q(year_amh__lte = current_year))
 
         yearSerializer = YearSerializer(year, many=True, context={'request': request})
         quarter = Quarter.objects.all()

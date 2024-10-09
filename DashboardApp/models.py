@@ -67,7 +67,6 @@ class Month(models.Model):
     def __str__(self):
         return self.month_english
 
-
 class NationalPlan(models.Model):
     np_name_eng = models.CharField(max_length=150, blank=True)
     np_name_amh = models.CharField(max_length=150, blank=True)
@@ -87,17 +86,28 @@ class SDG(models.Model):
         return 'SDG ' + str(self.code) + " - " + self.title
     
     class Meta:
-        ordering = ['code']
+        ordering = ['-code']
+
+
+class AgendaGoals(models.Model):
+    title = models.CharField(max_length=100)
+    goal = models.CharField(max_length=100)
+    sdg = models.ManyToManyField("SDG",  blank=True, related_name="agenda_goals")
+
+    def __str__(self):
+        return self.title
+    
+    class Meta:
+        ordering = ['-id']
 
 class PolicyArea(models.Model):
     policyAreaEng = models.CharField(max_length=450, blank=True)
     policyAreaAmh = models.CharField(max_length=450, blank=True)
     icon = IconField()
     rank = models.IntegerField(default=400)
-    sdg = models.ManyToManyField("SDG",  blank=True)
+    sdg = models.ManyToManyField("SDG",  blank=True, related_name='sdgs')
 
     def __str__(self):
-
         return self.policyAreaEng 
 
 
@@ -177,9 +187,6 @@ class PolicyArea(models.Model):
 
         return result
 
-
-
-   
     
 class StrategicGoal(models.Model):
     goal_name_eng = models.CharField(max_length=350, blank=True)
@@ -644,8 +651,6 @@ class QuarterPlanTemp(models.Model):
         else:
             return "sub-indicator or empty"
 
-
-
 class QuarterProgress(models.Model):
     # national_plan = models.ForeignKey(NationalPlan, on_delete=models.CASCADE)
     indicator = models.ForeignKey(
@@ -708,7 +713,6 @@ class QuarterProgress(models.Model):
 
         self.score, self.scorecard = self.calculate_score_and_card()
         super().save(*args, **kwargs)
-
 
 class AnnualPlan(models.Model):
     national_plan = models.ForeignKey(
@@ -824,7 +828,6 @@ class MonthProgress(models.Model):
         else:
             return self.sub_indicator.sub_kpi_name_eng        
 
-
 class AnnualQuarter(models.Model):
     indicator = models.ForeignKey(
         Indicator, on_delete=models.SET_NULL, blank=True, null=True, related_name='annual_quarter_indicators_tempo')
@@ -880,8 +883,6 @@ class AnnualPlan2(models.Model):
     def __str__(self):
         return self.kpi_name_eng
 
-
-
 class QuarterProgress2(models.Model):
 
     indicator = models.ForeignKey(
@@ -914,9 +915,7 @@ class QuarterProgress2(models.Model):
     
     def __str__(self):
         return self.kpi_name_eng
-    
-    
-    
+      
 class Post(models.Model):
     user = models.ForeignKey(
         "userManagement.Account", on_delete=models.SET_NULL, null=True, blank=True)
@@ -933,16 +932,12 @@ class Post(models.Model):
     def get_absolute_url(self):
         return reverse('indicator_detail', kwargs={'id': self.id})
 
-
-
-
 class DashboardCategory(models.Model):
     name_eng = models.CharField(max_length=200)
     name_amh = models.CharField(max_length=200, blank=True)
 
     def __str__(self):
         return self.name_eng
-
 
 class DashboardSetting(models.Model):
     name = models.CharField(max_length=50,blank=True,null=True)

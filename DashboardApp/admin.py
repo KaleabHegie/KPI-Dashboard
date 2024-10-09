@@ -10,6 +10,7 @@ admin.site.register(Category)
 admin.site.register(KpiAggregation)
 admin.site.register(ScoreCardRange)
 admin.site.register(SDG)
+admin.site.register(AgendaGoals)
 
 class KeyResultAreaAdmin(ImportExportModelAdmin):
     resource_classes = [KeyResultAreaResource]

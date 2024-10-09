@@ -74,7 +74,7 @@ def indicator(request,id):
 def time_series_year(request):
     if request.method == 'GET':
         current_year = Year.objects.filter(is_current_year = True).first().year_amh
-        year = Year.objects.filter(Q(year_amh__lte = current_year+1))
+        year = Year.objects.filter(Q(year_amh__lte = current_year))
 
         yearSerializer = YearSerializer(year, many=True, context={'request': request})
         quarter = Quarter.objects.all()
@@ -91,11 +91,21 @@ def policy_area_SDG(request):
     if request.method == 'GET':
         policy_area = PolicyArea.objects.all()
         serializer = PolicyAreaSDGSerializer(policy_area, many=True)
+
         sdg = SDG.objects.all()
         serializerSDG = SDGSerializer(sdg, many=True)
+
+        agenda = AgendaGoals.objects.all()
+        serializerAgenda = AgendaSerializer(agenda, many=True)
+
+
+        
+
+
         context = {
             'policy_areas' : serializer.data,
-            'sdgs' : serializerSDG.data
+            'sdgs' : serializerSDG.data,
+            'agendas' : serializerAgenda.data
         }
         return Response(context)
 

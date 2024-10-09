@@ -52,21 +52,34 @@ class SearchIndicatorSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class AgendaSerializer(serializers.ModelSerializer):
+    num_of_sdg = serializers.SerializerMethodField()
+    class Meta:
+        model = AgendaGoals
+        fields = '__all__'
+
+    def get_num_of_sdg(self, obj):
+        return obj.sdg.all().count()
+
 
 class PolicyAreaSDGSerializer(serializers.ModelSerializer):
-    sdg = serializers.SerializerMethodField()
+    num_of_goals = serializers.SerializerMethodField()    
     class Meta:
         model = PolicyArea
         fields = '__all__'
-
-    def get_sdg(self, obj):
-        return [sdg.code for sdg in obj.sdg.all()]
+    
+    def get_num_of_goals(self, obj):
+        return obj.policy_area_goal.all().count()
     
 
 class SDGSerializer(serializers.ModelSerializer):
     class Meta:
         model = SDG
         fields = '__all__'
+
+    
+
+    
    
 
 class PolicyAreaSerializer(serializers.ModelSerializer):
