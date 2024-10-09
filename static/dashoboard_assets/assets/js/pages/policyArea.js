@@ -435,7 +435,7 @@ $(document).ready(()=>{
     const goalWithKraList = (goal) =>{        
         let kra_lists = goal.kra_goal.map((kra) =>{
           return `
-          <h6 name="kra-lists" >${kra.activity_name_eng} - AVG SCORE (<span class="badge" style="background-color: ${kra?.kra_score_card?.scorecard_color};"> ${Math.floor(kra?.kra_score_card?.avg_score) || 0} </span>)</h6>
+          <h6 name="kra-lists" class="pt-3" >${kra.activity_name_eng} - AVG SCORE (<span class="badge" style="background-color: ${kra?.kra_score_card?.scorecard_color};"> ${Math.floor(kra?.kra_score_card?.avg_score) || 0} </span>)</h6>
           ${indicatorList(kra.indicators).join('') || '<p name="indicator-lists"  class="d-none fw-bold text-danger" >No indicators</p>'}
           `
         })
@@ -832,7 +832,7 @@ $(document).ready(()=>{
             },
           },
           title: {
-            text: 'Shares of Ministries',
+            text: 'Ministries Shares',
             align: 'middle',
           },
           xaxis: {
