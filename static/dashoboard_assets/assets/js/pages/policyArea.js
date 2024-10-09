@@ -53,7 +53,6 @@ $(document).ready(()=>{
             color:  '#263238'
           },
         },
-        colors: [color],
         fill: { opacity: [1, 0.6, 0.4, 0.6, 0.8, 1] },
         legend: { position: 'bottom' },
         dataLabels: { enabled: !0, dropShadow: { enabled: !1 } },
