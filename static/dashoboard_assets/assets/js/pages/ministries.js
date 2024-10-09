@@ -142,6 +142,7 @@ $(document).ready(() => {
 
 
   const chartGauge2 = (id , percent) => {
+    
     Highcharts.chart(`chartdiv${id}`, {
       chart: {
           type: 'gauge',
@@ -151,6 +152,9 @@ $(document).ready(() => {
           plotShadow: false,
           height: '35%',
           backgroundColor: 'transparent',
+      },
+      credits: {
+        enabled: false
       },
       title: {
           text: ''
@@ -294,7 +298,6 @@ $(document).ready(() => {
   
     preLoading('ministryCardLists' , 8 , 3)
     let data = await fetchData(url);
-    console.log(data)
     $("#ministryCardLists").html(`
      
       `);
@@ -302,7 +305,7 @@ $(document).ready(() => {
       let color = randomColor();
 
       return `
-            <div class="col-md-6 col-xl-3">
+            <div class="col-md-4 col-lg-3 col-sm-5 col-xl-3">
                 <div class="card card-shadow" name="ministry-card" data-ministry="${ministry.id}" data-ministry-name="${ministry.responsible_ministry_eng}" data-ministry-image="${ministry.image}" data-color="${color}" >
                     <div class="card-body">
                         <div class="row mt-3">
@@ -572,7 +575,7 @@ $(document).ready(() => {
 }
 
   const kpiStatuesGraph = async (per) => {
-  console.log(per)  
+
   var options = {
     series: per,
     labels: [`High Performance ${[per[0]]}`, `Average Performance ${[per[1]]}`, `Low Performance ${[per[2]]}`],
@@ -911,7 +914,7 @@ $(document).ready(() => {
   let card = data.dashboard.map((card, index) =>{
     let color = randomColor()
     return`
-          <div class="col-md-6 col-xl-2">
+          <div class="col-md-4 col-lg-2 col-sm-5 col-xl-2">
                <div  class="card social-widget-card bg-${color}-500" style="width:120%;margin-left:-40px;">
                    <div class="card-body">
                        <h2 class="text-white m-0">${card.value}</h2>
@@ -997,8 +1000,9 @@ $(document).ready(() => {
 
   const main = async () => {
     await filterDataOption() 
-    dashboardCard()
+      dashboardCard()
       ministryCard();
+      ministryIndicatorShare();
       $("#year").html($("#dataTypeLists").val())
   }
 
@@ -1042,6 +1046,77 @@ $(document).ready(() => {
     value ? $("[name='kra-lists']").addClass('mt-3') :  $("[name='kra-lists']").removeClass('mt-3')
   })
 
+  const ministryIndicatorShare = async () => { 
+    let url = `/ministries`;
+    preLoading('policyAreaCardLists', 1, 1) 
+    let data = await fetchData(url);
+    console.log(data);
+
+    var options = {
+        series: [
+            {
+                data: []
+            }
+        ],
+        legend: {
+            show: false
+        },
+        chart: {
+            height: 350,
+            type: 'treemap'
+        },
+        title: {
+            text: 'Ministries Indicator Share',
+            align: 'center'
+        },
+        colors: [
+           '#2ca87f', '#4680ff', '#6610f2', '#673ab7', '#e83e8c', '#dc2626', '#fd7e14', '#e58a00', '#2ca87f', '#008080', '#3ec9d6' , "#FF1A66", "#E6331A", "#33FFCC",
+            "#66994D", "#B366CC", "#4D8000", "#B33300", "#CC80CC",
+            "#66664D", "#991AFF", "#E666FF", "#4DB3FF", "#1AB399",
+            "#E666B3", "#33991A", "#CC9999", "#B3B31A", "#00E680",
+            "#4D8066", "#809980", "#E6FF80", "#1AFF33", "#999933",
+            "#FF3380", "#CCCC00", "#66E64D", "#4D80CC", "#9900B3",
+            "#E64D66", "#4DB380", "#FF4D4D", "#99E6E6", "#6666FF"
+
+        ],
+        plotOptions: {
+            treemap: {
+                distributed: true,
+                enableShades: false
+            }
+        },
+        tooltip: {
+          y: {
+            formatter: function(value) {
+              return  value + ' Indicators'
+            }
+          }
+        }
+    };
+    
   
+  data.forEach((item, index) => {
+      options.series[0].data.push({ x: item.code, y: item.count_indicator});
+  });
+
+    var chart = new ApexCharts(document.querySelector("#ministryIndicatorShare"), options);
+    chart.render();
+};
+
  
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
