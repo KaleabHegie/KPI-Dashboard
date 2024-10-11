@@ -764,11 +764,11 @@ $(document).ready(()=>{
         let weight = 0
         data[key].map((item) => {
           sum += item?.goal_score_card?.avg_score ? item?.goal_score_card?.avg_score : 0;
-          weight+=item?.goal_weight
+          weight+=Number(item?.goal_weight)
           len++;
         });
 
-        let avg = Math.floor((sum * weight)/(len*100));
+        let avg = Math.floor((sum * weight)/(len*100)*100)/100;
 
         dataChart.push({
           data: avg || 0,
