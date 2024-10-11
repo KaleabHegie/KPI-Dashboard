@@ -294,7 +294,7 @@ $(document).ready(() => {
     let type = $("#dataType").val()
     let typeValue = $("#dataTypeLists").val()
     
-    let url = `/ministries${type == 'year' ? '?year='+typeValue : '?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`
+    let url = `/api/ministry/ministries${type == 'year' ? '?year='+typeValue : '?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`
   
     preLoading('ministryCardLists' , 8 , 3)
     let data = await fetchData(url);
@@ -365,49 +365,54 @@ $(document).ready(() => {
     });
   };
 
-  const goalListCard = async (id, color) => {
-    let type = $("#dataType").val()
+  const goalListCard = async (ministry_id ,id, color) => {
+       let type = $("#dataType").val()
         let typeValue = $("#dataTypeLists").val()
 
         //check is year or quarter
-        let url = `/policy_area_with_goal/${id}${type == 'year' ? '?year='+typeValue : '?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`
+        let url = `/api/ministry/policy_area_with_goal/${id}?ministry_id=${ministry_id}${type == 'year' ? '&?year='+typeValue : '&?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`
     
         let goals = await fetchData(url); 
 
     let card = goals.policy_area_goal.map((goal) => {
       let avgScoreWidth = goal.ministry_strategic_goal_score_card.avg_score.toFixed(2);
       return `
-          <div class="col-md-6 col-lg-6">
-              <div class="card card-shadow" style="height: 170px; border-style: solid; border-width: 1px; border-color: var(--bs-${color})" name="goal-card" data-goal="${goal.id}" data-goal-name="${goal.goal_name_eng}" data-color="${color}">
-                  <div class="card-body">
-                      <div class="h-100">
-                         <h6 class="mb-2 f-w-400  data-bs-toggle="tooltip" data-bs-placement="top" title="${goal.goal_name_eng}" text-muted">${goal.goal_name_eng.length > 45 ? goal.goal_name_eng.slice(0,45)+'...' : goal.goal_name_eng}</h6>
-                      </div>
-                  </div>
-                  <div class="card-footer">
-                           <div class="w-100 progress" style="height: 20px">
-                                  <div class="progress-bar" role="progressbar" style="width: ${avgScoreWidth}%; background-color:${goal.ministry_strategic_goal_score_card.scorecard_color};" aria-valuenow="${goal.ministry_strategic_goal_score_card.avg_score}" aria-valuemin="0" aria-valuemax="100">${avgScoreWidth}%</div>
-                              </div>
-                  </div>
+      <div class="col-md-6 col-lg-6">
+      <div class="card card-shadow" style="height: 170px; border-style: solid; border-width: 1px; border-color: var(--bs-${color})" name="goal-card" data-goal="${goal.id}" data-goal-name="${goal.goal_name_eng}" data-color="${color}" data-ministryId="${ministry_id}">
+          <div class="card-body">
+              <div class="h-100">
+                 <h6 class="mb-2 f-w-400  data-bs-toggle="tooltip" data-bs-placement="top" title="${goal.goal_name_eng}" text-muted">${goal.goal_name_eng.length > 45 ? goal.goal_name_eng.slice(0,45)+'...' : goal.goal_name_eng}</h6>
               </div>
           </div>
+          <div class="card-footer">
+                   <div class="w-100 progress" style="height: 20px">
+                          <div class="progress-bar" role="progressbar" style="width: ${avgScoreWidth}%; background-color:${goal.ministry_strategic_goal_score_card.scorecard_color};" aria-valuenow="${goal.ministry_strategic_goal_score_card.avg_score}" aria-valuemin="0" aria-valuemax="100">${avgScoreWidth}%</div>
+                      </div>
+          </div>
+      </div>
+  </div>
       `;
   });
 
-    $(`#goalListCard_${id}`).html(card);
+
+  return card.join('')
 
   };
 
-  const selectedMinistryCard = async (data, ministry_name, ministry_id , color , ministry_image) => {
+  const selectedMinistryCard = async (ministry_name, ministry_id , color , ministry_image) => {
     let type = $("#dataType").val()
     let typeValue = $("#dataTypeLists").val()
 
     //check is year or quarter
     
-    let url = `/dashboard_ministries/${ministry_id}${type == 'year' ? '?year='+typeValue : '?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`
+    let url = `/api/ministry/dashboard_ministries/${ministry_id}${type == 'year' ? '?year='+typeValue : '?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`
     let ministry_dashboard = await fetchData(url)
     preLoading('ministryDashboard' , 8 , 2)
-    data = await fetchData( ` /ministry_with_policy_area/${ministry_id}${type == 'year' ? '?year='+typeValue : '?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`)
+
+
+    ministryData = await fetchData( `/api/ministry/ministry_with_policy_area/${ministry_id}${type == 'year' ? '?year='+typeValue : '?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`)
+
+    console.log(ministryData)
     $("#policyAreaMainCard").html(``);
     $("#goalWithKraList").html(``);
     $("#ministryDashboard").html(``);
@@ -447,56 +452,73 @@ $(document).ready(() => {
       `
     )
   })
-    if (data.length == 1) {
-      data.forEach((policy) => {
+    if (ministryData.length == 1) {
+      ministryData.forEach(async(policy) => {
+        let policyAreaCard = `
+        <div class="col-md-6 col-lg-6" style="margin-bottom: 50px">
+        <div class="card bg-gray-900 h-100 dropbox-card" data-ministryId="${ministry_id}">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between">
+                    <h5 class="text-white">${
+                      policy.policyAreaEng
+                    }</h5>
+                    <div><i class="fas ${
+                      policy.icon
+                        ? "fa-" + policy.icon.split(",")[1]
+                        : "fa-tractor"
+                    } text-white" style="font-size:80px"></i></div>
+                </div>
+                <div class="d-flex align-items-center h-75">
+                    <div class="col chartdiv" id="chartdiv${policy.id}"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    `;
+
+      $("#policyAreaMainCard").append(policyAreaCard)   
+      chartGauge2(policy.id , policy.ministry_policy_area_score_card.avg_score); // Display progress chart for the policy
+
+      letGoalTest =  await goalListCard(ministry_id, policy.id , color)
+        // Display goals for the policy
         $("#policyAreaMainCard").append(`
                   <div class="col-md-6 col-lg-6" style="margin-bottom: 50px">
-                      <div class="card bg-gray-900 h-100 dropbox-card">
-                          <div class="card-body">
-                              <div class="d-flex align-items-center justify-content-between">
-                                  <h5 class="text-white">${
-                                    policy.policyAreaEng
-                                  }</h5>
-                                  <div><i class="fas ${
-                                    policy.icon
-                                      ? "fa-" + policy.icon.split(",")[1]
-                                      : "fa-tractor"
-                                  } text-white" style="font-size:80px"></i></div>
-                              </div>
-                              <div class="d-flex align-items-center h-75">
-                                  <div class="col chartdiv" id="chartdiv${policy.id}"></div>
-                              </div>
-                          </div>
+                      <h3>Goals</h3>
+                      <div class="row h-100 mt-3">
+                       ${letGoalTest}
                       </div>
                   </div>
               `);
 
               
-              chartGauge2(policy.id , policy.ministry_policy_area_score_card.avg_score); // Display progress chart for the policy
-
-        // Display goals for the policy
-        $("#policyAreaMainCard").append(`
-                  <div class="col-md-6 col-lg-6" style="margin-bottom: 50px">
-                      <h3>Goals</h3>
-                      <div class="row h-100 mt-3" id="goalListCard_${policy.id}"></div>
-                  </div>
-              `);
-
-      goalListCard( policy.id , color)
-              
       });
     } 
-    else if (data.length > 1) {
+
+
+    else if (ministryData.length > 1) {
       $("#policyAreaMainCard").append(`
         <div class="mt-5">
            <h3 style="color: var(--bs-${color})">${ministry_name}</h3>
            <hr>
         </div>
         `);
-    data.forEach((policy) => {
-      $("#policyAreaMainCard").append(`
-                <div class="col-md-6 col-lg-6" style="margin-bottom: 50px;" id="policy_card_${policy.id}">
-                    <div class="card bg-gray-900 dropbox-card">
+
+
+    ministryData.forEach(async(policy) => {
+
+      letGoalTest =  await goalListCard(ministry_id, policy.id , color)
+      
+      let goalListCardHtml = `
+      <div class="col-md-6 col-lg-12" style="margin-bottom: 50px">
+         <h3>Goals</h3>
+              <div class="row h-100 mt-3">
+               ${letGoalTest}
+              </div>
+      </div>`
+
+      let policyAreaCard = `
+                <div class="col-md-6 col-lg-6" style="margin-bottom: 50px;">
+                    <div class="card bg-gray-900 dropbox-card" data-ministryId="${ministry_id}">
                         <div class="card-body" style="height:350px;">
                             <div class="d-flex align-items-center justify-content-between">
                                 <h5 class="text-white">${
@@ -513,21 +535,19 @@ $(document).ready(() => {
                             </div>
                         </div>
                     </div>
+
+                    ${goalListCardHtml}
+                    
                 </div>
-            `);
+            `;
 
-            
-            chartGauge2(policy.id , policy.ministry_policy_area_score_card.avg_score); // Display progress chart for the policy
 
-      // Display goals for the policy
-      $(`#policy_card_${policy.id}`).append(`
-                <div class="col-md-6 col-lg-12" style="margin-bottom: 50px">
-                    <h3>Goals</h3>
-                    <div class="row h-100 mt-3" id="goalListCard_${policy.id}"></div>
-                </div>
-            `);
+          $("#policyAreaMainCard").append(policyAreaCard)
+          chartGauge2(policy.id , policy.ministry_policy_area_score_card.avg_score); // Display progress chart for the policy
 
-            goalListCard( policy.id , color)
+    
+
+           
             
     });
     }
@@ -546,7 +566,7 @@ $(document).ready(() => {
     return indicators.map((indicator) =>{
 
       let previousIndicator = indicator?.annual_indicators?.find((item) => item.year == (indicator?.annual[0].year-1) )
-      let diff = Math.floor(indicator?.annual[0]?.annual_performance - previousIndicator.annual_performance)
+      let diff = Math.floor(indicator?.annual[0]?.annual_performance - previousIndicator?.annual_performance)
       let direction = diff > 1 ? 'fa-arrow-up' : diff >= 0 &&  diff == 0 ? 'fa-arrow-right': 'fa-arrow-down'
       let directionColor = diff > 1 ? 'text-success' : diff >= 0 &&  diff == 0 ? 'text-dark': 'text-danger'
   
@@ -599,10 +619,6 @@ $(document).ready(() => {
 
   var chart = new ApexCharts(document.querySelector("#kpiStatuesGraph"), options);
   chart.render();
-
-
-
-     
   }
 
 
@@ -615,11 +631,11 @@ $(document).ready(() => {
   let typeValue = $("#dataTypeLists").val()
 
   //check is year or quarter
-  let url = `/ministry_with_policy_area/${ministry_id}?${type == 'year' ? '?year='+typeValue : '?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`
+  let url = `/api/ministry/ministry_with_policy_area/${ministry_id}?${type == 'year' ? '?year='+typeValue : '?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`
  
   let data = await fetchData(url)
   
-  selectedMinistryCard(data, ministry_name, ministry_id , color , ministry_image);
+  selectedMinistryCard(ministry_name, ministry_id , color , ministry_image);
   $("html, body").animate(
     {
       scrollTop: $("#policyAreaMainCard").offset().top,
@@ -633,7 +649,7 @@ $(document).ready(() => {
     let typeValue = $("#dataTypeLists").val()
 
     //check is year or quarter
-    let url = `/ministry_with_policy_area/${ministry_id}${type == 'year' ? '?year='+typeValue : '?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`
+    let url = `/api/ministry/ministry_with_policy_area/${ministry_id}${type == 'year' ? '?year='+typeValue : '?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`
    
     let data = await fetchData(url)
   $('#kpiStatus').html(``)
@@ -695,13 +711,13 @@ $(document).ready(() => {
   }
   }
 
-  const selectedGoalCard = async (goal_id , color) => {
+  const selectedGoalCard = async (goal_id ,ministry_id , color) => {
     let type = $("#dataType").val()
     let typeValue = $("#dataTypeLists").val()
     preLoading('goalWithKraList', 3 , 4)
 
     //check is year or quarter
-    let url = `/goal_with_kra/${goal_id}${type == 'year' ? '?year='+typeValue : '?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`
+    let url = `/api/ministry/goal_with_kra/${goal_id}?ministry_id=${ministry_id}${type == 'year' ? '&?year='+typeValue : '&?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`
    
     let goal = await fetchData(url)
 
@@ -906,7 +922,7 @@ $(document).ready(() => {
 // Dashboard top cards
   const dashboardCard = async() =>{
   preLoading('dashboardInfo', 5 , 2)
-  let data = await fetchData('/dashboard/')
+  let data = await fetchData('/api/ministry/dashboard/')
 
   const icon = ['briefcase', 'bullseye', 'suitcase', 'chart-line' , 'building']
   
@@ -932,9 +948,10 @@ $(document).ready(() => {
 
   $(document).on("click", "[name='goal-card']", async function () {
     const goal_id = $(this).data("goal");
+    const ministry_id = $(this).data("ministryid");
     const color = $(this).data("color");
-
-    selectedGoalCard(goal_id , color);
+    console.log(ministry_id)
+    selectedGoalCard(goal_id , ministry_id ,color);
     $("html, body").animate(
       {
         scrollTop: $("#goalWithKraList").offset().top,
@@ -950,7 +967,7 @@ $(document).ready(() => {
     const indicatorName = $(this).data('indicatorName')
     const goal = $(this).data('goal')
 
-    let data = await fetchData(`/indicator/${indicatorId}/`)
+    let data = await fetchData(`/api/ministry/indicator/${indicatorId}/`)
 
     $('#kpi-goal').html(goal || 'None')
     indicatorModal(indicatorName, data)
@@ -959,7 +976,7 @@ $(document).ready(() => {
   })
 
   const filterDataOption = async() =>{
-    let data = await fetchData(`/time_series_year/`)
+    let data = await fetchData(`/api/ministry/time_series_year/`)
 
     const yearOption = () =>{
       return  data?.years?.map((year, index) => {
@@ -1047,7 +1064,7 @@ $(document).ready(() => {
   })
 
   const ministryIndicatorShare = async () => { 
-    let url = `/ministries`;
+    let url = `/api/ministry/ministries/`;
     preLoading('policyAreaCardLists', 1, 1) 
     let data = await fetchData(url);
     console.log(data);

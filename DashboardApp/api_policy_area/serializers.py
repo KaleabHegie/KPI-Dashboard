@@ -130,6 +130,7 @@ class GoalWithKraSerializers(serializers.ModelSerializer):
     good_performance = serializers.SerializerMethodField()
     average_performance = serializers.SerializerMethodField()
     poor_performance = serializers.SerializerMethodField()
+    no_performance = serializers.SerializerMethodField()
     class Meta:
         model = StrategicGoal
         fields =  '__all__'        
@@ -230,7 +231,6 @@ class GoalWithKraSerializers(serializers.ModelSerializer):
                 'percentage' : (performance/ total_target) * 100 if total_target > 0 else 0
             }
 
-
     def get_poor_performance(self, obj):
         request = self.context.get('request')
         quarter = request.query_params.get('quarter')
@@ -271,12 +271,59 @@ class GoalWithKraSerializers(serializers.ModelSerializer):
 
             performance = obj.kra_goal.filter(
                         Q(indicators__annual_indicators__annual_target__isnull=False),
+                        Q(indicators__annual_indicators__annual_performance__isnull=False),
                         Q(indicators__annual_indicators__year__year_amh=year),
                         Q(indicators__annual_indicators__annual_performance__lt=0.5 * F('indicators__annual_indicators__annual_target')) | 
                         Q(indicators__annual_indicators__annual_performance__isnull=True)
                         ).aggregate(
                             low_performance=Coalesce(Count('indicators__annual_indicators'), 0)
                         )['low_performance']
+            return  {
+                'performance': performance,
+                'percentage' : (performance/ total_target) * 100 if total_target > 0 else 0
+            }
+    
+    def get_no_performance(self, obj):
+        request = self.context.get('request')
+        quarter = request.query_params.get('quarter')
+        year = request.query_params.get('year')
+
+
+        if quarter and year:
+            total_target = obj.kra_goal.filter(
+                            Q(indicators__quarter_indicators__quarter_target__isnull=False),
+                            Q(indicators__quarter_indicators__year__year_amh=year),
+                            Q(indicators__quarter_indicators__quarter__quarter_eng=quarter)
+                            ).aggregate(total = Count('indicators__quarter_indicators'))['total']
+
+
+            performance = obj.kra_goal.filter(
+                        Q(indicators__quarter_indicators__quarter_target__isnull=False),
+                        Q(indicators__quarter_indicators__year__year_amh=year),
+                        Q(indicators__quarter_indicators__quarter__quarter_eng=quarter),
+                        Q(indicators__quarter_indicators__quarter_performance__isnull=True)
+                        ).aggregate(
+                        no_performance=Count('indicators__quarter_indicators')
+                        )['no_performance']
+            return  {
+                'performance': performance,
+                'percentage' : (performance/ total_target) * 100 if total_target > 0 else 0
+            }
+
+        else:
+            total_target = obj.kra_goal.filter(
+                            Q(indicators__annual_indicators__annual_target__isnull=False),
+                            Q(indicators__annual_indicators__year__year_amh=year),
+                            ).aggregate(total = Count('indicators__annual_indicators'))['total']
+
+
+            performance = obj.kra_goal.filter(
+                        Q(indicators__annual_indicators__annual_target__isnull=False),
+                        Q(indicators__annual_indicators__year__year_amh=year),
+                        Q(indicators__annual_indicators__annual_performance__isnull=True)
+                        ).aggregate(
+                        no_performance=Coalesce(Count('indicators__annual_indicators'), 0)
+                        )['no_performance']
             return  {
                 'performance': performance,
                 'percentage' : (performance/ total_target) * 100 if total_target > 0 else 0

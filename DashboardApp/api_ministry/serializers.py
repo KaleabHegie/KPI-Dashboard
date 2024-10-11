@@ -61,8 +61,8 @@ class GoalWithKraSerializers(serializers.ModelSerializer):
         fields =  '__all__' 
     def get_kra_goal(self, obj):
         # Filter the related StrategicGoal objects based on a condition
-        m_id = self.context.get('m_id')
-        indicators = Indicator.objects.filter(responsible_ministries__id=m_id)
+        ministry_id = self.context.get('ministry_id}')
+        indicators = Indicator.objects.filter(responsible_ministries__id=ministry_id)
         kras = KeyResultArea.objects.filter(indicators__in=indicators , goal=obj).distinct()
         serializer = KeyResultAreaWithIndictorSerializer(kras, many=True , context=self.context)
         return serializer.data   

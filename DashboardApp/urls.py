@@ -43,16 +43,16 @@ urlpatterns = [
 
 
     ###Ministry dashboard
-    path('ministry_with_policy_area/<str:ministry_id>',MinistryDashboard.ministry_with_policy_area),
-    path('policy_area_with_goal/<str:id>',MinistryDashboard.policy_area_with_goal),
-    path('ministries' ,MinistryDashboard.ministries),
-    path('goal_with_kra/<str:id>',MinistryDashboard. goal_with_kra),
-    path('indicator/<str:id>/',MinistryDashboard. indicator),
-    path('time_series_year/',MinistryDashboard. time_series_year),
-    path('dashboard/' ,MinistryDashboard.dashboard),
-    path('dashboard_ministries/<str:ministry_id>',MinistryDashboard.dashboard_ministries),
-    path('indicatorsInGoal/<str:id>',MinistryDashboard.indicatorsInGoal),
-    path('kra_with_indicator/<str:id>' , MinistryDashboard.kra_with_indicator),
+    path('api/ministry/ministry_with_policy_area/<str:ministry_id>',MinistryDashboard.ministry_with_policy_area),
+    path('api/ministry/policy_area_with_goal/<str:id>',MinistryDashboard.policy_area_with_goal),
+    path('api/ministry/ministries' ,MinistryDashboard.ministries),
+    path('api/ministry/goal_with_kra/<str:id>',MinistryDashboard. goal_with_kra),
+    path('api/ministry/indicator/<str:id>/',MinistryDashboard. indicator),
+    path('api/ministry/time_series_year/',MinistryDashboard. time_series_year),
+    path('api/ministry/dashboard/' ,MinistryDashboard.dashboard),
+    path('api/ministry/dashboard_ministries/<str:ministry_id>',MinistryDashboard.dashboard_ministries),
+    path('api/ministry/indicatorsInGoal/<str:id>',MinistryDashboard.indicatorsInGoal),
+    path('api/ministry/kra_with_indicator/<str:id>' , MinistryDashboard.kra_with_indicator),
 
      #### RESET PASSWORD
     #dashboard-pages/authentication/

@@ -8,13 +8,9 @@ from django.db.models import Q
 
 import random
 
-m_id = None
-def get_selected_ministry(id):
-    global m_id
-    m_id = id
-
 @api_view(['GET'])
 def ministries(request):
+    
     if request.method == 'GET':
         ministries = ResponsibleMinistry.objects.filter(visible=True)
         serializer = MinistrySerializer(ministries, many=True, context={'request': request})
@@ -22,8 +18,6 @@ def ministries(request):
 
 @api_view(['GET'])
 def ministry_with_policy_area(request, ministry_id=None):
-    
-    get_selected_ministry(ministry_id)
     if ministry_id:
         indicators = Indicator.objects.filter(responsible_ministries__id=ministry_id)
         kras = KeyResultArea.objects.filter(indicators__in=indicators)
@@ -37,33 +31,36 @@ def ministry_with_policy_area(request, ministry_id=None):
 
 @api_view(['GET'])
 def policy_area_with_goal(request, id):
-    global m_id
     try:
         policy_area = PolicyArea.objects.get(id=id)
     except PolicyArea.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
     
     if request.method == 'GET':
-        m_id = m_id
-        serializer = PolicyAreaWithGoalSerializer(policy_area, context={'request': request , 'm_id' : m_id})
-        return Response(serializer.data)
+        if 'ministry_id' in request.GET:
+            ministry_id = request.GET['ministry_id']
+            print(request.GET['year'], "tgygfhyffgffhfgfhg")
+            serializer = PolicyAreaWithGoalSerializer(policy_area, context={'request': request , 'm_id' : ministry_id})
+            return Response(serializer.data)
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['GET'])
 def goal_with_kra(request, id):
-    global m_id
     try:
         goal = StrategicGoal.objects.get(id=id)
     except StrategicGoal.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        m_id = m_id
-        serializer = GoalWithKraSerializers(goal, context={'request': request , 'm_id' : m_id})
-        return Response(serializer.data)
+        if 'ministry_id' in request.GET:
+            ministry_id = request.GET['ministry_id']
+            print(ministry_id)
+            serializer = GoalWithKraSerializers(goal, context={'request': request , 'm_id' : ministry_id})
+            return Response(serializer.data)
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['GET'])
 def kra_with_indicator(request, id):
-    global m_id
     try:
         kra = KeyResultArea.objects.get(id=id)
     except KeyResultArea.DoesNotExist:

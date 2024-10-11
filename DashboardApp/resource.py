@@ -4,6 +4,20 @@ from userManagement.models import ResponsibleMinistry
 from .models import StrategicGoal, KeyResultArea, Year, PolicyArea ,Quarter,AnnualPlan, NationalPlan, Indicator
 from import_export.widgets import ForeignKeyWidget
 
+from .models import SDG, AgendaGoals
+
+
+
+class SDGResource(resources.ModelResource):
+    class Meta:
+        model = SDG
+
+class AgendaGoalsResource(resources.ModelResource):
+    class Meta:
+        model = AgendaGoals
+
+
+
 class GoalResource(resources.ModelResource):
     national_plan = fields.Field(
         column_name='national_plan',

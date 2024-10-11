@@ -397,6 +397,40 @@ def dashboard_logout(request):
 
 
 def policy_area(request):
+    import random
+
+    for policy_area in PolicyArea.objects.all():
+        goals = list(policy_area.policy_area_goal.all())
+        num_goals = len(goals)
+    
+        if num_goals == 0:
+            continue
+    
+        random_weights = [random.random() for _ in range(num_goals)]
+        total = sum(random_weights)
+    
+        # Scale the weights to be in the range of 0 to 100
+        scaled_weights = [(weight / total) * 100 for weight in random_weights]
+    
+        # Ensure no weight is negative (they should already be non-negative if using random.random())
+        # But if you're using any other method, you can filter negative weights here.
+        scaled_weights = [max(0.0, weight) for weight in scaled_weights]
+    
+        # Adjust weights to make sure they sum to 100
+        total_scaled = sum(scaled_weights)
+        diff = 100 - total_scaled
+    
+        if diff != 0:
+            # Distributing the difference proportionally to each weight
+            for i in range(num_goals):
+                scaled_weights[i] += (scaled_weights[i] / total_scaled) * diff
+    
+        for goal, weight in zip(goals, scaled_weights):
+            goal.goal_weight = weight  # Weights can be decimals
+            goal.save()
+
+
+
     return render(request, 'PolicyAndMinistries/index.html')
 
 def info(request): 
@@ -408,3 +442,7 @@ def search(request):
 
 def ministry_index(request):
     return render(request, 'PolicyAndMinistries/ministries_index.html')
+
+
+
+    

@@ -14,14 +14,6 @@
         content="Bootstrap admin template, Dashboard UI Kit, Dashboard Template, Backend Panel, react dashboard, angular dashboard">
     <meta name="author" content="Phoenixcoded"><!-- [Favicon] icon -->
     <link rel="icon" href="https://ableproadmin.com/assets/images/favicon.svg" type="image/x-icon">
-    <!-- [Font] Family -->
-    <link rel="stylesheet" href="https://ableproadmin.com/assets/fonts/inter/inter.css" id="main-font-link">
-    <!-- [Tabler Icons] https://tablericons.com -->
-    <link rel="stylesheet" href="https://ableproadmin.com/assets/fonts/tabler-icons.min.css">
-    <!-- [Feather Icons] https://feathericons.com -->
-    <link rel="stylesheet" href="https://ableproadmin.com/assets/fonts/feather.css">
-    <!-- [Font Awesome Icons] https://fontawesome.com/icons -->
-    <link rel="stylesheet" href="https://ableproadmin.com/assets/fonts/fontawesome.css">
     <!-- [Material Icons] https://fonts.google.com/icons -->
     <link rel="stylesheet" href="https://ableproadmin.com/assets/fonts/material.css"><!-- [Template CSS Files] -->
     <link rel="stylesheet" href="https://ableproadmin.com/assets/css/style.css" id="main-style-link">
@@ -30,9 +22,6 @@
 
 <body data-pc-preset="preset-1" data-pc-sidebar-caption="true" data-pc-layout="vertical" data-pc-direction="ltr"
     data-pc-theme_contrast="" data-pc-theme="light"><!-- [ Pre-loader ] start -->
-    <div class="page-loader">
-        <div class="bar"></div>
-    </div><!-- [ Pre-loader ] End -->
     <div class="auth-main">
         <div class="auth-wrapper v1">
             <div class="auth-form">
@@ -40,9 +29,15 @@
                     <div class="card-body">
                         <form method="post">
                             {% csrf_token %}
-                            <img src="{% static 'dashoboard_assets/assets/images/logo-dark.svg' %} "
+                            <div class="d-flex">
+                                <img src="{% static 'dashoboard_assets/assets/images/logo-dark.svg' %} "
+                                style="width: 140px;"
                                 class="img-fluid d-block mx-auto logo-lg" alt="logo">
-                            <h4 class="text-center f-w-500 mb-3">Login with your email</h4>
+                                <img src="{% static 'dashoboard_assets/assets/images/Prime_Minister_Office.png' %} "
+                                style="width: 140px;"
+                                class="img-fluid d-block mx-auto logo-lg" alt="logo">
+                            </div>
+                            <h4 class="text-center f-w-500 mb-3 pt-3 ">Login with your email</h4>
                             {% include 'dashboard-app/include/messages.html' %}
                             <div class="form-group">
                                 <label for="{{ form.email.id_for_label }}">Email address</label>
