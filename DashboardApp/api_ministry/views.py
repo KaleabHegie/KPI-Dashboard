@@ -11,6 +11,7 @@ import random
 @api_view(['GET'])
 def ministries(request):
     
+    
     if request.method == 'GET':
         ministries = ResponsibleMinistry.objects.filter(visible=True)
         serializer = MinistrySerializer(ministries, many=True, context={'request': request})

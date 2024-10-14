@@ -53,7 +53,6 @@ $(document).ready(()=>{
             color:  '#263238'
           },
         },
-        colors: [color],
         fill: { opacity: [1, 0.6, 0.4, 0.6, 0.8, 1] },
         legend: { position: 'bottom' },
         dataLabels: { enabled: !0, dropShadow: { enabled: !1 } },
@@ -116,8 +115,9 @@ $(document).ready(()=>{
       
       data.forEach((item,index) =>{
         let card = `
-        <div class="col-md-3 card">
-            <div class="card-body p-2 m-0">
+        <div class="col-md-3 ">
+          <div class="card social-widget-card text-dark">
+            <div class="card-body m-0">
                 <div class="row justify-content-center">
                     <div class="col-5">
                         <div id="total-performance-graph-${index}" class="p-0 m-0"></div>
@@ -128,7 +128,9 @@ $(document).ready(()=>{
                     </div>
                 </div>
             </div>
+          </div>
         </div>`
+
         $("#performanceAnalysis").append(card)
         performanceAnalysisPieChart(`total-performance-graph-${index}`, item?.percentage || 0, item.color)
     
@@ -328,7 +330,7 @@ $(document).ready(()=>{
 
       let type = $("#dataType").val()
       let typeValue = $("#dataTypeLists").val()
-      let url = ` /api/policy-area/${type == 'year' ? '?year='+typeValue : '?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`
+      let url = `/api/policy-area/${type == 'year' ? '?year='+typeValue : '?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`
 
       preLoading('policyAreaCardLists', 12, 2)  //loading -> htmlId, num of repeat, num of column 
       let data = await fetchData(url)
@@ -376,7 +378,7 @@ $(document).ready(()=>{
         let card = goals.map((goal) =>{
             return `
             <div class="col-6 col-lg-4">
-                <div class="card card-shadow " name="goal-card" data-goal-name="${goal.goal_name_eng}" data-goal="${goal.id}" style="height : 200px; border-style: solid;  border-width: 1px; border-color: var(--bs-${color})">
+                <div class="card card-shadow " name="goal-card" data-color="${goal.goal_score_card.scorecard_color}"  data-score="${Math.floor(goal.goal_score_card.avg_score) || 0}%" data-goal-name="${goal.goal_name_eng}" data-goal="${goal.id}" style="height : 200px; border-style: solid;  border-width: 1px; border-color: var(--bs-${color})">
                     <div class="card-body">
                       <div class="mb-2 row justify-content-between">
                         <div class="col-6 text-start fw-bold">${goal?.responsible_ministries?.code}</div>
@@ -404,19 +406,19 @@ $(document).ready(()=>{
         return indicators.map((indicator) =>{
     
           let previousIndicator = indicator?.annual_indicators?.find((item) => item.year == (indicator?.annual[0].year-1) )
-          let diff = Math.floor(indicator?.annual[0]?.annual_performance - previousIndicator.annual_performance)
+          let diff = Math.floor(indicator?.annual[0]?.annual_performance - previousIndicator?.annual_performance)
           let direction = diff > 1 ? 'fa-arrow-up' : diff >= 0 &&  diff == 0 ? 'fa-arrow-right': 'fa-arrow-down'
           let directionColor = diff > 1 ? 'text-success' : diff >= 0 &&  diff == 0 ? 'text-dark': 'text-danger'
       
           let hasTarget = indicator?.annual[0]?.annual_target ? 'primary' : 'secondary'
           let score = indicator?.annual[0]?.score || 0
-          
+          console.log(indicator)
           return `
               <div name="indicator-lists" class="col-lg-4 mt-1 d-none">
                   <div>
                       <div class="d-flex align-items-center">
                           <div class="flex-shrink-0">
-                            <span class="p-2 d-block rounded-circle"  style=" font-size: 22px; background-color: ${indicator?.annual[0]?.scorecard || 'red'}"></span>
+                            <span class="p-2 d-block rounded-circle"  style=" font-size: 22px; background-color: ${indicator?.annual[0]?.annual_target ? indicator?.annual[0]?.scorecard || 'red' : 'gray'}"></span>
                           </div>
                           <div class="ml-3"> &nbsp <i class="fas ${direction}  ${directionColor}  " style=" font-size: 22px;"></i></div>
                           <div class="flex-grow-1 mx-2">
@@ -432,17 +434,17 @@ $(document).ready(()=>{
         })
     }
 
-    const goalWithKraList = (goal) =>{        
+    const goalWithKraList = (goal,goalName, goalScore, goalColor) =>{        
         let kra_lists = goal.kra_goal.map((kra) =>{
           return `
-          <h6 name="kra-lists" >${kra.activity_name_eng} - AVG SCORE (<span class="badge" style="background-color: ${kra?.kra_score_card?.scorecard_color};"> ${Math.floor(kra?.kra_score_card?.avg_score) || 0} </span>)</h6>
+          <h6 name="kra-lists" class="pt-3 col-6" >${kra.activity_name_eng} - <span class="badge" style="background-color: ${kra?.kra_score_card?.scorecard_color};"> ${Math.floor(kra?.kra_score_card?.avg_score) || 0}% </span></h6>
           ${indicatorList(kra.indicators).join('') || '<p name="indicator-lists"  class="d-none fw-bold text-danger" >No indicators</p>'}
           `
         })
 
         let goalHtml = `
-           <div class="row mt-5">
-              <h3>${goal.goal_name_eng}</h3>
+           <div class="row mt-5 mb-5">
+              <h3>${goal.goal_name_eng} <span class="badge" style="background-color: ${goalColor};">${goalScore}</span></h3>
               <p class="fw-bold">Key Result Areas</p>
               ${kra_lists.join('')}
           </div> `
@@ -484,6 +486,13 @@ $(document).ready(()=>{
               <span class="p-2 d-block rounded-circle " style="background-color: #DC3545; "></span>
             </div>
             <div class="pe-5"> &nbsp Very Poor Performance</div>
+
+            <div class="flex-shrink-0">
+              <span class="p-2 d-block rounded-circle " style="background-color: gray; "></span>
+            </div>
+            <div class="pe-5"> &nbsp No Target</div>
+
+
         </div>
 
         <p name="indicator-lists" class="mt-4 d-none fw-bold" >Comparing with last year</p>
@@ -567,7 +576,7 @@ $(document).ready(()=>{
     const dashboardCard = async() =>{
 
       preLoading('dashboardInfo', 4, 3)  //loading -> htmlId, num of repeat, num of column
-      let data = await fetchData(' /api/dashboard/')
+      let data = await fetchData('/api/dashboard/')
 
       const icon = ['briefcase', 'bullseye', 'suitcase', 'chart-line']
       let color = randomColor()
@@ -598,7 +607,7 @@ $(document).ready(()=>{
 
 
     const filterDataOption = async() =>{
-      let data = await fetchData(` /api/time_series_year/`)
+      let data = await fetchData(`/api/time_series_year/`)
 
       const yearOption = () =>{
         return  data?.years?.map((year, index) => {
@@ -652,6 +661,7 @@ $(document).ready(()=>{
     }
 
     const policyAreaDashboard2 = (data) =>{
+      console.log(data)
 
       let card = data?.map((item) =>{
         return  `
@@ -754,11 +764,11 @@ $(document).ready(()=>{
         let weight = 0
         data[key].map((item) => {
           sum += item?.goal_score_card?.avg_score ? item?.goal_score_card?.avg_score : 0;
-          weight+=item?.goal_weight
+          weight+=Number(item?.goal_weight)
           len++;
         });
 
-        let avg = Math.floor((sum * weight)/(len*100));
+        let avg = Math.floor((sum * weight)/(len*100)*100)/100;
 
         dataChart.push({
           data: avg || 0,
@@ -832,7 +842,7 @@ $(document).ready(()=>{
             },
           },
           title: {
-            text: 'Shares of Ministries',
+            text: 'Ministries Shares',
             align: 'middle',
           },
           xaxis: {
@@ -884,7 +894,7 @@ $(document).ready(()=>{
         let typeValue = $("#dataTypeLists").val()
 
         //check is year or quarter
-        let url = ` /api/policy-area/${policyAreaId}/${type == 'year' ? '?year='+typeValue : '?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`
+        let url = `/api/policy-area/${policyAreaId}/${type == 'year' ? '?year='+typeValue : '?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`
        
 
         preLoading('policyAreaMainCard', 4, 3)  //loading -> htmlId, num of repeat, num of column
@@ -892,7 +902,7 @@ $(document).ready(()=>{
 
 
         const ministriesShare = Object.groupBy(data.policy_area_goal, ({responsible_ministries})=>{
-          return responsible_ministries.code
+          return responsible_ministries?.code || 1
         });
 
 
@@ -914,19 +924,19 @@ $(document).ready(()=>{
 
         let policyAreaDashboardData2 = [
           {
-            title : '(Num) Indicator have target',
+            title : 'Indicators With Target',
             value : data.count_indicator_target,
             icon : 'fas fa-bullseye',
             color : 'primary'
           },
           {
-            title : '(Num) Indicator have Target and Performance',
+            title : 'Indicators With Performance',
             value : data.count_indicator_have_performance,
             icon : 'fas fa-chart-bar',
             color : 'success'
           },
           {
-            title : '(Num) Indicator have Target and No Performance',
+            title : 'Indicators With Target but No Performance',
             value : data.count_indicator_have_target_and_no_performance,
             icon : 'fas fa-sort-amount-down',
             color : 'danger'
@@ -949,8 +959,8 @@ $(document).ready(()=>{
         let shareGoalNameLists = data?.policy_area_goal?.map((goal)=> goal.goal_name_eng.slice(0,15)+"...")
         let shareGoalValueLists = data?.policy_area_goal?.map((goal)=>goal.goal_weight || 0)
 
-           //ministries share for policy area
-           ministrySharesPyramid(ministriesShare)
+        //ministries share for policy area
+        ministrySharesPyramid(ministriesShare)
 
         
         //policy area dashboard
@@ -959,7 +969,7 @@ $(document).ready(()=>{
 
 
         //pie chart goal share
-        goalSharePieChart(shareGoalNameLists,normalizeTo100(shareGoalValueLists), color)
+        //goalSharePieChart(shareGoalNameLists,normalizeTo100(shareGoalValueLists), color)
 
         // Render selected policy area card and goal list
         selectedPolicyAreaCard(data, color, score);
@@ -980,11 +990,13 @@ $(document).ready(()=>{
     $(document).on('click', "[name='goal-card']", async function() {
       const goalId = $(this).data('goal')
       const goalName = $(this).data('goalName')
+      const goalScore = $(this).data('score')
+      const goalColor = $(this).data('color')
 
 
       let type = $("#dataType").val()
       let typeValue = $("#dataTypeLists").val()
-      let url = ` /api/goal_with_kra/${goalId}/${type == 'year' ? '?year='+typeValue : '?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`
+      let url = `/api/goal_with_kra/${goalId}/${type == 'year' ? '?year='+typeValue : '?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`
     
 
 
@@ -992,7 +1004,7 @@ $(document).ready(()=>{
       let data = await fetchData(url)
 
      
-      goalWithKraList(data, goalName)
+      goalWithKraList(data, goalName, goalScore, goalColor)
 
       //performance analysis card
 
@@ -1010,14 +1022,21 @@ $(document).ready(()=>{
         title : 'Average Performance',
         value : data?.average_performance?.performance || 0,
         percentage : data?.average_performance?.percentage || 0,
-        color : '#fd7e14'
+        color : '#ffc107'
       },
       {
         title : 'Poor Performance',
         value : data?.poor_performance?.performance || 0,
         percentage : data?.poor_performance?.percentage || 0,
         color : '#dc2626'
-      }
+      },
+      {
+        title : 'No data',
+        value : data?.no_performance?.performance || 0,
+        percentage : data?.no_performance?.percentage || 0,
+        color : '#6c757d'
+      },
+      
     ]
 
       performanceAnalysisCard(performanceData) 
@@ -1030,7 +1049,7 @@ $(document).ready(()=>{
       const indicatorName = $(this).data('indicatorName')
       const goal = $(this).data('goal')
 
-      let data = await fetchData(` /api/indicator/${indicatorId}/`)
+      let data = await fetchData(`/api/indicator/${indicatorId}/`)
 
       $('#kpi-goal').html(goal || 'None')
       indicatorModal(indicatorName, data)
@@ -1135,7 +1154,7 @@ $(document).ready(()=>{
       </div>`)
 
 
-      let search = await fetchData(` //api/search/?q=${value}`)
+      let search = await fetchData(`/api/search/?q=${value}`)
 
 
       if(search){
@@ -1241,7 +1260,7 @@ $(document).ready(()=>{
       $("[name=search-kra]").on("click", async function () {
         let kraId  = $(this).data("id")
 
-        let data = await fetchData(` /api/search/kra/${kraId}/`)
+        let data = await fetchData(`/api/search/kra/${kraId}/`)
         //update modal title
         $("#searchKraDetailLabel").html('Key Result Area Details - ' + data.kra.activity_name_eng)
 
@@ -1259,7 +1278,7 @@ $(document).ready(()=>{
       $("[name=search-goal]").on('click', async function () {
         let goalId = $(this).data("id")
 
-        let data = await(fetchData(` /api/search/goal/${goalId}/`))
+        let data = await(fetchData(`/api/search/goal/${goalId}/`))
 
         data?.goal?.kra_goal?.forEach((kra) => {
            //create table
@@ -1288,7 +1307,7 @@ $(document).ready(()=>{
     const handleAutoComplete = () => {
       $('#searchValue').on('keydown', async()=>{
        let value = $("#searchValue").val()
-       let data = await fetchData(` /api/search_auto_complete/?q=${value}`)
+       let data = await fetchData(`/api/search_auto_complete/?q=${value}`)
 
 
        $("#datalistOptions").html('') //update list to empty
@@ -1306,7 +1325,7 @@ $(document).ready(()=>{
     $(document).on('change', '#showIndicator', async function () {
       let value = $('#showIndicator').prop('checked')
       value ? $("[name='indicator-lists']").removeClass('d-none') :  $("[name='indicator-lists']").addClass('d-none')
-      value ? $("[name='kra-lists']").addClass('mt-3') :  $("[name='kra-lists']").removeClass('mt-3')
+      $("[name='kra-lists']").toggleClass('mt-3 col-6', !value);
     })
    
     

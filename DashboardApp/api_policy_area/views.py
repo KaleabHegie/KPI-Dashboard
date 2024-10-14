@@ -31,7 +31,7 @@ def dashboard(request):
 @api_view(['GET'])
 def policy_areas(request):
     if request.method == 'GET':
-        policy_areas = PolicyArea.objects.annotate(count_goal=Count('policy_area_goal'))
+        policy_areas = PolicyArea.objects.annotate(count_goal=Count('policy_area_goal')).order_by('rank')
         serializer = PolicyAreaSerializer(policy_areas, many=True, context={'request': request})
         return Response(serializer.data)
 
