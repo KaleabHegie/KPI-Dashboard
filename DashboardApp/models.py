@@ -113,7 +113,7 @@ class PolicyArea(models.Model):
 
     def policy_area_score_card(self, quarter=None, year=None):
         cache_key = f"policy_area_score_card_{self.pk}_{quarter}_{year}"
-        result = cache.get(cache_key)
+        result = None
         if result is None:
             # Perform calculations if not cached
             goals = self.policy_area_goal.all()
@@ -151,24 +151,29 @@ class PolicyArea(models.Model):
     
     def ministry_policy_area_score_card(self, quarter=None, year=None , goal_ids = None , kra_id = None,indicator_id= None):
         cache_key = f"policy_area_score_card_{self.pk}_{quarter}_{year}"
-        result = cache.get(cache_key)
+        result = None
         if result is None:
             # Perform calculations if not cached
             goals = self.policy_area_goal.filter(id__in = goal_ids)
             goal_avg_score = 0
+            goal_total_wight = 0
             sum = 0
             for goal in goals:
                 goal_weight = goal.goal_weight
                 if quarter and year:
-                    sum = sum + goal.ministry_strategic_goal_score_card(quarter=quarter, year=year , indicator_id = indicator_id , kras_ids = kra_id)['avg_score']
+                    sum = sum + goal.ministry_strategic_goal_score_card(quarter=quarter, year=year , indicator_id = indicator_id , kras_ids = kra_id)['avg_score'] * float(goal_weight/100)
                 else:
-                    goal_percent = float(goal.ministry_strategic_goal_score_card(year=year , indicator_id = indicator_id , kras_ids = kra_id)['avg_score']) * float(goal_weight/100)
+                    goal_percent = float(goal.ministry_strategic_goal_score_card(year=year , indicator_id = indicator_id , kras_ids = kra_id)['avg_score'])  * float(goal_weight/100)
                     sum = sum + goal_percent
-                    
-
-            avg_score = sum 
+                    goal_total_wight = goal_total_wight + goal_weight
+            
+            if goal_total_wight != 0:
+              avg_score = float(sum * 100) / float(goal_total_wight) 
+            else :
+              avg_score = 0
 
             score_card_ranges = cache.get('score_card_ranges')
+            
 
             if score_card_ranges is None:
                 score_card_ranges = list(ScoreCardRange.objects.all())
@@ -183,8 +188,7 @@ class PolicyArea(models.Model):
                 'scorecard_color': scorecard_color,
             }
             cache.set(cache_key, result, CACHE_TIMEOUT)
-
-
+        
         return result
 
     
@@ -210,7 +214,7 @@ class StrategicGoal(models.Model):
 
     def strategic_goal_score_card(self, quarter=None, year=None):
         cache_key = f"strategic_goal_score_card_{self.pk}_{quarter}_{year}"
-        result = cache.get(cache_key)
+        result = None
         if result is None:
             key_result_areas = self.kra_goal.all()
             sum = 0
@@ -246,10 +250,11 @@ class StrategicGoal(models.Model):
     
     def ministry_strategic_goal_score_card(self, quarter=None, year=None , kras_ids=None , indicator_id=None):
         cache_key = f"ministry_strategic_goal_score_card_{self.pk}_{quarter}_{year}"
-        result = cache.get(cache_key)
+        result = None
         if result is None:
             key_result_areas = self.kra_goal.filter(id__in=kras_ids).distinct()
             sum = 0
+            kra_total_wight = 0
             for kra in key_result_areas:
                 kra_weight =  kra.activity_weight
                 if quarter and year:
@@ -257,9 +262,22 @@ class StrategicGoal(models.Model):
                 elif year:
                    kra_percent = float(kra.ministry_key_result_area_score_card(year=year , indicators_id=indicator_id)['avg_score']) * float(kra_weight/100)
                    sum = sum + kra_percent
+            goals = StrategicGoal.objects.filter(kra_goal__id__in=kras_ids , policy_area = self.policy_area).distinct()
+            total_goal_weight = 0
+            for goal in goals:
+                total_goal_weight = total_goal_weight + goal.goal_weight  
+            
 
-            goal_score = float(sum) * float(self.goal_weight/100)
-            avg_score = (goal_score * 100) / float(self.goal_weight)
+            
+           
+            
+            calculated_weight = float((self.goal_weight)*100) / float(total_goal_weight)
+          
+            goal_score = float(float(sum) * float(calculated_weight)) / 100
+            avg_score = goal_score
+
+            print('-------===============',avg_score, total_goal_weight, sum, calculated_weight) 
+
             
 
             score_card_ranges = cache.get('score_card_ranges')
@@ -300,7 +318,7 @@ class KeyResultArea(models.Model):
 
     def key_result_area_score_card(self, quarter=None, year=None):
         cache_key = f"key_result_area_score_card_{self.pk}_{quarter}_{year}"
-        result = cache.get(cache_key)
+        result = None
         if result is None:
             indicators = self.indicators.all().values_list('id', flat=True)
 
@@ -404,7 +422,7 @@ class KeyResultArea(models.Model):
 
     def ministry_key_result_area_score_card(self ,quarter=None, year=None , indicators_id=None):
         cache_key = f"ministry_key_result_area_score_card_{self.pk}_{quarter}_{year}"
-        result = cache.get(cache_key)
+        result = None
         if result is None:
             indicators = self.indicators.filter(id__in=indicators_id).values_list('id', flat=True)
 

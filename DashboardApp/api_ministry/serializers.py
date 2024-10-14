@@ -41,16 +41,16 @@ class KeyResultAreaWithIndictorSerializer(serializers.ModelSerializer):
         model = KeyResultArea
         fields =  '__all__' 
     def get_indicators(self, obj):
-        m_id = self.context.get('m_id')
-        indicators = Indicator.objects.filter(responsible_ministries__id=m_id , keyResultArea=obj).distinct()
+        ministry_id = self.context.get('ministry_id')
+        indicators = Indicator.objects.filter(responsible_ministries__id=ministry_id , keyResultArea=obj).distinct()
         serializer = IndicatorSerializer(indicators, many=True , context=self.context)
         return serializer.data  
     def get_ministry_key_result_area_score_card(self, obj):
         request = self.context.get('request')
-        m_id = self.context.get('m_id')
+        ministry_id = self.context.get('ministry_id')
         quarter = request.query_params.get('quarter')
         year = request.query_params.get('year')
-        indicators_id = Indicator.objects.filter(responsible_ministries__id=m_id, keyResultArea=obj).values_list('id', flat=True).distinct()
+        indicators_id = Indicator.objects.filter(responsible_ministries__id=ministry_id, keyResultArea=obj).values_list('id', flat=True).distinct()
         return obj.ministry_key_result_area_score_card(quarter=quarter, year=year , indicators_id=indicators_id)
 
 class GoalWithKraSerializers(serializers.ModelSerializer):
@@ -61,8 +61,11 @@ class GoalWithKraSerializers(serializers.ModelSerializer):
         fields =  '__all__' 
     def get_kra_goal(self, obj):
         # Filter the related StrategicGoal objects based on a condition
-        m_id = self.context.get('m_id')
-        indicators = Indicator.objects.filter(responsible_ministries__id=m_id)
+        request = self.context.get('request')
+        ministry_id = self.context.get('ministry_id')
+        quarter = request.query_params.get('quarter')
+        year = request.query_params.get('year')
+        indicators = Indicator.objects.filter(responsible_ministries__id=ministry_id)
         kras = KeyResultArea.objects.filter(indicators__in=indicators , goal=obj).distinct()
         serializer = KeyResultAreaWithIndictorSerializer(kras, many=True , context=self.context)
         return serializer.data   
@@ -127,14 +130,14 @@ class PolicyAreaSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         year = request.query_params.get('year')
         indicators = Indicator.objects.filter(responsible_ministries__id=ministry_id)
-        performance = AnnualPlan.objects.filter(indicator__in=indicators, year__year_amh=year, annual_performance__isnull=False ).count()
+        performance = AnnualPlan.objects.filter(indicator__in=indicators, year__year_amh=year, annual_target__isnull=False , annual_performance__isnull=False ).count()
         return performance    
     def get_count_has_no_performance(self, obj):
         ministry_id = self.context.get('ministry_id')
         request = self.context.get('request')
         year = request.query_params.get('year')
         indicators = Indicator.objects.filter(responsible_ministries__id=ministry_id)
-        no_performance = AnnualPlan.objects.filter(indicator__in=indicators, year__year_amh=year, annual_performance__isnull=True).count()
+        no_performance = AnnualPlan.objects.filter(indicator__in=indicators, year__year_amh=year, annual_target__isnull=False ,annual_performance__isnull=True).count()
         return  no_performance
     def get_count_has_no_target(self, obj):
         ministry_id = self.context.get('ministry_id')
@@ -148,21 +151,21 @@ class PolicyAreaSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         year = request.query_params.get('year')
         indicators = Indicator.objects.filter(responsible_ministries__id=ministry_id)
-        average_performance = AnnualPlan.objects.filter(indicator__in=indicators, year__year_amh=year, annual_performance__gte = 0.5* F('annual_target') ,   annual_performance__lt = 0.7* F('annual_target')).count()
+        average_performance = AnnualPlan.objects.filter(indicator__in=indicators, year__year_amh=year, annual_target__isnull=False ,annual_performance__gte = 0.5* F('annual_target') ,   annual_performance__lt = 0.7* F('annual_target')).count()
         return average_performance    
     def get_low_performance(self, obj):
         ministry_id = self.context.get('ministry_id')
         request = self.context.get('request')
         year = request.query_params.get('year')
         indicators = Indicator.objects.filter(responsible_ministries__id=ministry_id)
-        low_performance = AnnualPlan.objects.filter(indicator__in=indicators, year__year_amh=year, annual_performance__lt = 0.5* F('annual_target')).count()
+        low_performance = AnnualPlan.objects.filter(indicator__in=indicators, year__year_amh=year,  annual_target__isnull=False , annual_performance__lt = 0.5* F('annual_target')).count()
         return low_performance    
     def get_high_performance(self, obj):
         ministry_id = self.context.get('ministry_id')
         request = self.context.get('request')
         year = request.query_params.get('year')
         indicators = Indicator.objects.filter(responsible_ministries__id=ministry_id)
-        high_performance = AnnualPlan.objects.filter(indicator__in=indicators, year__year_amh=year, annual_performance__gte = 0.5* F('annual_target')).count()
+        high_performance = AnnualPlan.objects.filter(indicator__in=indicators, year__year_amh=year, annual_target__isnull=False, annual_performance__gte = 0.5* F('annual_target')).count()
         return high_performance         
 
 class MinistrySerializer(serializers.ModelSerializer):
@@ -177,10 +180,7 @@ class MinistrySerializer(serializers.ModelSerializer):
         quarter = request.query_params.get('quarter')
         year = request.query_params.get('year')
         indicator_id = Indicator.objects.filter(responsible_ministries__id=obj.id).values_list('id', flat=True).distinct()
-        kra_id = KeyResultArea.objects.filter(indicators__id__in=indicator_id).distinct().values_list('id', flat=True).distinct()
-        goal_ids = StrategicGoal.objects.filter(kra_goal__id__in=kra_id).values_list('id', flat=True).distinct()
-        policy_area_ids = PolicyArea.objects.filter(policy_area_goal__in=goal_ids).distinct()
-        return obj.ministry_score_card(quarter=quarter, year=year , goal_ids=goal_ids , kra_id=kra_id , indicator_id=indicator_id , policy_area_ids=policy_area_ids )    
+        return obj.ministry_score_card(quarter=quarter, year=year , indicator_id=indicator_id )    
     def get_count_indicator(self , obj):
         return obj.ministry_kpi.all().count()  
 class YearSerializer(serializers.ModelSerializer):
