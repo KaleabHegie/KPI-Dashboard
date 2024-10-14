@@ -111,30 +111,35 @@ class PolicyArea(models.Model):
         return self.policyAreaEng 
 
 
+    
     def policy_area_score_card(self, quarter=None, year=None):
         cache_key = f"policy_area_score_card_{self.pk}_{quarter}_{year}"
-        result = None
+        result = cache.get(cache_key)
+    
         if result is None:
             # Prefetch all goals for the policy area to avoid repeated DB queries
             goals = self.policy_area_goal.all().prefetch_related('kra_goal')
     
-            total_score_sum = 0  # Initialize sum
+            total_goal_weight = 0  # Initialize total weight
+            score = 0
             
             for goal in goals:
-                goal_weight = goal.goal_weight  # Fetch goal weight
-    
+              
                 # Use cached strategic_goal_score_card to avoid repeated scorecard calculation
                 if quarter and year:
-                    goal_score = goal.strategic_goal_score_card(quarter=quarter, year=year)['avg_score']
+                    goal_score = goal.strategic_goal_score_card(quarter=quarter, year=year)['sum_score']
                 else:
-                    goal_score = goal.strategic_goal_score_card(year=year)['avg_score']
+                    
+                    single_goal = goal.strategic_goal_score_card(year=year)
+                    
+                    score = score + single_goal['sum_score']
+                    total_goal_weight = total_goal_weight + single_goal['total_kra_weight']
     
-                # Calculate weighted goal score
-                weighted_goal_score = float(goal_score) * float(goal_weight / 100)
-                total_score_sum += weighted_goal_score
-    
-            # Final average score
-            avg_score = total_score_sum
+            
+            # Calculate weighted goal score
+            avg_score = float(float(score)/float(total_goal_weight)) * 100 if total_goal_weight > 0 else 0
+
+            # print(total_goal_weight, score, avg_score)
     
             # Cache score card ranges if not already cached
             score_card_ranges = cache.get_or_set('score_card_ranges', lambda: list(ScoreCardRange.objects.all()), CACHE_TIMEOUT)
@@ -145,7 +150,7 @@ class PolicyArea(models.Model):
     
             # Store result
             result = {
-                'sum_score': total_score_sum,
+                'sum_score': avg_score,
                 'avg_score': avg_score,
                 'scorecard_color': scorecard_color,
             }
@@ -155,7 +160,6 @@ class PolicyArea(models.Model):
     
         return result
 
-    
     def ministry_policy_area_score_card(self, quarter=None, year=None , goal_ids = None , kra_id = None,indicator_id= None):
         cache_key = f"policy_area_score_card_{self.pk}_{quarter}_{year}"
         result = None
@@ -221,27 +225,28 @@ class StrategicGoal(models.Model):
 
     def strategic_goal_score_card(self, quarter=None, year=None):
         cache_key = f"strategic_goal_score_card_{self.pk}_{quarter}_{year}"
-        result = None
+        result = cache.get(cache_key)
+        
         if result is None:
             # Prefetch all KRAs and their weights to avoid repeated queries
             key_result_areas = self.kra_goal.all().prefetch_related('indicators')
     
             # Initialize sum to 0
             total_score_sum = 0
+            total_kra_weight = 0
     
             for kra in key_result_areas:
-                kra_weight = kra.activity_weight
-                
                 # Fetch the KRA score based on quarter and year
-                kra_score = kra.key_result_area_score_card(year=year, quarter=quarter)['avg_score'] if quarter else kra.key_result_area_score_card(year=year)['avg_score']
-                
+                kra_score = kra.key_result_area_score_card(year=year, quarter=quarter)['avg_score'] if quarter else kra.key_result_area_score_card(year=year)
+                total_kra_weight = total_kra_weight + kra_score['total_indicator_weight']
+
                 # Calculate weighted KRA score
-                kra_weighted_score = float(kra_score) * float(kra_weight / 100)
+                kra_weighted_score = float(kra_score['avg_score']) * float(kra_score['total_indicator_weight'] / 100)
                 total_score_sum += kra_weighted_score
     
             # Calculate the strategic goal score and average score
-            goal_score = total_score_sum * float(self.goal_weight / 100)
-            avg_score = (goal_score * 100) / float(self.goal_weight) if self.goal_weight else 0
+            goal_score = float(total_score_sum * 100) / float(total_kra_weight) if total_kra_weight > 0 else 0
+            avg_score = goal_score
     
             # Cache score card ranges if not already cached
             score_card_ranges = cache.get_or_set('score_card_ranges', lambda: list(ScoreCardRange.objects.all()), CACHE_TIMEOUT)
@@ -255,6 +260,7 @@ class StrategicGoal(models.Model):
                 'sum_score': total_score_sum,
                 'avg_score': avg_score,
                 'scorecard_color': scorecard_color,
+                'total_kra_weight': total_kra_weight
             }
     
             # Cache the final result
@@ -263,55 +269,51 @@ class StrategicGoal(models.Model):
         return result
 
     
-    def ministry_strategic_goal_score_card(self, quarter=None, year=None , kras_ids=None , indicator_id=None):
-        cache_key = f"ministry_strategic_goal_score_card_{self.pk}_{quarter}_{year}"
-        result = None
+    
+    def strategic_goal_score_card(self, quarter=None, year=None):
+        cache_key = f"strategic_goal_score_card_{self.pk}_{quarter}_{year}"
+        result = cache.get(cache_key)
+        
         if result is None:
-            key_result_areas = self.kra_goal.filter(id__in=kras_ids).distinct()
-            sum = 0
-            kra_total_wight = 0
+            # Prefetch all KRAs and their weights to avoid repeated queries
+            key_result_areas = self.kra_goal.all().prefetch_related('indicators')
+    
+            # Initialize sum to 0
+
+            total_kra_weight = 0
+            score = 0
+    
             for kra in key_result_areas:
-                kra_weight =  kra.activity_weight
+                # Fetch the KRA score based on quarter and year
                 if quarter and year:
-                    sum = sum +kra.ministry_key_result_area_score_card(year=year, quarter=quarter , indicators_id = indicator_id)['avg_score']
-                elif year:
-                   kra_percent = float(kra.ministry_key_result_area_score_card(year=year , indicators_id=indicator_id)['avg_score']) * float(kra_weight/100)
-                   sum = sum + kra_percent
-            goals = StrategicGoal.objects.filter(kra_goal__id__in=kras_ids , policy_area = self.policy_area).distinct()
-            total_goal_weight = 0
-            for goal in goals:
-                total_goal_weight = total_goal_weight + goal.goal_weight  
-            
+                    single_kra = kra.key_result_area_score_card(year=year, quarter=quarter)
+                else:
+                    single_kra = kra.key_result_area_score_card(year=year)
 
-            
-           
-            
-            calculated_weight = float((self.goal_weight)*100) / float(total_goal_weight)
-          
-            goal_score = float(float(sum) * float(calculated_weight)) / 100
-            avg_score = goal_score
 
-            print('-------===============',avg_score, total_goal_weight, sum, calculated_weight) 
+                total_kra_weight = total_kra_weight + single_kra['total_indicator_weight']
+                score =  score + single_kra['sum_score']
 
-            
 
-            score_card_ranges = cache.get('score_card_ranges')
-
-            if score_card_ranges is None:
-                score_card_ranges = list(ScoreCardRange.objects.all())
-                cache.set('score_card_ranges', score_card_ranges, CACHE_TIMEOUT)
-
+            avg_score = float(float(score)/float(total_kra_weight)) * 100 if total_kra_weight > 0 else 0
+            # Cache score card ranges if not already cached
+            score_card_ranges = cache.get_or_set('score_card_ranges', lambda: list(ScoreCardRange.objects.all()), CACHE_TIMEOUT)
+    
+            # Determine score card color
             card = next((range for range in score_card_ranges if range.starting <= avg_score <= range.ending), None)
             scorecard_color = card.color if card else "#4680ff"
-
+    
+            # Final result dictionary
             result = {
-                'sum_score': sum,
+                'sum_score': score,
                 'avg_score': avg_score,
                 'scorecard_color': scorecard_color,
+                'total_kra_weight': total_kra_weight
             }
+    
+            # Cache the final result
             cache.set(cache_key, result, CACHE_TIMEOUT)
-
-     
+    
         return result
 
 class KeyResultArea(models.Model):
@@ -333,68 +335,108 @@ class KeyResultArea(models.Model):
 
     def key_result_area_score_card(self, quarter=None, year=None):
         cache_key = f"key_result_area_score_card_{self.pk}_{quarter}_{year}"
-        result = None
+        result = cache.get(cache_key)
         if result is None:
-            indicators = self.indicators.values_list('id', flat=True)  # Faster, no need for 'all()'
+            indicators = self.indicators.all().values_list('id', flat=True)
 
-            score_query = AnnualPlan.objects if not quarter else QuarterProgress.objects
-
-            filter_params = {
-                'indicator__in': indicators,
-                'year__year_amh': year
-            }
             if quarter:
-                filter_params['quarter__quarter_eng'] = quarter
-                filter_params['quarter_target__isnull'] = False
-                performance_field = 'quarter_performance'
-                target_field = 'quarter_target'
-            else:
-                filter_params['annual_target__isnull'] = False
-                performance_field = 'annual_performance'
-                target_field = 'annual_target'
-                # Perform a single query with necessary annotations and aggregations
-                scores = score_query.filter(**filter_params).annotate(
-    
-                performance_value=Coalesce(F(performance_field), Value(0)),
-                raw_performance_percentage=ExpressionWrapper(
-                    F('performance_value') * 100.0 / F(target_field), output_field=FloatField()
-                ),
-                performance_percentage=Case(
-                    When(raw_performance_percentage__gt=100, then=Value(100.0)),
-                    default=F('raw_performance_percentage'),
-                    output_field=FloatField()
-                ),
-                weighted_performance=ExpressionWrapper(
-                    F('performance_percentage') * F('indicator__kpi_weight') / 100.0, 
-                    output_field=FloatField()
+                quarter_scores = QuarterProgress.objects.filter(
+                    Q(quarter_target__isnull=False),  
+                    Q(indicator__in=indicators),
+                    Q(year__year_amh=year),
+                    Q(quarter__quarter_eng=quarter)
+                ).annotate(
+                    # Replace null performance values with 0 using Coalesce
+                    performance_value=Coalesce('quarter_performance', Value(0)),
+                    
+                    # Calculate the percentage of performance over target for each row
+                    raw_performance_percentage=ExpressionWrapper(
+                        F('performance_value') * 100.0 / F('quarter_target'),
+                        output_field=FloatField()
+                    ),
+                    
+                    # Cap the performance percentage at 100 if it exceeds 100
+                    performance_percentage=Case(
+                        When(raw_performance_percentage__gt=100, then=Value(100.0)),
+                        default=F('raw_performance_percentage'),
+                        output_field=FloatField()
+                    ),
+
+                    kpi_weight_value=F('indicator__kpi_weight'),
+
+                    weighted_performance=ExpressionWrapper(
+                        F('performance_percentage') * (F('kpi_weight_value') / 100.0), 
+                        output_field=FloatField()
+                    )
+                ).values('weighted_performance', 'kpi_weight_value'
+                ).aggregate(
+                    total_score=Sum('weighted_performance'),
+                    total_indicator_weight=Sum('kpi_weight_value'),
                 )
-            ).aggregate(
-                total_score=Sum('weighted_performance'),
-                total_indicator_weight=Sum('indicator__kpi_weight'),
-            )
+
+                sum_score = quarter_scores['total_score'] or 0
+                try: 
+                    avg_score = float(quarter_scores['total_score'] * 100) / float(quarter_scores['total_indicator_weight']) 
+                except: 
+                    avg_score = 0
+            else:
+                annual_scores = AnnualPlan.objects.filter(
+                    Q(annual_target__isnull=False),  
+                    Q(indicator__in=indicators),
+                    Q(year__year_amh=year)
+                ).annotate(
+                    # Replace null performance values with 0 using Coalesce
+                    performance_value=Coalesce('annual_performance', Value(0)),
+                    
+                    # Calculate the percentage of performance over target for each row
+                    raw_performance_percentage=ExpressionWrapper(
+                        F('performance_value') * 100.0 / F('annual_target'),
+                        output_field=FloatField()
+                    ),
+                    
+                    # Cap the performance percentage at 100 if it exceeds 100
+                    performance_percentage=Case(
+                        When(raw_performance_percentage__gt=100, then=Value(100.0)),
+                        default=F('raw_performance_percentage'),
+                        output_field=FloatField()
+                    ),
+
+                    kpi_weight_value=F('indicator__kpi_weight'),
+
+                    weighted_performance=ExpressionWrapper(
+                        F('performance_percentage') * (F('kpi_weight_value') / 100.0), 
+                        output_field=FloatField()
+                    )
+                ).values('weighted_performance', 'kpi_weight_value'
+                ).aggregate(
+                    total_score=Sum('weighted_performance'),
+                    total_indicator_weight=Sum('kpi_weight_value'),
+                )
+                try: 
+                    avg_score = float(annual_scores['total_score'] * 100) / float(annual_scores['total_indicator_weight']) 
+                except: 
+                    avg_score = 0
 
 
-            try:
-                avg_score = float(scores['total_score'] * 100 / float(scores['total_indicator_weight'])) if scores['total_indicator_weight'] else 0
-            except:
-                avg_score = 0
+            score_card_ranges = cache.get('score_card_ranges')
+            if score_card_ranges is None:
+                score_card_ranges = list(ScoreCardRange.objects.all())
+                cache.set('score_card_ranges', score_card_ranges, CACHE_TIMEOUT)
 
-    
-            # Cache ScoreCardRanges only if necessary
-            score_card_ranges = cache.get_or_set('score_card_ranges', lambda: list(ScoreCardRange.objects.all()), CACHE_TIMEOUT)
-    
             card = next((range for range in score_card_ranges if range.starting <= avg_score <= range.ending), None)
             scorecard_color = card.color if card else "#4680ff"
-    
+
             result = {
-                'sum_score': avg_score,
+                'sum_score': sum_score,
                 'avg_score': avg_score,
                 'scorecard_color': scorecard_color,
+                'total_indicator_weight' : annual_scores['total_indicator_weight'] or 0
             }
-    
             cache.set(cache_key, result, CACHE_TIMEOUT)
 
         return result
+
+
 
 
     def ministry_key_result_area_score_card(self ,quarter=None, year=None , indicators_id=None):
@@ -499,6 +541,7 @@ class KeyResultArea(models.Model):
                 'sum_score': sum_score,
                 'avg_score': avg_score,
                 'scorecard_color': scorecard_color,
+                'total_indicator_weight' : annual_scores['total_indicator_weight'] or 0
             }
             cache.set(cache_key, result, CACHE_TIMEOUT)
 

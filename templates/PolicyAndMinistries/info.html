@@ -5,174 +5,549 @@
 {% include 'PolicyAndMinistries/include/head.html' %}
 
 <body data-pc-preset="preset-1" data-pc-sidebar-caption="true" data-pc-layout="vertical" data-pc-direction="ltr"
-    data-pc-theme_contrast="" data-pc-theme="light">
+  data-pc-theme_contrast="" data-pc-theme="light">
 
-    {% include 'PolicyAndMinistries/include/header.html'%}
-
-
-
-    <div class="pc-container">
-        <div class="pc-content container-sm">
-            <!-- [ Main Content ] start -->
-            <div class="">
-
-                <div class="card-body pc-component">
-                    {% include 'PolicyAndMinistries/include/navbar.html' %}
-                    <!--Chart - 1-->
-                    <div class="mt-5">
-                        <h3>SDG</h3>
-
-                        <div class="d-flex w-full ps-4 pe-4 mt-4 justify-content-between">
-                            <h6 class="text-start">Policy Area</h6>
-                            <h6 class="text-end">SDG</h6>
-                            <h6 class="text-end">Agenda 2063 Goals</h6>
-                        </div>
-
-                        <div class="border-0" id="goalShareTreeMapUpdated"></div>
-                    </div>
-
-                    <div class="mt-5">
-                        <h3>Ethiopian Economic Planning Timeline</h3>
-                        <div id="container"></div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
-    </div>
-
-
-    {% include "PolicyAndMinistries/include/script.html" %}
-    <script src="{% static 'dashoboard_assets/assets//js//pages//policyArea.js' %}"></script>
-
-
-    <script>
-
-
-        var options = {
-            series: [
-
-
-            {
-              name: 'Growth and Transformation Plan I (GTP I)',
-              data: [
-                {
-                  x: 'Development Plan',
-                  y: [
-                    new Date('2010-01-01').getTime(),
-                    new Date('2015-01-01').getTime()
-                  ],
-                }
-              ]
-            },
-
-
-            {
-                name: 'Growth and Transformation Plan II (GTP II)',
-                data: [
-                  {
-                    x: 'Development Plan',
-                    y: [
-                      new Date('2015-01-01').getTime(),
-                      new Date('2020-01-01').getTime()
-                    ],
-                  }
-                ]
-              },
-
-
-              {
-                name: '10-Year Development Plan',
-                data: [
-                  {
-                    x: 'Development Plan',
-                    y: [
-                      new Date('2020-01-01').getTime(),
-                      new Date('2030-01-01').getTime()
-                    ],
-                  }
-                ]
-              },
-
-
-              {
-                name: ' 3-Year Investment Plan',
-                data: [
-                  {
-                    x: 'Development Plan',
-                    y: [
-                      new Date('2021-01-01').getTime(),
-                      new Date('2024-01-01').getTime()
-                    ],
-                  }
-                ]
-              },
-
-
-              {
-                name: 'Homegrown Economic Reform (HGER I)',
-                data: [
-                  {
-                    x: 'Reform',
-                    y: [
-                      new Date('2019-01-01').getTime(),
-                      new Date('2022-01-01').getTime()
-                    ],
-                  }
-                ]
-              },
+  {% include 'PolicyAndMinistries/include/header.html'%}
 
 
 
-              {
-                name: 'Homegrown Economic Reform (HGER II)',
-                data: [
-                  {
-                    x: 'Reform',
-                    y: [
-                      new Date('2023-01-01').getTime(),
-                      new Date('2030-01-01').getTime()
-                    ],
-                  }
-                ]
-              },
+  <div class="pc-container">
+    <div class="pc-content container-sm">
+      <!-- [ Main Content ] start -->
+      <div class="">
 
-
-
-
-          ],
-            chart: {
-            height: 450,
-            type: 'rangeBar'
-          },
-          colors:['#2ca87f', '#4680ff', '#6610f2', '#673ab7', '#e83e8c', '#dc2626', '#fd7e14', '#e58a00', '#2ca87f', '#008080', '#3ec9d6'],
-          plotOptions: {
-            bar: {
-              horizontal: true,
-              barHeight: '80%'
-            }
-          },
-          xaxis: {
-            type: 'datetime'
-          },
-          stroke: {
-            width: 1
-          },
-          fill: {
-            type: 'solid',
-            opacity: 0.6
-          },
-          legend: {
-            position: 'top',
-            horizontalAlign: 'left'
-          }
-          };
+        <div class="card-body pc-component">
+          {% include 'PolicyAndMinistries/include/navbar.html' %}
+          <!--Chart - 1-->
   
 
-          var chart = new ApexCharts(document.querySelector("#container"), options);
-          chart.render();
-        
+          <div class="mt-5 pb-5">
+            <h3>Ethiopian Economic Planning Timeline</h3>
+            <div id="timelineEthDevPlan"></div>
+          </div>
+
+
+
+          <div class="mt-5 pt-5 pb-5">
+            <h3>Investment Target by Policy Area</h3>
+            <div id="policyAreaLists" class="row"></div>
+
+
+
+            <div class="pt-5" id="investmentTargetPolicyAreaOptions"></div>
+            <div class="row pt-5">
+              <!--share-->
+              <div id="shares" class="col-md-8">
+
+              </div>
+              <!--Total MDPI Policy area-->
+              <div class="col-md-4 ">
+                <h5>Total MDPI policy Areas</h5>
+                <div class="table-body card-body pt-0">
+                  <div class="table-responsive">
+                    <table class="table table-hover">
+                      <thead>
+                        <tr>
+                          <th>PPAs</th>
+                          <th class="text-end">Total MDPI policy areas</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>
+                            <div class="d-flex align-items-center text-muted">
+                              <div class="avtar avtar-xs bg-light-secondary flex-shrink-0 me-2">
+                                <i class="fas fa-tasks"></i>
+                              </div>
+                              <span class="text-truncate w-100">Program</span>
+                            </div>
+                          </td>
+                          <td class="text-end f-w-600"><span>116</span></td>
+                        </tr>
+
+                        <tr>
+                          <td>
+                            <div class="d-flex align-items-center text-muted">
+                              <div class="avtar avtar-xs bg-light-secondary flex-shrink-0 me-2"><i
+                                  class="fas fa-network-wired f-16"></i></div><span
+                                class="text-truncate w-100">Project</span>
+                            </div>
+                          </td>
+                          <td class="text-end f-w-600"><span>2717</span></td>
+                        </tr>
+
+                        <tr>
+                          <td>
+                            <div class="d-flex align-items-center text-muted">
+                              <div class="avtar avtar-xs bg-light-secondary flex-shrink-0 me-2"><i
+                                  class="fab fa-blackMantis f-16"></i></div><span
+                                class="text-truncate w-100">Activity</span>
+                            </div>
+                          </td>
+                          <td class="text-end f-w-600"><span>1643</span></td>
+                        </tr>
+
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="mt-5">
+            <h3>SDG</h3>
+
+            <div class="d-flex w-full ps-4 pe-4 mt-4 justify-content-between">
+              <h6 class="text-start">Policy Area</h6>
+              <h6 class="text-end">SDG</h6>
+              <h6 class="text-end">Agenda 2063 Goals</h6>
+            </div>
+
+            <div class="border-0" id="goalShareTreeMapUpdated"></div>
+          </div>
+
+
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+
+  {% include "PolicyAndMinistries/include/script.html" %}
+  <script src="{% static 'dashoboard_assets/assets//js//pages//policyArea.js' %}"></script>
+
+
+  <script>
+
+
+    var options = {
+      series: [
+        {
+          name: 'Growth and Transformation Plan I (GTP I)',
+          data: [
+            {
+              x: 'Development Plan',
+              y: [
+                new Date('2010-01-01').getTime(),
+                new Date('2015-01-01').getTime()
+              ],
+            }
+          ]
+        },
+
+
+        {
+          name: 'Growth and Transformation Plan II (GTP II)',
+          data: [
+            {
+              x: 'Development Plan',
+              y: [
+                new Date('2015-01-01').getTime(),
+                new Date('2020-01-01').getTime()
+              ],
+            }
+          ]
+        },
+
+
+        {
+          name: '10-Year Development Plan',
+          data: [
+            {
+              x: 'Development Plan',
+              y: [
+                new Date('2020-01-01').getTime(),
+                new Date('2030-01-01').getTime()
+              ],
+            }
+          ]
+        },
+
+
+        {
+          name: ' 3-Year Investment Plan',
+          data: [
+            {
+              x: 'Development Plan',
+              y: [
+                new Date('2021-01-01').getTime(),
+                new Date('2024-01-01').getTime()
+              ],
+            }
+          ]
+        },
+
+
+        {
+          name: 'Homegrown Economic Reform (HGER I)',
+          data: [
+            {
+              x: 'Reform',
+              y: [
+                new Date('2019-01-01').getTime(),
+                new Date('2022-01-01').getTime()
+              ],
+            }
+          ]
+        },
+
+
+
+        {
+          name: 'Homegrown Economic Reform (HGER II)',
+          data: [
+            {
+              x: 'Reform',
+              y: [
+                new Date('2023-01-01').getTime(),
+                new Date('2030-01-01').getTime()
+              ],
+            }
+          ]
+        },
+
+
+
+
+      ],
+      chart: {
+        height: 450,
+        type: 'rangeBar'
+      },
+      colors: ['#2ca87f', '#4680ff', '#6610f2', '#673ab7', '#e83e8c', '#dc2626', '#fd7e14', '#e58a00', '#2ca87f', '#008080', '#3ec9d6'],
+      plotOptions: {
+        bar: {
+          horizontal: true,
+          barHeight: '80%'
+        }
+      },
+      xaxis: {
+        type: 'datetime'
+      },
+      stroke: {
+        width: 1
+      },
+      fill: {
+        type: 'solid',
+        opacity: 0.6
+      },
+      legend: {
+        position: 'top',
+        horizontalAlign: 'left'
+      }
+    };
+
+
+    var chart = new ApexCharts(document.querySelector("#timelineEthDevPlan"), options);
+    chart.render();
+
+
+    const policyAreaLists = [
+    "Sustainable Macroeconomic Management and Growth",
+    "Trade and Investment Competitiveness",
+    "Agricultural Production Growth and Food Self-Reliance",
+    "Manufacturing Industry Capacity Utilisation and Growth",
+    "Mineral Resources for Growth and Prosperity",
+    "Economic Opportunities in the Tourism Sector",
+    "Digital Technology for Growth and Prosperity",
+    "Construction Industry Efficiency and Competitiveness",
+    "Safe, Resilient and Smart Urbanisation",
+    "Sustainable Management of Water and Sanitation",
+    "Affordable, Reliable, and Green Energy",
+    "Integrated and Modernised Transport and Logistics",
+    "Skills Development and Labour Market Competitiveness",
+    "Quality Education",
+    "Equitable and Inclusive Healthcare Systems",
+    "Social Protection and Equality",
+    "Promoting Culture, Sports, and Creative Economy",
+    "Rule of Law and Effective Administration of Justice",
+    "Pragmatic, Diversified & Inclusive Foreign Partnerships",
+    "Effective Public Service and Administration",
+    "Peaceful and Democratic Society",
+    "Green Growth and Clean Environment",
+    "Recovery, Resilience and Risk Management"
+];
+
+policyAreaLists.forEach((item, index) => {
+  $('#policyAreaLists').append(`
+    <div class="col-sm-4 p-2">
+    <div class="d-flex align-items-center">
+      <div class="badge bg-light-secondary f-12">${index + 1}</div>
+      <div class="flex-grow-1 mx-2">
+        <p class="mb-0 d-grid text-start"><span class="text-truncate w-100">${item}</span></p>
+      </div>
+    </div>
+  </div>
+  `)
+})
+
+    let investmentTargetPolicyAreaOptions = {
+      series: [{
+        name: 'Program',
+        type: 'column',
+        data: [15, 5, 8, 6, 6, 6, 5, 3, 5, 4, 1, 6, 4, 5, 9, 6, 6, 10, 5, 4, 9, 3, 4]
+      }, {
+        name: 'Project',
+        type: 'column',
+        data: [227, 29, 233, 86, 18, 36, 53, 27, 21, 720, 96, 460, 38, 28, 332, 34, 46, 45, 29, 23, 66, 23, 47]
+      },
+      {
+        name: 'Activity',
+        type: 'column',
+        data: [153, 48, 303, 73, 25, 42, 107, 8, 47, 60, 10, 79, 45, 49, 0, 116, 295, 41, 30, 17, 46, 39, 10]
+      }, {
+        name: 'Total',
+        type: 'line',
+        data: [314078, 20145, 227174, 68782, 17541, 28032, 151747, 19990, 193521, 219703, 225480, 736646, 16086, 451937, 483489, 86945, 24741, 127233, 51207, 129883, 68907, 759, 1014784]
+      }],
+      chart: {
+        height: 400,
+        type: 'line',
+        stacked: false
+      },
+      dataLabels: {
+        enabled: true,
+        enabledOnSeries: [3]
+      },
+      stroke: {
+        width: [1, 1, 1, 4]
+      },
+      title: {
+        text: '',
+        align: 'left',
+        offsetX: 110
+      },
+      xaxis: {
+        labels: {
+          formatter: function (value) {
+            return value;
+          }
+        }
+      },
+      yaxis: [
+        {
+          labels: {
+            show: false,
+          },
+          seriesName: 'Income',
+          axisTicks: {
+            show: true,
+          },
+          axisBorder: {
+            show: true,
+            color: '#008FFB'
+          },
+          title: {
+            text: "MDIP Investment Target by Policy Area",
+            style: {
+              color: '#008FFB',
+            }
+          },
+          tooltip: {
+            enabled: true
+          }
+        },
+        {
+          seriesName: 'Cashflow',
+          opposite: true,
+          axisTicks: {
+            show: true,
+          },
+          axisBorder: {
+            show: true,
+            color: '#00E396'
+          },
+          labels: {
+            style: {
+              colors: '#00E396',
+            }
+          },
+          title: {
+            text: "Number of PPAs",
+            style: {
+              color: '#00E396',
+            }
+          },
+        },
+        {
+          seriesName: 'Revenue',
+          opposite: true,
+          axisTicks: {
+            show: true,
+          },
+          axisBorder: {
+            show: true,
+            color: '#FEB019'
+          },
+          labels: {
+            style: {
+              colors: '#FEB019',
+            },
+          },
+          title: {
+            text: "Investment (Million Birr)",
+            style: {
+              color: '#FEB019',
+            }
+          }
+        },
+      ],
+      tooltip: {
+        fixed: {
+          enabled: true,
+          position: 'topLeft', // topRight, topLeft, bottomRight, bottomLeft
+          offsetY: 30,
+          offsetX: 60
+        },
+      },
+      legend: {
+        horizontalAlign: 'left',
+        offsetX: 40
+      }
+    };
+
+    var chart = new ApexCharts(document.querySelector("#investmentTargetPolicyAreaOptions"), investmentTargetPolicyAreaOptions);
+    chart.render();
+
+
+    var options = {
+      series: [
+        {
+          data: [
+            {
+              x: 'Sustainable Macroeconomic Management and Growth',
+              y: 6.7
+            },
+            {
+              x: 'Trade and Investment Competitiveness',
+              y: 0.4
+            },
+            {
+              x: 'Agricultural Production Growth and Food Self-Reliance',
+              y: 4.9
+            },
+            {
+              x: 'Manufacturing Industry Capacity Utilisation and Growth',
+              y: 1.5
+            },
+            {
+              x: 'Mineral Resources for Growth and Prosperity',
+              y: 0.4
+            },
+            {
+              x: 'Economic Opportunities in the Tourism Sector',
+              y: 0.6
+            },
+            {
+              x: 'Digital Technology for Growth and Prosperity',
+              y: 3.2
+            },
+            {
+              x: 'Construction Industry Efficiency and Competitiveness',
+              y: 0.4
+            },
+            {
+              x: 'Safe, Resilient and Smart Urbanisation',
+              y: 4.1
+            },
+            {
+              x: 'Sustainable Management of Water and Sanitation',
+              y: 4.7
+            },
+            {
+              x: 'Affordable, Reliable, and Green Energy ',
+              y: 4.8
+            },
+            {
+              x: 'Integrated and Modernised Transport and Logistics',
+              y: 15.7
+            },
+            {
+              x: 'Skills Development and Labour Market Competitiveness',
+              y: 0.3
+            },
+            {
+              x: 'Quality Education',
+              y: 9.7
+            },
+            {
+              x: 'Equitable and Inclusive Healthcare Systems',
+              y: 10.3
+            },
+            {
+              x: 'Social Protection and Equality',
+              y: 1.9
+            },
+            {
+              x: 'Promoting Culture, Sports, and Creative Economy',
+              y: 0.5
+            },
+            {
+              x: 'Rule of Law and Effective Administration of Justice',
+              y: 2.7
+            },
+            {
+              x: 'Pragmatic, Diversified & Inclusive Foreign Partnerships',
+              y: 1.1
+            },
+            {
+              x: 'Effective Public Service and Administration',
+              y: 2.8
+            },
+            {
+              x: 'Peaceful and Democratic Society',
+              y: 1.5
+            },
+            {
+              x: 'Green Growth and Clean Environment',
+              y: 0.0
+            },
+            {
+              x: 'Recovery, Resilience and Risk Management',
+              y: 21.7
+            },
+          ]
+        }
+      ],
+      legend: {
+        show: false
+      },
+      chart: {
+        height: 350,
+        type: 'treemap'
+      },
+      title: {
+        text: 'MDPI policy Areas Shares',
+        align: 'center'
+      },
+      colors: [
+        '#3B93A5',
+        '#F7B844',
+        '#ADD8C7',
+        '#EC3C65',
+        '#CDD7B6',
+        '#C1F666',
+        '#D43F97',
+        '#1E5D8C',
+        '#421243',
+        '#7F94B0',
+        '#EF6537',
+        '#C0ADDB'
+      ],
+      plotOptions: {
+        treemap: {
+          distributed: true,
+          enableShades: false
+        }
+      }
+    };
+
+    var chart = new ApexCharts(document.querySelector("#shares"), options);
+    chart.render();
 
 
 
@@ -182,7 +557,11 @@
 
 
 
-    </script>
+
+
+
+
+  </script>
 
 </body>
 
