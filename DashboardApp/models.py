@@ -170,7 +170,9 @@ class PolicyArea(models.Model):
             for goal in goals:
                 goal_weight = goal.goal_weight
                 if quarter and year:
-                    sum = sum + goal.ministry_strategic_goal_score_card(quarter=quarter, year=year , indicator_id = indicator_id , kras_ids = kra_id)['avg_score'] * float(goal_weight/100)
+                    single_goal = goal.ministry_strategic_goal_score_card(year=year , quarter=quarter ,indicator_id = indicator_id , kras_ids = kra_id)
+                    goal_score = goal_score + single_goal['sum_score']
+                    goal_total_wight = goal_total_wight + single_goal['kra_total_wight']
                 else:
                     single_goal = goal.ministry_strategic_goal_score_card(year=year , indicator_id = indicator_id , kras_ids = kra_id)
                     goal_score = goal_score + single_goal['sum_score']
@@ -262,8 +264,7 @@ class StrategicGoal(models.Model):
             cache.set(cache_key, result, CACHE_TIMEOUT)
     
         return result
-
-    
+   
     def ministry_strategic_goal_score_card(self, quarter=None, year=None , kras_ids=None , indicator_id=None):
         cache_key = f"ministry_strategic_goal_score_card_{self.pk}_{quarter}_{year}"
         result = None
@@ -425,8 +426,6 @@ class KeyResultArea(models.Model):
             cache.set(cache_key, result, CACHE_TIMEOUT)
 
         return result
-
-
 
     def ministry_key_result_area_score_card(self ,quarter=None, year=None , indicators_id=None):
         cache_key = f"ministry_key_result_area_score_card_{self.pk}_{quarter}_{year}"

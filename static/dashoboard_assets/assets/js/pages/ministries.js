@@ -342,7 +342,7 @@ $(document).ready(() => {
 
       return `
             <div class="col-md-4 col-lg-3 col-sm-5 col-xl-3">
-                <div class="card card-shadow" name="ministry-card" data-ministry="${ministry.id}" data-ministry-name="${ministry.responsible_ministry_eng}" data-ministry-image="${ministry.image}" data-color="${color}" >
+                <div class="card card-shadow" name="ministry-card" data-ministry="${ministry.id}" data-ministry-name="${ministry.responsible_ministry_eng}" data-ministry-image="${ministry.image}" data-color="${color}">
                     <div class="card-body">
                         <div class="row mt-3">
                             <div class="col-5">
@@ -1126,8 +1126,9 @@ $(document).ready(() => {
 
   const ministryIndicatorShare = async () => { 
     let url = `/api/ministry/ministries/`;
-    preLoading('policyAreaCardLists', 1, 1) 
+    preLoading('policyAreaCardLists', 1, 1);
     let data = await fetchData(url);
+
     var options = {
         series: [
             {
@@ -1139,7 +1140,33 @@ $(document).ready(() => {
         },
         chart: {
             height: 350,
-            type: 'treemap'
+            type: 'treemap',
+            events: {
+                dataPointSelection: async function(event, chartContext, config) {
+                    let ministryCode = config.w.config.series[0].data[config.dataPointIndex].x;
+
+                    const ministryData = data.find(item => item.code === ministryCode);
+                    const ministry_id = ministryData.id;
+                    const ministry_name = ministryData.code;
+                    const ministry_image = ministryData.image;
+                    const color = ministryData.color;
+
+                    let type = $("#dataType").val();
+                    let typeValue = $("#dataTypeLists").val();
+
+                    let url = `/api/ministry/ministry_with_policy_area/${ministry_id}?${type == 'year' ? 'year=' + typeValue : 'year=' + typeValue.split('-')[0] + '&quarter=' + typeValue.split('-')[1]}`;
+
+                    let ministryDetails = await fetchData(url);
+
+                    selectedMinistryCard(ministry_name, ministry_id, color, ministry_image);
+                    $("html, body").animate(
+                        {
+                            scrollTop: $("#policyAreaMainCard").offset().top,
+                        },
+                        500 
+                    );
+                }
+            }
         },
         title: {
             text: 'Ministries Indicator Share',
@@ -1153,7 +1180,6 @@ $(document).ready(() => {
             "#4D8066", "#809980", "#E6FF80", "#1AFF33", "#999933",
             "#FF3380", "#CCCC00", "#66E64D", "#4D80CC", "#9900B3",
             "#E64D66", "#4DB380", "#FF4D4D", "#99E6E6", "#6666FF"
-
         ],
         plotOptions: {
             treemap: {
@@ -1164,16 +1190,15 @@ $(document).ready(() => {
         tooltip: {
           y: {
             formatter: function(value) {
-              return  value + ' Indicators'
+              return value + ' Indicators';
             }
           }
         }
     };
-    
-  
-  data.forEach((item, index) => {
-      options.series[0].data.push({ x: item.code, y: item.count_indicator});
-  });
+
+    data.forEach((item, index) => {
+        options.series[0].data.push({ x: item.code, y: item.count_indicator });
+    });
 
     var chart = new ApexCharts(document.querySelector("#ministryIndicatorShare"), options);
     chart.render();
