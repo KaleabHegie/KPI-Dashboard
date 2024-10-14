@@ -168,21 +168,18 @@ class PolicyArea(models.Model):
             goals = self.policy_area_goal.filter(id__in = goal_ids)
             goal_avg_score = 0
             goal_total_wight = 0
-            sum = 0
+            goal_score = 0
             for goal in goals:
                 goal_weight = goal.goal_weight
                 if quarter and year:
                     sum = sum + goal.ministry_strategic_goal_score_card(quarter=quarter, year=year , indicator_id = indicator_id , kras_ids = kra_id)['avg_score'] * float(goal_weight/100)
                 else:
-                    goal_percent = float(goal.ministry_strategic_goal_score_card(year=year , indicator_id = indicator_id , kras_ids = kra_id)['avg_score'])  * float(goal_weight/100)
-                    sum = sum + goal_percent
-                    goal_total_wight = goal_total_wight + goal_weight
-            
-            if goal_total_wight != 0:
-              avg_score = float(sum * 100) / float(goal_total_wight) 
-            else :
-              avg_score = 0
+                    single_goal = goal.ministry_strategic_goal_score_card(year=year , indicator_id = indicator_id , kras_ids = kra_id)
+                    goal_score = goal_score + single_goal['sum_score']
+                    goal_total_wight = goal_total_wight + single_goal['kra_total_wight']
 
+            avg_score = float(float(goal_score)/float(goal_total_wight)) * 100 if goal_total_wight > 0 else 0        
+          
             score_card_ranges = cache.get('score_card_ranges')
             
 
@@ -194,7 +191,7 @@ class PolicyArea(models.Model):
             scorecard_color = card.color if card else "#4680ff"
 
             result = {
-                'sum_score': sum,
+                'sum_score': avg_score,
                 'avg_score': avg_score,
                 'scorecard_color': scorecard_color,
             }
@@ -220,56 +217,8 @@ class StrategicGoal(models.Model):
     goal_is_visable = models.BooleanField(default=False)
     def __str__(self):
         return self.goal_name_eng
-    
 
 
-    def strategic_goal_score_card(self, quarter=None, year=None):
-        cache_key = f"strategic_goal_score_card_{self.pk}_{quarter}_{year}"
-        result = cache.get(cache_key)
-        
-        if result is None:
-            # Prefetch all KRAs and their weights to avoid repeated queries
-            key_result_areas = self.kra_goal.all().prefetch_related('indicators')
-    
-            # Initialize sum to 0
-            total_score_sum = 0
-            total_kra_weight = 0
-    
-            for kra in key_result_areas:
-                # Fetch the KRA score based on quarter and year
-                kra_score = kra.key_result_area_score_card(year=year, quarter=quarter)['avg_score'] if quarter else kra.key_result_area_score_card(year=year)
-                total_kra_weight = total_kra_weight + kra_score['total_indicator_weight']
-
-                # Calculate weighted KRA score
-                kra_weighted_score = float(kra_score['avg_score']) * float(kra_score['total_indicator_weight'] / 100)
-                total_score_sum += kra_weighted_score
-    
-            # Calculate the strategic goal score and average score
-            goal_score = float(total_score_sum * 100) / float(total_kra_weight) if total_kra_weight > 0 else 0
-            avg_score = goal_score
-    
-            # Cache score card ranges if not already cached
-            score_card_ranges = cache.get_or_set('score_card_ranges', lambda: list(ScoreCardRange.objects.all()), CACHE_TIMEOUT)
-    
-            # Determine score card color
-            card = next((range for range in score_card_ranges if range.starting <= avg_score <= range.ending), None)
-            scorecard_color = card.color if card else "#4680ff"
-    
-            # Final result dictionary
-            result = {
-                'sum_score': total_score_sum,
-                'avg_score': avg_score,
-                'scorecard_color': scorecard_color,
-                'total_kra_weight': total_kra_weight
-            }
-    
-            # Cache the final result
-            cache.set(cache_key, result, CACHE_TIMEOUT)
-    
-        return result
-
-    
-    
     def strategic_goal_score_card(self, quarter=None, year=None):
         cache_key = f"strategic_goal_score_card_{self.pk}_{quarter}_{year}"
         result = cache.get(cache_key)
@@ -314,6 +263,48 @@ class StrategicGoal(models.Model):
             # Cache the final result
             cache.set(cache_key, result, CACHE_TIMEOUT)
     
+        return result
+
+    
+    def ministry_strategic_goal_score_card(self, quarter=None, year=None , kras_ids=None , indicator_id=None):
+        cache_key = f"ministry_strategic_goal_score_card_{self.pk}_{quarter}_{year}"
+        result = None
+        if result is None:
+            key_result_areas = self.kra_goal.filter(id__in=kras_ids).distinct()
+            kra_score = 0
+            kra_total_wight = 0
+            for kra in key_result_areas:
+                if quarter and year:
+                    sum = sum +kra.ministry_key_result_area_score_card(year=year, quarter=quarter , indicators_id = indicator_id)['avg_score']
+
+                elif year:
+                   single_kra = kra.ministry_key_result_area_score_card(year=year , indicators_id=indicator_id)
+                   kra_total_wight = kra_total_wight + single_kra['total_indicator_weight']
+                   kra_score = kra_score + single_kra['sum_score']
+
+        
+            avg_score = float(float(kra_score)/float(kra_total_wight)) * 100 if kra_total_wight > 0 else 0
+
+            
+
+            score_card_ranges = cache.get('score_card_ranges')
+
+            if score_card_ranges is None:
+                score_card_ranges = list(ScoreCardRange.objects.all())
+                cache.set('score_card_ranges', score_card_ranges, CACHE_TIMEOUT)
+
+            card = next((range for range in score_card_ranges if range.starting <= avg_score <= range.ending), None)
+            scorecard_color = card.color if card else "#4680ff"
+
+            result = {
+                'sum_score': kra_score,
+                'avg_score': avg_score,
+                'scorecard_color': scorecard_color,
+                'kra_total_wight' : kra_total_wight
+            }
+            cache.set(cache_key, result, CACHE_TIMEOUT)
+
+     
         return result
 
 class KeyResultArea(models.Model):
@@ -412,6 +403,7 @@ class KeyResultArea(models.Model):
                     total_score=Sum('weighted_performance'),
                     total_indicator_weight=Sum('kpi_weight_value'),
                 )
+                sum_score = annual_scores['total_score'] or 0
                 try: 
                     avg_score = float(annual_scores['total_score'] * 100) / float(annual_scores['total_indicator_weight']) 
                 except: 
@@ -435,7 +427,6 @@ class KeyResultArea(models.Model):
             cache.set(cache_key, result, CACHE_TIMEOUT)
 
         return result
-
 
 
 

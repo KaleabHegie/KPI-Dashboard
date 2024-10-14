@@ -331,7 +331,7 @@ $(document).ready(() => {
     let typeValue = $("#dataTypeLists").val()
     
     let url = `/api/ministry/ministries${type == 'year' ? '?year='+typeValue : '?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`
-   
+  
     preLoading('ministryCardLists' , 8 , 3)
     let data = await fetchData(url);
     $("#ministryCardLists").html(`
@@ -427,20 +427,6 @@ $(document).ready(() => {
           </div>
       </div>
   </div>
-      <div class="col-md-6 col-lg-6">
-      <div class="card card-shadow" style="height: 170px; border-style: solid; border-width: 1px; border-color: var(--bs-${color})" name="goal-card" data-goal="${goal.id}" data-goal-name="${goal.goal_name_eng}" data-color="${color}" data-ministryId="${ministry_id}">
-          <div class="card-body">
-              <div class="h-100">
-                 <h6 class="mb-2 f-w-400  data-bs-toggle="tooltip" data-bs-placement="top" title="${goal.goal_name_eng}" text-muted">${goal.goal_name_eng.length > 45 ? goal.goal_name_eng.slice(0,45)+'...' : goal.goal_name_eng}</h6>
-              </div>
-          </div>
-          <div class="card-footer">
-                   <div class="w-100 progress" style="height: 20px">
-                          <div class="progress-bar" role="progressbar" style="width: ${avgScoreWidth}%; background-color:${goal.ministry_strategic_goal_score_card.scorecard_color};" aria-valuenow="${goal.ministry_strategic_goal_score_card.avg_score}" aria-valuemin="0" aria-valuemax="100">${avgScoreWidth}%</div>
-                      </div>
-          </div>
-      </div>
-  </div>
       `;
   });
 
@@ -458,7 +444,6 @@ $(document).ready(() => {
 
   };
 
-  const selectedMinistryCard = async (ministry_name, ministry_id , color , ministry_image) => {
   const selectedMinistryCard = async (ministry_name, ministry_id , color , ministry_image) => {
     let type = $("#dataType").val()
     let typeValue = $("#dataTypeLists").val()
@@ -556,9 +541,6 @@ $(document).ready(() => {
                       <div class="row h-100 mt-3">
                        ${letGoalTest}
                       </div>
-                      <div class="row h-100 mt-3">
-                       ${letGoalTest}
-                      </div>
                   </div>
               `);
       
@@ -615,9 +597,6 @@ $(document).ready(() => {
 
                     ${goalListCardHtml}
                     
-
-                    ${goalListCardHtml}
-                    
                 </div>
             `;
 
@@ -629,9 +608,7 @@ $(document).ready(() => {
           chartGauge2(policy.id , policy.ministry_policy_area_score_card.avg_score); // Display progress chart for the policy
 
     
-    
 
-           
            
             
     });
@@ -721,7 +698,6 @@ $(document).ready(() => {
   let data = await fetchData(url)
   
   selectedMinistryCard(ministry_name, ministry_id , color , ministry_image);
-  selectedMinistryCard(ministry_name, ministry_id , color , ministry_image);
   $("html, body").animate(
     {
       scrollTop: $("#policyAreaMainCard").offset().top,
@@ -797,7 +773,6 @@ $(document).ready(() => {
   }
   }
 
-  const selectedGoalCard = async (goal_id ,ministry_id , color) => {
   const selectedGoalCard = async (goal_id ,ministry_id , color) => {
     let type = $("#dataType").val()
     let typeValue = $("#dataTypeLists").val()
@@ -1204,4 +1179,20 @@ $(document).ready(() => {
     chart.render();
 };
 
+ 
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
