@@ -342,15 +342,15 @@ $(document).ready(()=>{
             let direction = avgScore > 60 ? 'fa-arrow-up' : avgScore >= 50 &&  avgScore <= 60 ? 'fa-arrow-right': 'fa-arrow-down'
             return`
             <div class="col-6 col-sm-4 col-xl-2">
-            <div class="card card-shadow  m-1 " data-policy-area="${area.id}" data-score="${avgScore}" data-color="${color}" name="policy-area-card">
+            <div  class="card card-shadow  m-1 " data-policy-area="${area.id}" data-score="${avgScore}" data-color="${color}" name="policy-area-card">
                 <div class="row ">
-                    <div class="col-8 rounded-start bg-${color}-700 rounded-start" >
+                    <div style="height: 150px;" class="col-8 rounded-start bg-${color}-700 rounded-start" >
                         <div class="row justify-content-center  mt-3 text-white">
                             <div class="col-2  p-0 m-0">
-                                <p class="fw-bold   p-0 m-0 ms-2" style="font-size: 10px;">${index+1}</p>
+                                <p class="fw-bold  p-0 m-0 ms-2" style="font-size: 11px;">${index+1}</p>
                             </div>
                             <div class="col-10 p-0 m-0 ">
-                                <p class="font-monospace p-0 m-0  text-start"  data-bs-toggle="tooltip" data-bs-placement="top" title="${area.policyAreaEng}" style="font-size: 9px;">${area.policyAreaEng.slice(0,25)}...</p>
+                                <p class="font-monospace p-0 m-0  text-start"  data-bs-toggle="tooltip" data-bs-placement="top" title="${area.policyAreaEng}" style="font-size: 9px;">${area.policyAreaEng}</p>
                             </div>
                         </div>
                         <div class="row mt-3">
@@ -360,7 +360,7 @@ $(document).ready(()=>{
                     </div>
                     <div class="col-4 align-items-center d-flex">
                         <div>
-                            <i class="fas ${direction}  fa-2x  text-center" style="color: ${area?.policy_area_score_card?.scorecard_color} "></i>
+                            <i class="fas ${direction}  fa-3x  text-center" style="color: ${area?.policy_area_score_card?.scorecard_color} "></i>
                             <div class="text-center mt-2 p-1 " style="border-style: solid;  border-width: 1px; border-color: var(--bs-${color})">${Math.floor(area?.policy_area_score_card?.avg_score)}</div>
                         </div>
                     </div>
@@ -665,7 +665,8 @@ $(document).ready(()=>{
 
       let card = data?.map((item) =>{
         return  `
-        <div class="card">
+        <div class="col-md-4">
+        <div class="card p-1" style="height: 130px">
         <div class="card-body">
             <div class="d-flex align-items-center">
                 <div class="flex-shrink-0">
@@ -680,6 +681,7 @@ $(document).ready(()=>{
                 </div>
 
             </div>
+        </div>
         </div>
     </div>`
   
@@ -960,7 +962,7 @@ $(document).ready(()=>{
         let shareGoalValueLists = data?.policy_area_goal?.map((goal)=>goal.goal_weight || 0)
 
         //ministries share for policy area
-        ministrySharesPyramid(ministriesShare)
+        //ministrySharesPyramid(ministriesShare)
 
         
         //policy area dashboard
