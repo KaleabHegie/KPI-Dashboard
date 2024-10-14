@@ -127,9 +127,11 @@ class PolicyArea(models.Model):
               
                 # Use cached strategic_goal_score_card to avoid repeated scorecard calculation
                 if quarter and year:
-                    goal_score = goal.strategic_goal_score_card(quarter=quarter, year=year)['sum_score']
-                else:
+                    single_goal = goal.strategic_goal_score_card(year=year)
                     
+                    score = score + single_goal['sum_score']
+                    total_goal_weight = total_goal_weight + single_goal['total_kra_weight']
+                else:
                     single_goal = goal.strategic_goal_score_card(year=year)
                     
                     score = score + single_goal['sum_score']
@@ -164,7 +166,6 @@ class PolicyArea(models.Model):
         if result is None:
             # Perform calculations if not cached
             goals = self.policy_area_goal.filter(id__in = goal_ids)
-            goal_avg_score = 0
             goal_total_wight = 0
             goal_score = 0
             for goal in goals:
@@ -418,7 +419,7 @@ class KeyResultArea(models.Model):
             scorecard_color = card.color if card else "#4680ff"
 
             result = {
-                'sum_score': sum_score,
+                'sum_score': annual_scores['total_score'] or 0,
                 'avg_score': avg_score,
                 'scorecard_color': scorecard_color,
                 'total_indicator_weight' : annual_scores['total_indicator_weight'] or 0
