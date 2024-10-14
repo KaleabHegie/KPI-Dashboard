@@ -138,8 +138,6 @@ class PolicyArea(models.Model):
             
             # Calculate weighted goal score
             avg_score = float(float(score)/float(total_goal_weight)) * 100 if total_goal_weight > 0 else 0
-
-            # print(total_goal_weight, score, avg_score)
     
             # Cache score card ranges if not already cached
             score_card_ranges = cache.get_or_set('score_card_ranges', lambda: list(ScoreCardRange.objects.all()), CACHE_TIMEOUT)

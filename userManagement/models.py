@@ -4,7 +4,9 @@ from django.utils.html import mark_safe
 from django.core.cache import cache
 from django.conf import settings
 from DashboardApp.models import AnnualPlan , QuarterProgress , Year , Quarter , ScoreCardRange
-from django.db.models import Sum, Avg
+from django.db.models import Sum, Avg  , Value , F , FloatField , ExpressionWrapper , Case , When , Q
+from django.db.models.functions import Coalesce
+
 # Create your models here.
 CACHE_TIMEOUT = getattr(settings, 'CACHE_TIMEOUT', 300)
 
@@ -93,48 +95,101 @@ class ResponsibleMinistry(models.Model):
     #     return result 
   
     def ministry_score_card(self, quarter=None, year=None, indicator_id=None):
-        cache_key = f"ministry_score_card_{self.id}_{quarter}_{year}_{indicator_id}"
+        cache_key = f"ministry_score_card_{self.pk}_{quarter}_{year}"
         result = None
-
         if result is None:
             indicators = self.ministry_kpi.filter(id__in=indicator_id).values_list('id', flat=True)
 
-            # Set default values for sum_score and avg_score
-            sum_score = 0
-            avg_score = 0
-
             if quarter:
-                quarter_scores = QuarterProgress.objects.filter(
-                    indicator__in=indicators,
-                    year__year_amh=year,
-                    quarter__quarter_eng=quarter
-                ).exclude(
-                    quarter_target__isnull=True
+                annual_scores = QuarterProgress.objects.filter(
+                    Q(quarter_target__isnull=False),  
+                    Q(indicator__in=indicators),
+                    Q(year__year_amh=year),
+                    Q(quarter__quarter_eng = quarter)
+                ).annotate(
+                    # Replace null performance values with 0 using Coalesce
+                    performance_value=Coalesce('quarter_performance', Value(0)),
+                    
+                    # Calculate the percentage of performance over target for each row
+                    raw_performance_percentage=ExpressionWrapper(
+                        F('performance_value') * 100.0 / F('quarter_target'),
+                        output_field=FloatField()
+                    ),
+
+                    
+                    # Cap the performance percentage at 100 if it exceeds 100
+                    performance_percentage=Case(
+                        When(raw_performance_percentage__gt=100, then=Value(100.0)),
+                        default=F('raw_performance_percentage'),
+                        output_field=FloatField()
+                    ),
+
+                    kpi_weight_value=F('indicator__kpi_weight'),
+
+                    weighted_performance=ExpressionWrapper(
+                        F('performance_percentage') * (F('kpi_weight_value') / 100.0), 
+                        output_field=FloatField()
+                    )
+                ).values('weighted_performance', 'kpi_weight_value'
                 ).aggregate(
-                    total_score=Sum('score'),
-                    avg_score=Avg('score')
+                    total_score=Sum('weighted_performance'),
+                    total_indicator_weight=Sum('kpi_weight_value'),
                 )
-                sum_score = quarter_scores.get('total_score', 0)
-                avg_score = quarter_scores.get('avg_score', 0)
+
+                sum_score = annual_scores['total_score'] or 0
+                try: 
+                    avg_score = float(annual_scores['total_score'] * 100) / float(annual_scores['total_indicator_weight']) 
+                except: 
+                    avg_score = 0
             else:
                 annual_scores = AnnualPlan.objects.filter(
-                    indicator__in=indicators,
-                    year__year_amh=year
-                ).exclude(
-                    annual_target__isnull=True
+                    Q(annual_target__isnull=False),  
+                    Q(indicator__in=indicators),
+                    Q(year__year_amh=year)
+                ).annotate(
+                    # Replace null performance values with 0 using Coalesce
+                    performance_value=Coalesce('annual_performance', Value(0)),
+                    
+                    # Calculate the percentage of performance over target for each row
+                    raw_performance_percentage=ExpressionWrapper(
+                        F('performance_value') * 100.0 / F('annual_target'),
+                        output_field=FloatField()
+                    ),
+
+                    
+                    # Cap the performance percentage at 100 if it exceeds 100
+                    performance_percentage=Case(
+                        When(raw_performance_percentage__gt=100, then=Value(100.0)),
+                        default=F('raw_performance_percentage'),
+                        output_field=FloatField()
+                    ),
+
+                    kpi_weight_value=F('indicator__kpi_weight'),
+
+                    weighted_performance=ExpressionWrapper(
+                        F('performance_percentage') * (F('kpi_weight_value') / 100.0), 
+                        output_field=FloatField()
+                    )
+                ).values('weighted_performance', 'kpi_weight_value'
                 ).aggregate(
-                    total_score=Sum('score'),
-                    avg_score=Avg('score')
+                    total_score=Sum('weighted_performance'),
+                    total_indicator_weight=Sum('kpi_weight_value'),
                 )
-                sum_score = annual_scores.get('total_score', 0)
-                avg_score = annual_scores.get('avg_score', 0)
+
+                sum_score = annual_scores['total_score'] or 0
+                try: 
+                    avg_score = float(annual_scores['total_score'] * 100) / float(annual_scores['total_indicator_weight']) 
+                except: 
+                    avg_score = 0
+                    
+
 
             score_card_ranges = cache.get('score_card_ranges')
             if score_card_ranges is None:
                 score_card_ranges = list(ScoreCardRange.objects.all())
                 cache.set('score_card_ranges', score_card_ranges, CACHE_TIMEOUT)
 
-            card = next((range_obj for range_obj in score_card_ranges if range_obj.starting is not None and range_obj.ending is not None and (range_obj.starting <= avg_score <= range_obj.ending if avg_score is not None else False)), None)
+            card = next((range for range in score_card_ranges if range.starting <= avg_score <= range.ending), None)
             scorecard_color = card.color if card else "#4680ff"
 
             result = {
@@ -142,10 +197,11 @@ class ResponsibleMinistry(models.Model):
                 'avg_score': avg_score,
                 'scorecard_color': scorecard_color,
             }
-
             cache.set(cache_key, result, CACHE_TIMEOUT)
 
         return result
+
+
 class UserSector(models.Model):
     user = models.OneToOneField(
         Account, on_delete=models.CASCADE, primary_key=True)
