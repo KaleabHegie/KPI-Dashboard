@@ -22,7 +22,7 @@
   
 
           <div class="mt-5 pb-5">
-            <h3>Ethiopian Economic Planning Timeline</h3>
+            <h3>Ethiopia development planning context </h3>
             <div id="timelineEthDevPlan"></div>
           </div>
 
@@ -97,7 +97,7 @@
 
 
           <div class="mt-5">
-            <h3>SDG</h3>
+            <h3>Sdg and agenda 2063 alignment</h3>
 
             <div class="d-flex w-full ps-4 pe-4 mt-4 justify-content-between">
               <h6 class="text-start">Policy Area</h6>
@@ -122,128 +122,154 @@
 
 
   <script>
+    const policyAreaColors = [
+    "#0f172a",  // Slate 900
+    "#b91c1c",  // Red 700
+    "#065f46",  // Emerald 800
+    "#1e3a8a",  // Blue 800
+    "#ca8a04",  // Yellow 600
+    "#0e7490",  // Cyan 700
+    "#7e22ce",  // Purple 800
+    "#374151",  // Gray 700
+    "#9f1239",  // Rose 700
+    "#713f12",  // Amber 800
+    "#312e81",  // Indigo 900
+    "#5b21b6",  // Violet 800
+    "#15803d",  // Green 700
+    "#7c2d12",  // Orange 800
+    "#be123c",  // Pink 700
+    "#166534",  // Green 800
+    "#4338ca",  // Indigo 700
+    "#6366f1",  // Indigo 500
+    "#1f2937",  // Gray 800
+    "#92400e",  // Orange 700
+    "#dc2626",  // Red 600
+    "#047857",  // Emerald 700
+    "#4a5568",  // Gray 600
+    "#075985"   // Sky 700
+];
 
-
-    var options = {
-      series: [
+var options = {
+  series: [
+    {
+      name: 'Growth and Transformation Plan I (GTP I)',
+      data: [
         {
-          name: 'Growth and Transformation Plan I (GTP I)',
-          data: [
-            {
-              x: 'Development Plan',
-              y: [
-                new Date('2010-01-01').getTime(),
-                new Date('2015-01-01').getTime()
-              ],
-            }
-          ]
-        },
-
-
-        {
-          name: 'Growth and Transformation Plan II (GTP II)',
-          data: [
-            {
-              x: 'Development Plan',
-              y: [
-                new Date('2015-01-01').getTime(),
-                new Date('2020-01-01').getTime()
-              ],
-            }
-          ]
-        },
-
-
-        {
-          name: '10-Year Development Plan',
-          data: [
-            {
-              x: 'Development Plan',
-              y: [
-                new Date('2020-01-01').getTime(),
-                new Date('2030-01-01').getTime()
-              ],
-            }
-          ]
-        },
-
-
-        {
-          name: ' 3-Year Investment Plan',
-          data: [
-            {
-              x: 'Development Plan',
-              y: [
-                new Date('2021-01-01').getTime(),
-                new Date('2024-01-01').getTime()
-              ],
-            }
-          ]
-        },
-
-
-        {
-          name: 'Homegrown Economic Reform (HGER I)',
-          data: [
-            {
-              x: 'Reform',
-              y: [
-                new Date('2019-01-01').getTime(),
-                new Date('2022-01-01').getTime()
-              ],
-            }
-          ]
-        },
-
-
-
-        {
-          name: 'Homegrown Economic Reform (HGER II)',
-          data: [
-            {
-              x: 'Reform',
-              y: [
-                new Date('2023-01-01').getTime(),
-                new Date('2030-01-01').getTime()
-              ],
-            }
-          ]
-        },
-
-
-
-
-      ],
-      chart: {
-        height: 450,
-        type: 'rangeBar'
-      },
-      colors: ['#2ca87f', '#4680ff', '#6610f2', '#673ab7', '#e83e8c', '#dc2626', '#fd7e14', '#e58a00', '#2ca87f', '#008080', '#3ec9d6'],
-      plotOptions: {
-        bar: {
-          horizontal: true,
-          barHeight: '80%'
+          x: 'Development Plan',
+          y: [
+            new Date('2010-01-01').getTime(),
+            new Date('2015-01-01').getTime()
+          ],
         }
-      },
-      xaxis: {
-        type: 'datetime'
-      },
-      stroke: {
-        width: 1
-      },
-      fill: {
-        type: 'solid',
-        opacity: 0.6
-      },
-      legend: {
-        position: 'top',
-        horizontalAlign: 'left'
+      ]
+    },
+    {
+      name: 'Growth and Transformation Plan II (GTP II)',
+      data: [
+        {
+          x: 'Development Plan',
+          y: [
+            new Date('2015-01-01').getTime(),
+            new Date('2020-01-01').getTime()
+          ],
+        }
+      ]
+    },
+    {
+      name: '10-Year Development Plan',
+      data: [
+        {
+          x: 'Development Plan',
+          y: [
+            new Date('2020-01-01').getTime(),
+            new Date('2030-01-01').getTime()
+          ],
+        }
+      ]
+    },
+    {
+      name: '3-Year Investment Plan',
+      data: [
+        {
+          x: 'Development Plan',
+          y: [
+            new Date('2021-01-01').getTime(),
+            new Date('2024-01-01').getTime()
+          ],
+        }
+      ]
+    },
+    {
+      name: 'Homegrown Economic Reform (HGER I)',
+      data: [
+        {
+          x: 'Reform',
+          y: [
+            new Date('2019-01-01').getTime(),
+            new Date('2022-01-01').getTime()
+          ],
+        }
+      ]
+    },
+    {
+      name: 'Homegrown Economic Reform (HGER II)',
+      data: [
+        {
+          x: 'Reform',
+          y: [
+            new Date('2023-01-01').getTime(),
+            new Date('2030-01-01').getTime()
+          ],
+        }
+      ]
+    }
+  ],
+  chart: {
+    height: 450,
+    type: 'rangeBar'
+  },
+  colors: ['#2ca87f', '#4680ff', '#6610f2', '#673ab7', '#e83e8c', '#dc2626', '#fd7e14', '#e58a00', '#2ca87f', '#008080', '#3ec9d6'],
+  plotOptions: {
+    bar: {
+      horizontal: true,
+      barHeight: '80%'
+    }
+  },
+  xaxis: {
+    type: 'datetime'
+  },
+  stroke: {
+    width: 1
+  },
+  fill: {
+    type: 'solid',
+    opacity: 0.6
+  },
+  legend: {
+    position: 'top',
+    horizontalAlign: 'left'
+  },
+  tooltip: {
+    x: {
+      formatter: function(val) {
+        const date = new Date(val);
+        return val
       }
-    };
+    },
+    y: {
+      formatter: function(start, end) {
+        const startDate = new Date(start);
+        const endDate = new Date(end);
+        return (
+           startDate.getFullYear() 
+        );
+      }
+    }
+  }
+};
 
-
-    var chart = new ApexCharts(document.querySelector("#timelineEthDevPlan"), options);
-    chart.render();
+var chart = new ApexCharts(document.querySelector("#timelineEthDevPlan"), options);
+chart.render();
 
 
     const policyAreaLists = [
@@ -276,7 +302,7 @@ policyAreaLists.forEach((item, index) => {
   $('#policyAreaLists').append(`
     <div class="col-sm-4 p-2">
     <div class="d-flex align-items-center">
-      <div class="badge bg-light-secondary f-12">${index + 1}</div>
+      <div class="badge bg-light-secondary f-12 text-white" style="background-color:${policyAreaColors[index]}">${index + 1}</div>
       <div class="flex-grow-1 mx-2">
         <p class="mb-0 d-grid text-start"><span class="text-truncate w-100">${item}</span></p>
       </div>
@@ -555,6 +581,7 @@ policyAreaLists.forEach((item, index) => {
 
 
 
+ 
 
 
 
