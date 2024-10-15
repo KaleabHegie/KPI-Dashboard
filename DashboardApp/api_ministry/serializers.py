@@ -55,6 +55,7 @@ class KeyResultAreaWithIndictorSerializer(serializers.ModelSerializer):
 
 class GoalWithKraSerializers(serializers.ModelSerializer):
     kra_goal =  serializers.SerializerMethodField()
+    ministry_strategic_goal_score_card = serializers.SerializerMethodField()
 
     class Meta:
         model = StrategicGoal
@@ -69,6 +70,15 @@ class GoalWithKraSerializers(serializers.ModelSerializer):
         kras = KeyResultArea.objects.filter(indicators__in=indicators , goal=obj).distinct()
         serializer = KeyResultAreaWithIndictorSerializer(kras, many=True , context=self.context)
         return serializer.data   
+    
+    def get_ministry_strategic_goal_score_card(self, obj):
+        request = self.context.get('request')
+        ministry_id = self.context.get('ministry_id')
+        quarter = request.query_params.get('quarter')
+        year = request.query_params.get('year')
+        indicator_id = Indicator.objects.filter(responsible_ministries__id=ministry_id).values_list('id', flat=True).distinct()
+        kras_ids = KeyResultArea.objects.filter(indicators__id__in=indicator_id , goal=obj).values_list('id', flat=True).distinct()
+        return obj.ministry_strategic_goal_score_card(quarter=quarter, year=year , kras_ids=kras_ids , indicator_id=indicator_id)
     
 class GoalSerializers(serializers.ModelSerializer):
     ministry_strategic_goal_score_card = serializers.SerializerMethodField()

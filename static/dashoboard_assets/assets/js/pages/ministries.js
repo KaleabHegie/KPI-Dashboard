@@ -788,7 +788,7 @@ $(document).ready(() => {
     $("#goalWithKraList").html(``);
     $("#goalWithKraList").append(
       `<div>
-         <h3 style="color: var(--bs-${color})">${goal.goal_name_eng}</h3>
+         <h3 style="color: var(--bs-${color})"><span class="badge" style="background-color: ${goal?.ministry_strategic_goal_score_card?.scorecard_color};">  ${Math.floor(goal?.ministry_strategic_goal_score_card?.avg_score) || 0}</span> &nbsp${goal.goal_name_eng}</h3>
          <hr>
        </div>
       `
@@ -1214,7 +1214,7 @@ $(document).ready(() => {
 };
 
 // Function to handle ministry card click and fetch detailed KRA data
-const ministryIndicatorShareClicked = async (ministry_id , ministry_name , ministry_image) => {
+  const ministryIndicatorShareClicked = async (ministry_id , ministry_name , ministry_image) => {
 
 
     let type = $("#dataType").val()
@@ -1320,8 +1320,7 @@ const ministryIndicatorShareClicked = async (ministry_id , ministry_name , minis
       $("#ministryKra").append(`
       <h4 class="text-center text-danger mb-5">No data found for this goal</h4>
       `);
-    }
-};
+    }};
 
  
 });
