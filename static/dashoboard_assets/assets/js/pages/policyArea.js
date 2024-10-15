@@ -136,14 +136,13 @@ $(document).ready(()=>{
     }
 
     const performanceAnalysisCard = (data) =>{
-      console.log(data)
 
       $("#performanceAnalysis").html('')
       
       data.forEach((item,index) =>{
         let card = `
         <div class="col-md-3">
-          <div name="performance-card" data-type="${item.type || 'mike'}" class="card card-shadow social-widget-card text-dark" data-bs-toggle="modal" data-bs-target="#performanceDetailModal">
+          <div name="performance-card" data-type="${item?.type}" class="card card-shadow social-widget-card text-dark">
             <div class="card-body m-0">
                 <div class="row justify-content-center">
                     <div class="col-5">
@@ -162,53 +161,6 @@ $(document).ready(()=>{
         performanceAnalysisPieChart(`total-performance-graph-${index}`, item?.percentage || 0, item.color)
     
       })
-
-
-      //handle on click 
-      $(document).on('click', "[name='performance-card']", async function(){
-        let type = $(this).data('type')
-        let selectedData = data.find((item) => item.type === type)
-
-        console.log(selectedData)
-        $("#performanceDetailModalLabel").html(selectedData?.title)
-
-
-        const indicatorLists = selectedData?.data?.map((item) => {
-          return `
-              <div name="indicator-lists" class="col-lg-4 mt-1">
-                  <div>
-                      <div class="d-flex align-items-center">
-                          <div class="flex-shrink-0">
-                              <span class="p-2 d-block rounded-circle" style="font-size: 22px; background-color:${item?.annual[0]?.annual_target ? item?.annual[0]?.scorecard || 'gray' : 'gray'}"></span>
-                          </div>
-                          <div class="flex-grow-1 mx-2">
-                              <button name="indicator-btn" 
-                                      data-indicator-name="${item?.kpi_name_eng}"  
-                                      data-indicator-id="${item?.id}" 
-                                      class="btn btn-link-secondary mb-0 d-grid text-start" 
-                                      type="button" 
-                                      data-bs-toggle="modal" 
-                                      data-bs-target="#indicatorModal" 
-                                      aria-controls="offcanvasExample">
-                                  <span class="w-100" data-bs-toggle="tooltip" data-bs-placement="top" title="${item?.kpi_name_eng}">${item?.kpi_name_eng?.length > 25 || 0 ? item?.kpi_name_eng?.slice(0,25) + '...' : item?.kpi_name_eng}</span>
-                              </button>
-                          </div>
-                          <div class="badge bg-light-secondary f-12">${item.annual[0]?.score || 'None'}</div>
-                      </div>
-                  </div>
-              </div>
-          `;
-      }).join(''); // Join array into a single HTML string
-      
-      // Insert the generated HTML into the modal body
-      $("#performanceDetailBody").html(indicatorLists || '<h3 class="text-center text-danger">No data</h3>');
-            
-      })
-
-       
-     
-     
-
     }
     const chartProgress = (percent) =>{
       $(`#chart-progress-policy-area`).html('')
@@ -479,12 +431,16 @@ $(document).ready(()=>{
           let diff = Math.floor(indicator?.annual[0]?.annual_performance - previousIndicator?.annual_performance)
           let direction = diff > 1 ? 'fa-arrow-up' : diff >= 0 &&  diff == 0 ? 'fa-arrow-right': 'fa-arrow-down'
           let directionColor = diff > 1 ? 'text-success' : diff >= 0 &&  diff == 0 ? 'text-dark': 'text-danger'
-      
+                
           let hasTarget = indicator?.annual[0]?.annual_target ? 'primary' : 'secondary'
           let score = indicator?.annual[0]?.score || 0
+
+          let performanceType = score > 70 ? 'good' : score > 50 ? 'average' : score > 50 ? 'poor' : 'nodata'
+
+
           return `
               <div name="indicator-lists" class="col-lg-4 mt-1 d-none">
-                  <div>
+                  <div name="${performanceType}">
                       <div class="d-flex align-items-center">
                           <div class="flex-shrink-0">
                             <span class="p-2 d-block rounded-circle"  style=" font-size: 22px; background-color: ${indicator?.annual[0]?.annual_target ? indicator?.annual[0]?.scorecard || 'red' : 'gray'}"></span>
@@ -1087,32 +1043,28 @@ $(document).ready(()=>{
         value : data?.good_performance?.performance || 0,
         percentage : data?.good_performance?.percentage || 0,
         color : '#2ca87f',
-        data : data?.good_performance?.data,
-        type : 'good' //don't change it for modal detail
+        type : 'good' //don't change it, it's for filter
       },
       {
         title : 'Average Performance',
         value : data?.average_performance?.performance || 0,
         percentage : data?.average_performance?.percentage || 0,
         color : '#ffc107',
-        data : data?.average_performance?.data,
-        type : 'average' //don't change it for modal detail
+        type : 'average' //don't change it, it's for filter
       },
       {
         title : 'Poor Performance',
         value : data?.poor_performance?.performance || 0,
         percentage : data?.poor_performance?.percentage || 0,
         color : '#dc2626',
-        data : data?.poor_performance?.data,
-        type : 'poor' //don't change it for modal detail
+        type : 'poor' //don't change it, it's for filter
       },
       {
         title : 'No data',
         value : data?.no_performance?.performance || 0,
         percentage : data?.no_performance?.percentage || 0,
         color : '#6c757d',
-        data : data?.no_performance?.data,
-        type : 'nodata' //don't change it for modal detail
+        type : 'nodata' //don't change it, it's for filter
       },
       
     ]
@@ -1399,6 +1351,20 @@ $(document).ready(()=>{
     }
 
     handleAutoComplete()
+
+     //handle on click 
+     $(document).on('click', "[name='performance-card']", async function(){
+      let type = $(this).data('type')
+
+      //$('#showIndicator').prop('checked', true);
+
+      // let value = $('#showIndicator').prop('checked')
+      // value ? $("[name='indicator-lists']").removeClass('d-none') :  $("[name='indicator-lists']").addClass('d-none')
+      // $("[name='kra-lists']").toggleClass('mt-3 col-6', !value);
+      // console.log(type)
+      $("[name='kra-lists']").toggleClass('mt-3 col-6', false);    
+      $(`[name=${type}]`).parent().removeClass('d-none')
+    })
 
     $(document).on('change', '#showIndicator', async function () {
       let value = $('#showIndicator').prop('checked')
