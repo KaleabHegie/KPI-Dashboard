@@ -192,3 +192,7 @@ class QuarterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Quarter
         fields = '__all__'
+
+
+
+

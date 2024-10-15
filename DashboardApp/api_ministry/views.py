@@ -156,3 +156,16 @@ def indicatorsInGoal(request , id):
             }
         return Response(context)
 
+
+
+
+@api_view(['GET'])
+def ministry_kra_serializer(request , ministry_id):
+    if request.method == 'GET':
+        indicators = Indicator.objects.filter(responsible_ministries__id=ministry_id).distinct()
+        kras = KeyResultArea.objects.filter(indicators__in=indicators).distinct()
+        serializer = KeyResultAreaWithIndictorSerializer(kras, many=True, context={'request': request , 'ministry_id' : ministry_id})
+        return Response(serializer.data)
+
+
+

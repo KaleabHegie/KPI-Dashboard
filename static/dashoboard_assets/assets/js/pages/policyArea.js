@@ -437,8 +437,8 @@ $(document).ready(()=>{
     const goalWithKraList = (goal,goalName, goalScore, goalColor) =>{        
         let kra_lists = goal.kra_goal.map((kra) =>{
           return `
-          <h6 name="kra-lists" class="pt-3 col-6" >${kra.activity_name_eng} - <span class="badge" style="background-color: ${kra?.kra_score_card?.scorecard_color};"> ${Math.floor(kra?.kra_score_card?.avg_score) || 0}% </span></h6>
-          ${indicatorList(kra.indicators).join('') || '<p name="indicator-lists"  class="d-none fw-bold text-danger" >No indicators</p>'}
+          <h6 name="kra-lists" class="pt-3 col-6"><span class="badge" style="background-color: ${kra?.kra_score_card?.scorecard_color};">  ${Math.floor(kra?.kra_score_card?.avg_score) || 0}</span> &nbsp ${kra.activity_name_eng}</h6>
+         ${indicatorList(kra.indicators).join('') || '<p name="indicator-lists"  class="d-none fw-bold text-danger" >No indicators</p>'}
           `
         })
 

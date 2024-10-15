@@ -52,6 +52,7 @@ urlpatterns = [
     path('api/ministry/dashboard/' ,MinistryDashboard.dashboard),
     path('api/ministry/dashboard_ministries/<str:ministry_id>/',MinistryDashboard.dashboard_ministries),
     path('api/ministry/indicatorsInGoal/<str:id>/',MinistryDashboard.indicatorsInGoal),
+    path('api/ministry/ministry_kra_serializer/<str:ministry_id>/',MinistryDashboard.ministry_kra_serializer),
    
      #### RESET PASSWORD
     #dashboard-pages/authentication/

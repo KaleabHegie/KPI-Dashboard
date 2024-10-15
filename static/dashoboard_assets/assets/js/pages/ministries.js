@@ -457,6 +457,8 @@ $(document).ready(() => {
 
     ministryData = await fetchData( `/api/ministry/ministry_with_policy_area/${ministry_id}${type == 'year' ? '?year='+typeValue : '?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`)
 
+    
+    $("#ministryKra").html(``);
     $("#policyAreaMainCard").html(``);
     $("#goalWithKraList").html(``);
     $("#ministryDashboard").html(``);
@@ -781,6 +783,7 @@ $(document).ready(() => {
     //check is year or quarter
     let url = `/api/ministry/goal_with_kra/${goal_id}?ministry_id=${ministry_id}${type == 'year' ? '&year='+typeValue : '&year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`
     let goal = await fetchData(url)
+    console.log(goal)
 
     $("#goalWithKraList").html(``);
     $("#goalWithKraList").append(
@@ -794,7 +797,7 @@ $(document).ready(() => {
     if (goal.kra_goal.length > 0) {
       let kra_lists = goal.kra_goal.map((kra) => {
         return `
-        <h6 name="kra-lists" class="pt-3 col-6">${kra.activity_name_eng} - AVG SCORE <span class="badge" style="background-color: ${kra?.ministry_key_result_area_score_card?.scorecard_color};"> ${Math.floor(kra?.ministry_key_result_area_score_card?.avg_score) || 0} </span></h6>
+        <h6 name="kra-lists" class="pt-3 col-6"><span class="badge" style="background-color: ${kra?.ministry_key_result_area_score_card?.scorecard_color};">  ${Math.floor(kra?.ministry_key_result_area_score_card?.avg_score) || 0}</span> &nbsp ${kra.activity_name_eng}</h6>
          ${indicatorList(kra.indicators).join("")}
           `;
       });
@@ -1126,7 +1129,11 @@ $(document).ready(() => {
 
   const ministryIndicatorShare = async () => { 
     let url = `/api/ministry/ministries/`;
+    
+    // Preload data and show loading animation
     preLoading('policyAreaCardLists', 1, 1);
+
+    // Fetch ministry data
     let data = await fetchData(url);
 
     var options = {
@@ -1142,23 +1149,23 @@ $(document).ready(() => {
             height: 350,
             type: 'treemap',
             events: {
+                // Event triggered when a ministry is clicked on the treemap
                 dataPointSelection: async function(event, chartContext, config) {
+                    // Get selected ministry code
                     let ministryCode = config.w.config.series[0].data[config.dataPointIndex].x;
 
+                    // Find ministry details based on the ministry code
                     const ministryData = data.find(item => item.code === ministryCode);
                     const ministry_id = ministryData.id;
-                    const ministry_name = ministryData.code;
                     const ministry_image = ministryData.image;
-                    const color = ministryData.color;
+                    const ministry_name = ministryCode;
 
-                    let type = $("#dataType").val();
-                    let typeValue = $("#dataTypeLists").val();
+                    // Call ministryIndicatorShareClicked when a share is clicked
+                    ministryIndicatorShareClicked(ministry_id , ministry_name , ministry_image);
+                    
 
-                    let url = `/api/ministry/ministry_with_policy_area/${ministry_id}?${type == 'year' ? 'year=' + typeValue : 'year=' + typeValue.split('-')[0] + '&quarter=' + typeValue.split('-')[1]}`;
-
-                    let ministryDetails = await fetchData(url);
-
-                    selectedMinistryCard(ministry_name, ministry_id, color, ministry_image);
+                    
+                    // Scroll to the policy area main card
                     $("html, body").animate(
                         {
                             scrollTop: $("#policyAreaMainCard").offset().top,
@@ -1188,20 +1195,132 @@ $(document).ready(() => {
             }
         },
         tooltip: {
-          y: {
-            formatter: function(value) {
-              return value + ' Indicators';
+            y: {
+                formatter: function(value) {
+                    return value + ' Indicators';
+                }
             }
-          }
         }
     };
 
+    // Add ministry data to the chart options
     data.forEach((item, index) => {
         options.series[0].data.push({ x: item.code, y: item.count_indicator });
     });
 
+    // Render the chart
     var chart = new ApexCharts(document.querySelector("#ministryIndicatorShare"), options);
     chart.render();
+};
+
+// Function to handle ministry card click and fetch detailed KRA data
+const ministryIndicatorShareClicked = async (ministry_id , ministry_name , ministry_image) => {
+
+
+    let type = $("#dataType").val()
+    let typeValue = $("#dataTypeLists").val()
+
+    let url = `/api/ministry/ministry_kra_serializer/${ministry_id}/${type == 'year' ? '?year='+typeValue : '?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`;
+
+    // Fetch ministry KRA details based on ministry ID and year
+    $('#ministryKra').html('')
+    $('#ministryDashboard').html('')
+    $('#policyAreaMainCard').html('')
+    $('#goalShare').html('')
+    $('#goalWithKraList').html('')
+    $('#kpiStatus').html('')
+    preLoading('ministryKra',1,12)
+    let ministryDetails = await fetchData(url);
+    $('#ministryKra').html('')
+   
+    
+
+    $("#ministryKra").append(
+      `
+           <div class="mt-5">
+             <h3>${ministry_name} <img src="${ministry_image}" alt="" class="img-fluid float-end mb-5" style="height:80px;width:95px" /> </h3>
+             <hr class="mt-2">
+          </div>
+
+
+          <h3 class="text-center text-info"> KRA with indicators </h3>
+      `
+    )
+    
+    if (ministryDetails.length > 0) {
+      let kra_lists = ministryDetails.map((kra) => {
+        return `
+        <h6 name="kra-lists" class="pt-3 col-6"><span class="badge" style="background-color: ${kra?.ministry_key_result_area_score_card?.scorecard_color};">  ${Math.floor(kra?.ministry_key_result_area_score_card?.avg_score) || 0}</span> &nbsp ${kra.activity_name_eng}</h6>
+         ${indicatorList(kra.indicators).join("")}
+          `;
+      });
+      let kraHTML = `
+           <div class="row">
+              ${kra_lists.join("")}
+          </div> `;
+
+      $("#ministryKra").append(`
+       <div class="form-check mt-5 mb-2">
+          <input class="form-check-input" type="checkbox" value="" id="showIndicator"> 
+          <label class="form-check-label" for="showIndicator">Show with Indicator</label>
+       </div>
+ 
+
+       <h1 name="indicator-lists" class="d-none">Indicators</h1>
+       <p name="indicator-lists" class="d-none fw-bold" >Click on an indicator for values, time series, and metadata.</p>
+
+        <div name="indicator-lists" class="d-none d-flex align-items-center">
+            <div class="flex-shrink-0">
+              <span class="p-2 d-block rounded-circle" style="background-color: #28A745; "></span>
+            </div>
+            <div class="pe-5"> &nbsp Very Good Performance</div>
+
+            <div class="flex-shrink-0">
+              <span class="p-2 d-block rounded-circle " style="background-color: #8BC34A; "></span>
+            </div>
+            <div class="pe-5"> &nbsp Good Performance</div>
+
+            <div class="flex-shrink-0">
+              <span class="p-2 d-block rounded-circle " style="background-color: #FFC107; "></span>
+            </div>
+            <div class="pe-5"> &nbsp Average Performance</div>
+
+            <div class="flex-shrink-0">
+              <span class="p-2 d-block rounded-circle " style="background-color: #FF9800; "></span>
+            </div>
+            <div class="pe-5"> &nbsp Low Performance</div>
+
+            <div class="flex-shrink-0">
+              <span class="p-2 d-block rounded-circle " style="background-color: #DC3545; "></span>
+            </div>
+            <div class="pe-5"> &nbsp Very Poor Performance</div>
+        </div>
+
+        <p name="indicator-lists" class="mt-4 d-none fw-bold" >Comparing with last year</p>
+        <div name="indicator-lists" class="d-none d-flex align-items-center ">
+            <div class="flex-shrink-0">
+               <i class="fas fa-arrow-up text-success " style=" font-size: 22px;"></i>
+            </div>
+            <div class="pe-5"> &nbsp Increasing</div>
+    
+            <div class="flex-shrink-0">
+              <i class="fas fa-arrow-right " style=" font-size: 22px;"></i>
+            </div>
+            <div class="pe-5"> &nbsp Constant</div>
+    
+            <div class="flex-shrink-0">
+                <i class="fas fa-arrow-down text-danger " style=" font-size: 22px;"></i>
+            </div>
+            
+            <div class="pe-5"> &nbsp Decreasing</div>
+        </div>
+       ${kraHTML}
+       `);
+    } else {
+      $("#ministryKra").append(`
+      <h4 class="text-center text-danger mb-5">No data found for this goal</h4>
+      `);
+    }
 };
 
  
