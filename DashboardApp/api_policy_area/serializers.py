@@ -273,9 +273,9 @@ class GoalWithKraSerializers(serializers.ModelSerializer):
 
             performance = obj.kra_goal.filter(
                         Q(indicators__annual_indicators__annual_target__isnull=False),
+                        Q(indicators__annual_indicators__annual_performance__isnull=False),
                         Q(indicators__annual_indicators__year__year_amh=year),
-                        Q(indicators__annual_indicators__annual_performance__lt=0.5 * F('indicators__annual_indicators__annual_target')) | 
-                        Q(indicators__annual_indicators__annual_performance__isnull=True)
+                        Q(indicators__annual_indicators__annual_performance__lt=0.5 * F('indicators__annual_indicators__annual_target'))
                         ).aggregate(
                             low_performance=Coalesce(Count('indicators__annual_indicators'), 0)
                         )['low_performance']

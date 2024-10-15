@@ -433,9 +433,12 @@ $(document).ready(()=>{
           let directionColor = diff > 1 ? 'text-success' : diff >= 0 &&  diff == 0 ? 'text-dark': 'text-danger'
                 
           let hasTarget = indicator?.annual[0]?.annual_target ? 'primary' : 'secondary'
-          let score = indicator?.annual[0]?.score || 0
+          let score = indicator?.annual[0]?.score || 'None'
 
-          let performanceType = score > 70 ? 'good' : score > 50 ? 'average' : score > 50 ? 'poor' : 'nodata'
+          console.log(indicator.annual[0]?.score || 'NO')
+
+          let performanceType = score >= 70 ? 'good' :( score >= 50 ? 'average' : (score < 50 ? 'poor' : 'nodata'))
+
 
 
           return `
@@ -1356,17 +1359,16 @@ $(document).ready(()=>{
      $(document).on('click', "[name='performance-card']", async function(){
       let type = $(this).data('type')
 
-      //$('#showIndicator').prop('checked', true);
-
-      // let value = $('#showIndicator').prop('checked')
-      // value ? $("[name='indicator-lists']").removeClass('d-none') :  $("[name='indicator-lists']").addClass('d-none')
-      // $("[name='kra-lists']").toggleClass('mt-3 col-6', !value);
-      // console.log(type)
-      $("[name='kra-lists']").toggleClass('mt-3 col-6', false);    
+      $("[name='indicator-lists']").addClass('d-none')
+      $("[name='kra-lists']").removeClass('mt-3 col-6').addClass('d-none');  
+      $(`[name=${type}]`).parent().parent().prev().removeClass('d-none')
+      $(`[name=${type}]`).parent().parent().prev().prev().removeClass('d-none')
+      $(`[name=${type}]`).parent().parent().prev().prev().prev().removeClass('d-none')
       $(`[name=${type}]`).parent().removeClass('d-none')
     })
 
     $(document).on('change', '#showIndicator', async function () {
+      $("[name='kra-lists']").removeClass('d-none');  
       let value = $('#showIndicator').prop('checked')
       value ? $("[name='indicator-lists']").removeClass('d-none') :  $("[name='indicator-lists']").addClass('d-none')
       $("[name='kra-lists']").toggleClass('mt-3 col-6', !value);
