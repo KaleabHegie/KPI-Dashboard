@@ -328,7 +328,7 @@ $(document).ready(()=>{
     const modalIndicatorAnnualPlan = (data) => {
       let previous = 0
         let table = data.map((item) =>{
-          let diff = Math.floor(item.annual_performance - previous)
+          let diff = Math.floor(item.annual_performance - previous) 
           let direction = diff > 1 ? 'fa-arrow-up' : diff >= 0 &&  diff == 0 ? 'fa-arrow-right': 'fa-arrow-down'
           let directionColor = diff > 1 ? 'text-success' : diff >= 0 &&  diff == 0 ? 'text-dark': 'text-danger'
 
@@ -337,11 +337,11 @@ $(document).ready(()=>{
               <td>${item.year}</td>
               <td>${item.annual_target || 'None'}</td>
               <td>${item.annual_performance || 'None' }</td>
-              <td class="fw-bold" style="color: ${item.scorecard || 'red'}" >${item.score}</td>
-              <td class="${directionColor} fw-bold"> <i class="fas ${direction} fa-sm "></i> ${diff}</td>
-              <td class="${directionColor} fw-bold">${Math.floor((diff/previous)*100, 2) | "-"}%</td>
+              <td class="fw-bold" style="color: ${item.scorecard || 'red'}" >${item.score || 'None'}</td>
+              <td class="${item.annual_performance ? directionColor : 'text-danger'} fw-bold"> <i class="fas ${item.annual_performance ? direction : 'fa-arrow-down'} fa-sm "></i> ${item.annual_performance ? diff : 'None'}</td>
+              <td class="${item.annual_performance ? directionColor : 'text-danger'} fw-bold">${item.annual_performance && previous > 0 ? Math.floor((diff/previous)*100, 2) : "None"} %</td>
             </tr>
-            ${previous = item.annual_performance}
+            ${previous =  item.annual_performance || 0}
           `
         })
 
@@ -464,7 +464,7 @@ $(document).ready(()=>{
           let hasTarget = indicator?.annual[0]?.annual_target ? 'primary' : 'secondary'
           let score = indicator?.annual[0]?.score || 'None'
 
-          console.log(indicator.annual[0]?.score || 'NO')
+    
 
           let performanceType = score >= 70 ? 'good' :( score >= 50 ? 'average' : (score < 50 ? 'poor' : 'nodata'))
 

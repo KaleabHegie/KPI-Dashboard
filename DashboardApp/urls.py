@@ -55,6 +55,7 @@ urlpatterns = [
     path('api/ministry/ministry_kra_serializer/<str:ministry_id>/',MinistryDashboard.ministry_kra_serializer),
    
      #### RESET PASSWORD
+     
     #dashboard-pages/authentication/
     path('password_reset/', auth_views.PasswordResetView.as_view(template_name='dashboard-app/authentication/reset_password.html', form_class=UserPasswordResetForm), name='password_reset'),
     path('password_reset_done/', auth_views.PasswordResetDoneView.as_view(template_name='dashboard-app/authentication/password_reset_done.html'), name='password_reset_done'),
