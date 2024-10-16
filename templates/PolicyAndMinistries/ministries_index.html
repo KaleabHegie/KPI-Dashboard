@@ -25,7 +25,7 @@
         <div class="pc-content container-sm">
             {% include 'PolicyAndMinistries/include/navbar.html' %}
 
-            <div class="row justify-content-center gap-5 " id="dashboardInfo"></div>
+            <div class="row justify-content-center gap-4 " id="dashboardInfo"></div>
             <div class="container-sm">
                 <div class="row justify-content-end p-3">
                     <!--Filter Year and Quarter-->
@@ -52,11 +52,13 @@
             </div>
             <h2 class="ms-3 text-bold" id="year"></h2>
             <div class="row m-0" id="ministryCardLists"></div>
-            <div class="row m-0" id="ministryIndicatorShare"></div>
+            <div class="row m-0 justify-content-center">
+                <div class="col" id="ministryIndicatorShare"></div>
+            </div>
             <div class="row m-0" id="ministryKra"></div>
-            <div class="row m-0" id="ministryDashboard"></div>
+            <div class="row m-0 justify-content-center" id="ministryDashboard"></div>
             <div class="row m-0" id="policyAreaMainCard"></div>
-            <div class="row m-0 justify-content-center" id="goalShare"></div>
+            <div class="row m-0 justify-content-center" id="goalShare" style="height: 20px; width: 20px;"></div>
             <div class="row mt-5" id="kpiStatus"></div>
             <div class="row m-0" id="goalWithKraList"></div>
         </div>

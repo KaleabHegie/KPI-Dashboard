@@ -341,13 +341,13 @@ $(document).ready(() => {
       let color = randomColor();
 
       return `
-            <div class="col-md-4 col-lg-3 col-sm-5 col-xl-3">
-                <div class="card card-shadow" name="ministry-card" data-ministry="${ministry.id}" data-ministry-name="${ministry.responsible_ministry_eng}" data-ministry-image="${ministry.image}" data-color="${color}">
+            <div class="col-6 col-lg-3">
+                <div class="card card-shadow" style="height: 170px;" name="ministry-card" data-ministry="${ministry.id}" data-ministry-name="${ministry.responsible_ministry_eng}" data-ministry-image="${ministry.image}" data-color="${color}">
                     <div class="card-body">
                         <div class="row mt-3">
                             <div class="col-5">
                                 <div>
-                                    <img src="${ministry.image}" class="img-fluid" style="width: 70px; height: 70px;" alt="">
+                                    <img src="${ministry.image}" class="img-fluid" style="width: 70px;" alt="">
                                 </div>
                                 <div>
                                     <h4 class="mt-2">${ministry.code}</h4>
@@ -473,7 +473,7 @@ $(document).ready(() => {
           </div>
   
       
-      <div id="dash"class="col-md-12 col-lg-12 row mb-4">
+      <div id="dash" class="row justify-content-center mb-4">
       </div>
      
 
@@ -482,20 +482,20 @@ $(document).ready(() => {
     ministry_dashboard.dashboard.forEach((dashboard , index) => {
     $("#dash").append(
       `
-      <div class="col-md-3 col-lg-3">
-      <div  class="m-0 card bg-${colorList[index]}-500"">
-                                <div class="card-body p-3">
-                                    <div class="d-flex align-items-center justify-content-between">
-                                        <div>
-                                            <p class="mb-0 text-white text-opacity-75">${dashboard.title}</p>
-                                        </div>
-                                        <div class="avtar">
-                                            <h4 class="mb-0 text-white">${dashboard.value}</h4>
-                                        </div>
-                                </div>
-                      </div>
+      <div class="col-6 col-md-3 mt-2">
+        <div class="m-0 card bg-${colorList[index]}-500"">
+            <div class="card-body p-3">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <p class="mb-0 text-white text-opacity-75">${dashboard.title}</p>
+                    </div>
+                    <div class="avtar">
+                        <h4 class="mb-0 text-white">${dashboard.value}</h4>
+                    </div>
+            </div>
+          </div>
         </div>
-        </div>
+      </div>
 
       `
     )
@@ -725,37 +725,42 @@ $(document).ready(() => {
   `;
 
   let card2 = `
-  <div class="row col-lg-6 border shadow bg-teal-400 rounded justify-content-center mb-5">
-      <div class="col-md-6 col-xxl-3 mt-5" bis_skin_checked="1">
-          <div class="card shadow-none card-shadow border mb-3" style="height: 200px;" bis_skin_checked="1">
-              <div class="card-body p-3" bis_skin_checked="1">
-                  <div class="bg-primary p-3 pt-4 rounded-4 mt-3 align-items-bottom" bis_skin_checked="1">
+  <div class=" col-lg-6 border">
+
+    <div class="row bg-teal-400 rounded justify-content-center ">
+
+      <div class="col-md-4 p-3">
+          <div class="card" style="height: 200px;">
+              <div class="card-body p-3" >
+                <div class="bg-primary p-3 pt-4 rounded-4 mt-3 align-items-bottom">
                       <h3 class="text-center text-white">${data[0].count_has_performance}</h3>
                   </div>
                   <h6 class="mb-1 text-center mt-2">Indicators with performance</h6>
               </div>
           </div>
       </div>
-       <div class="col-md-6 col-xxl-3 mt-5" bis_skin_checked="1">
-          <div class="card shadow-none card-shadow border mb-3" style="height: 200px;" bis_skin_checked="1">
-              <div class="card-body p-3" bis_skin_checked="1">
-                  <div class="bg-warning p-3 pt-4 rounded-4 mt-3 align-items-bottom" bis_skin_checked="1">
+
+       <div class="col-md-4 p-3">
+          <div class="card" style="height: 200px;">
+              <div class="card-body p-3">
+                  <div class="bg-warning p-3 pt-4 rounded-4 mt-3 align-items-bottom">
                       <h3 class="text-center text-white">${data[0].count_has_no_performance}</h3>
                   </div>
                   <h6 class="mb-1 text-center mt-2">Indicators with target but no performance</h6>
               </div>
           </div>
       </div>
-       <div class="col-md-6 col-xxl-3 mt-5" bis_skin_checked="1">
-          <div class="card shadow-none card-shadow border mb-3" style="height: 200px;" bis_skin_checked="1">
-              <div class="card-body p-3" bis_skin_checked="1">
-                  <div class="bg-danger p-3 pt-4 rounded-4 mt-3 align-items-bottom" bis_skin_checked="1">
+       <div class="col-md-4 p-3">
+          <div class="card" style="height: 200px;">
+              <div class="card-body p-3">
+                  <div class="bg-danger p-3 pt-4 rounded-4 mt-3 align-items-bottom">
                       <h3 class="text-center text-white">${data[0].count_has_no_target}</h3>
                   </div>
                   <h6 class="mb-1 text-center mt-2">Indicators with out target</h6>
               </div>
           </div>
       </div>
+    </div>
 
   </div>
   `;
@@ -816,31 +821,35 @@ $(document).ready(() => {
        <h1 name="indicator-lists" class="d-none">Indicators</h1>
        <p name="indicator-lists" class="d-none fw-bold" >Click on an indicator for values, time series, and metadata.</p>
 
-        <div name="indicator-lists" class="d-none d-flex align-items-center">
-            <div class="flex-shrink-0">
-              <span class="p-2 d-block rounded-circle" style="background-color: #28A745; "></span>
-            </div>
-            <div class="pe-5"> &nbsp Very Good Performance</div>
+        <div name="indicator-lists" class="d-none row gap-2">
 
-            <div class="flex-shrink-0">
-              <span class="p-2 d-block rounded-circle " style="background-color: #8BC34A; "></span>
+            
+            <div class="col-md-2 d-flex align-items-center">
+                <div class="border rounded-circle d-flex" style="height: 20px; width: 20px; background-color: #28A745;"></div>
+                <div class="ms-2">Very Good Performance</div>
             </div>
-            <div class="pe-5"> &nbsp Good Performance</div>
+    
 
-            <div class="flex-shrink-0">
-              <span class="p-2 d-block rounded-circle " style="background-color: #FFC107; "></span>
+            <div class="col-md-2 d-flex align-items-center">
+                <div class="border rounded-circle d-flex" style="height: 20px; width: 20px; background-color: #8BC34A; "></div>
+                <div class="ms-2">&nbsp Good Performance</div>
             </div>
-            <div class="pe-5"> &nbsp Average Performance</div>
 
-            <div class="flex-shrink-0">
-              <span class="p-2 d-block rounded-circle " style="background-color: #FF9800; "></span>
+            <div class="col-md-2 d-flex align-items-center">
+                 <div class="border rounded-circle d-flex" style="height: 20px; width: 20px; background-color: #FFC107; "></div>
+                 <div class="ms-2">&nbsp Average Performance</div>
             </div>
-            <div class="pe-5"> &nbsp Low Performance</div>
 
-            <div class="flex-shrink-0">
-              <span class="p-2 d-block rounded-circle " style="background-color: #DC3545; "></span>
+            <div class="col-md-2 d-flex align-items-center">
+                 <div class="border rounded-circle d-flex" style="height: 20px; width: 20px; background-color: #FF9800; "></div>
+                 <div class="ms-2">&nbsp Low Performance</div>
             </div>
-            <div class="pe-5"> &nbsp Very Poor Performance</div>
+
+            <div class="col-md-2 d-flex align-items-center">
+                <div class="border rounded-circle d-flex" style="height: 20px; width: 20px; background-color: #DC3545; "></div>
+                <div class="ms-2">&nbsp Very Poor Performance</div>
+            </div>
+
         </div>
 
         <p name="indicator-lists" class="mt-4 d-none fw-bold" >Comparing with last year</p>
@@ -994,8 +1003,8 @@ $(document).ready(() => {
   let card = data.dashboard.map((card, index) =>{
     let color = randomColor()
     return`
-          <div class="col-md-4 col-lg-2 col-sm-5 col-xl-2">
-               <div  class="card social-widget-card bg-${color}-500" style="width:120%;margin-left:-40px;">
+          <div class="col-xl-2 m-0  " >
+               <div class="card social-widget-card p-0 m-0  border bg-${color}-500" style="width: 100%;" >
                    <div class="card-body">
                        <h2 class="text-white m-0">${card.value}</h2>
                        <span class="fw-bold">Total ${card.title}</span>
@@ -1270,6 +1279,7 @@ const ministryIndicatorShareClicked = async (ministry_id , ministry_name , minis
        <p name="indicator-lists" class="d-none fw-bold" >Click on an indicator for values, time series, and metadata.</p>
 
         <div name="indicator-lists" class="d-none d-flex align-items-center">
+        
             <div class="flex-shrink-0">
               <span class="p-2 d-block rounded-circle" style="background-color: #28A745; "></span>
             </div>
