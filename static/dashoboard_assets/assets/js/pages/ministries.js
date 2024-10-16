@@ -176,107 +176,109 @@ $(document).ready(() => {
     chart.render();
   };
 
-
-  const chartGauge2 = (id , percent) => {
-    
+  const chartGauge2 = (id, percent) => {
+    const isMobile = window.innerWidth < 768;  // Define a breakpoint for mobile
+    const chartHeight = isMobile ? '80%' : '60%'; // Larger height for mobile
+    const paneSize = isMobile ? '90%' : '140%'; // Adjust pane size for mobile
+    const labelFontSize = isMobile ? '10px' : '14px'; // Smaller font for mobile
+    const dataLabelFontSize = isMobile ? '12px' : '16px'; // Adjust data label font
+   
     Highcharts.chart(`chartdiv${id}`, {
       chart: {
-          type: 'gauge',
-          plotBackgroundColor: null,
-          plotBackgroundImage: null,
-          plotBorderWidth: 0,
-          plotShadow: false,
-          height: '35%',
-          backgroundColor: 'transparent',
+        type: 'gauge',
+        plotBackgroundColor: null,
+        plotBackgroundImage: null,
+        plotBorderWidth: 0,
+        plotShadow: false,
+        height: chartHeight, // Responsive height
+        backgroundColor: 'transparent',
       },
       credits: {
         enabled: false
       },
       title: {
-          text: ''
+        text: ''
       },
       pane: {
-          startAngle: -90,
-          endAngle: 89.9,
-          background: null,
-          center: ['50%', '75%'],
-          size: '130%'
+        startAngle: -90,
+        endAngle: 89.9,
+        background: null,
+        center: ['50%', '75%'],
+        size: paneSize // Responsive pane size
       },
       yAxis: {
-          min: 0,
-          max: 100,
-          tickPixelInterval: 30,
-          tickPosition: 'inside',
-          tickColor: '#fff',
-          tickLength: 20,
-          tickWidth: 2,
-          minorTickInterval: null,
-          labels: {
-              distance: 20,
-              style: {
-                  fontSize: '14px',
-                  color: '#fff'
-              }
-          },
-          lineWidth: 0,
-          plotBands: [{
-              from: 0,
-              to: 25,
-              text: 'Low',
-              color: '#DF5353', // red
-              thickness: 20,
-          }, {
-              from: 25,
-              to: 50,
-              color: '#ffa500', // orange
-              thickness: 20,
-          }, {
-              from: 50,
-              to: 75,
-              color: '#DDDF0D', // yellow
-              thickness: 20
-          }, {
-              from: 75,
-              to: 100,
-              color: '#55BF3B', // green
-              thickness: 20
-          }]
+        min: 0,
+        max: 100,
+        tickPixelInterval: 30,
+        tickPosition: 'inside',
+        tickColor: '#fff',
+        tickLength: 20,
+        tickWidth: 2,
+        minorTickInterval: null,
+        labels: {
+          distance: 20,
+          style: {
+            fontSize: labelFontSize, // Responsive label font size
+            color: '#fff'
+          }
+        },
+        lineWidth: 0,
+        plotBands: [{
+          from: 0,
+          to: 25,
+          color: '#DF5353', // red
+          thickness: 20,
+        }, {
+          from: 25,
+          to: 50,
+          color: '#ffa500', // orange
+          thickness: 20,
+        }, {
+          from: 50,
+          to: 75,
+          color: '#DDDF0D', // yellow
+          thickness: 20
+        }, {
+          from: 75,
+          to: 100,
+          color: '#55BF3B', // green
+          thickness: 20
+        }]
       },
       exporting: { enabled: false },
       series: [{
-          name: 'Average score',
-          data: [percent], // Only one data point
-          tooltip: {
-              valueSuffix: ''
-          },
-          dataLabels: {
-              format: '{y} ',
-              borderWidth: 0,
-              color: (
-                  Highcharts.defaultOptions.title &&
-                  Highcharts.defaultOptions.title.style &&
-                  Highcharts.defaultOptions.title.style.color
-              ) || '#333333',
-              style: {
-                  fontSize: '16px'
-              }
-          },
-          dial: {
-              radius: '80%',
-              backgroundColor: 'white',
-              baseWidth: 12,
-              baseLength: '0%',
-              rearLength: '0%'
-          },
-          pivot: {
-              backgroundColor: 'white',
-              radius: 6
+        name: 'Average score',
+        data: [Math.floor(percent)], // Only one data point
+        tooltip: {
+          valueSuffix: ''
+        },
+        dataLabels: {
+          format: '{y} ',
+          borderWidth: 0,
+          color: (
+            Highcharts.defaultOptions.title &&
+            Highcharts.defaultOptions.title.style &&
+            Highcharts.defaultOptions.title.style.color
+          ) || '#333333',
+          style: {
+            fontSize: dataLabelFontSize // Responsive data label font size
           }
+        },
+        dial: {
+          radius: '80%',
+          backgroundColor: 'white',
+          baseWidth: 12,
+          baseLength: '0%',
+          rearLength: '0%'
+        },
+        pivot: {
+          backgroundColor: 'white',
+          radius: 6
+        }
       }]
-  });
-
+    });
   }
-
+  
   const chartGauge = (id, percent) => {
     var options = {
       series: [percent],
@@ -516,8 +518,8 @@ $(document).ready(() => {
                         : "fa-tractor"
                     } text-white" style="font-size:80px"></i></div>
                 </div>
-                <div class="d-flex align-items-center h-75">
-                    <div class="col chartdiv" id="chartdiv${policy.id}"></div>
+                <div class="row justify-content-center ">
+                    <div class="col chartdiv  pt-5 w-100 h-100" id="chartdiv${policy.id}"></div>
                 </div>
             </div>
         </div>
