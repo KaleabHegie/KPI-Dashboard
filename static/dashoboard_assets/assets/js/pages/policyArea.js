@@ -366,13 +366,13 @@ $(document).ready(()=>{
             <div class="col-6 col-sm-4 col-xl-2">
             <div  class="card card-shadow  m-1 " data-policy-area="${area.id}" data-score="${avgScore}" data-color="${index}" name="policy-area-card">
                 <div class="row ">
-                    <div style="height: 150px; background-color: ${policyAreaColors[index]}" class="col-8 rounded-start rounded-start" >
+                    <div style="background-color: ${policyAreaColors[index]}" class="col-8 rounded-start rounded-start" >
                         <div class="row justify-content-center  mt-3 text-white">
                             <div class="col-2  p-0 m-0">
                                 <p class="fw-bold  p-0 m-0 ms-2" style="font-size: 11px;">${index+1}</p>
                             </div>
                             <div class="col-10 p-0 m-0 ">
-                                <p class="font-monospace p-0 m-0  text-start"  data-bs-toggle="tooltip" data-bs-placement="top" title="${area.policyAreaEng}" style="font-size: 9px;">${area.policyAreaEng}</p>
+                                <p class="font-monospace p-0 m-0  text-start"  data-bs-toggle="tooltip" data-bs-placement="top" title="${area.policyAreaEng}" style="font-size: 9px;">${area.policyAreaEng.length > 25 ?area.policyAreaEng.slice(0,25) + "..." : area.policyAreaEng }</p>
                             </div>
                         </div>
                         <div class="row mt-3">
@@ -390,6 +390,35 @@ $(document).ready(()=>{
             </div>
         </div>
             `
+
+        //     return`
+        //     <div class="col-6 col-sm-4 col-xl-2">
+        //     <div  class="card card-shadow  m-1 " data-policy-area="${area.id}" data-score="${avgScore}" data-color="${index}" name="policy-area-card">
+        //         <div class="row ">
+        //             <div style="height: 150px; background-color: ${policyAreaColors[index]}" class="col-8 rounded-start rounded-start" >
+        //                 <div class="row justify-content-center  mt-3 text-white">
+        //                     <div class="col-2  p-0 m-0">
+        //                         <p class="fw-bold  p-0 m-0 ms-2" style="font-size: 11px;">${index+1}</p>
+        //                     </div>
+        //                     <div class="col-10 p-0 m-0 ">
+        //                         <p class="font-monospace p-0 m-0  text-start"  data-bs-toggle="tooltip" data-bs-placement="top" title="${area.policyAreaEng}" style="font-size: 9px;">${area.policyAreaEng}</p>
+        //                     </div>
+        //                 </div>
+        //                 <div class="row mt-3">
+        //                     <i class="fas ${area.icon ? 'fa-'+area.icon.split(',')[1]:'fas fa-tractor'} fa-2x text-center text-white pb-4"></i>
+        //                 </div>
+
+        //             </div>
+        //             <div class="col-4 align-items-center d-flex">
+        //                 <div>
+        //                     <i class="fas ${direction}  fa-3x  text-center" style="color: ${area?.policy_area_score_card?.scorecard_color} "></i>
+        //                     <div class="text-center mt-2 p-1 " style="border-style: solid;  border-width: 1px; border-color: var(--bs-${color})">${Math.floor(area?.policy_area_score_card?.avg_score)}</div>
+        //                 </div>
+        //             </div>
+        //         </div>
+        //     </div>
+        // </div>
+        //     `
         })
 
         $("#policyAreaCardLists").html(card)
