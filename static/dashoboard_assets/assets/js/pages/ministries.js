@@ -178,7 +178,7 @@ $(document).ready(() => {
 
   const chartGauge2 = (id, percent) => {
     const isMobile = window.innerWidth < 768;  // Define a breakpoint for mobile
-    const chartHeight = isMobile ? '80%' : '60%'; // Larger height for mobile
+    const chartHeight = isMobile ? '60%' : '40%'; // Larger height for mobile
     const paneSize = isMobile ? '90%' : '140%'; // Adjust pane size for mobile
     const labelFontSize = isMobile ? '10px' : '14px'; // Smaller font for mobile
     const dataLabelFontSize = isMobile ? '12px' : '16px'; // Adjust data label font
