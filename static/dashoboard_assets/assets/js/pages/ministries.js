@@ -18,6 +18,34 @@ $(document).ready(() => {
     $("#"+divId).html(`<div class="row">${spinner}</div>`)
   }
 
+  const bgColorList = [
+    "#0f172a",  // Slate 900
+    "#b91c1c",  // Red 700
+    "#065f46",  // Emerald 800
+    "#1e3a8a",  // Blue 800
+    "#ca8a04",  // Yellow 600
+    "#0e7490",  // Cyan 700
+    "#7e22ce",  // Purple 800
+    "#374151",  // Gray 700
+    "#9f1239",  // Rose 700
+    "#713f12",  // Amber 800
+    "#312e81",  // Indigo 900
+    "#5b21b6",  // Violet 800
+    "#15803d",  // Green 700
+    "#7c2d12",  // Orange 800
+    "#be123c",  // Pink 700
+    "#166534",  // Green 800
+    "#4338ca",  // Indigo 700
+    "#6366f1",  // Indigo 500
+    "#1f2937",  // Gray 800
+    "#92400e",  // Orange 700
+    "#dc2626",  // Red 600
+    "#047857",  // Emerald 700
+    "#4a5568",  // Gray 600
+    "#075985"   // Sky 700
+  ];
+  
+
   const colorList = [
     "green",
     "red",
@@ -504,8 +532,8 @@ $(document).ready(() => {
       ministryData.forEach(async(policy) => {
         let policyAreaCard = `
         <div class="col-md-6 col-lg-6" style="margin-bottom: 50px">
-        <div class="card bg-gray-900 h-100 dropbox-card" data-ministryId="${ministry_id}">
-            <div class="card-body">
+        <div style="background-color: ${bgColorList[Math.floor(Math.random() * bgColorList.length)]}" class="card h-100 dropbox-card" data-ministryId="${ministry_id}">
+           <div class="card-body">
                 <div class="d-flex align-items-center justify-content-between">
                     <h5 class="text-white">${
                       policy.policyAreaEng
@@ -533,7 +561,7 @@ $(document).ready(() => {
                 </div>
         `
       )
-      chartGauge2(policy.id , policy.ministry_policy_area_score_card.avg_score); 
+      chartGauge2(policy.id , Math.floor(policy.ministry_policy_area_score_card.avg_score*100)/ 100 ); 
       
       letGoalTest =  await goalListCard(ministry_id, policy.id , color , policy.policyAreaEng)
         // Display goals for the policy
@@ -579,7 +607,7 @@ $(document).ready(() => {
 
       let policyAreaCard = `
                 <div class="col-md-6 col-lg-6" style="margin-bottom: 50px;">
-                    <div class="card bg-gray-900 dropbox-card" data-ministryId="${ministry_id}">
+                    <div style="background-color: ${bgColorList[Math.floor(Math.random() * bgColorList.length)]}" class="card dropbox-card" data-ministryId="${ministry_id}">
                         <div class="card-body" style="height:350px;">
                             <div class="d-flex align-items-center justify-content-between">
                                 <h5 class="text-white">${
@@ -659,7 +687,7 @@ $(document).ready(() => {
 }
 
   const kpiStatuesGraph = async (per) => {
-
+  console.log(per)  
   var options = {
     series: per,
     labels: [`High Performance ${[per[0]]}`, `Average Performance ${[per[1]]}`, `Low Performance ${[per[2]]}`],
@@ -716,6 +744,7 @@ $(document).ready(() => {
     let url = `/api/ministry/ministry_with_policy_area/${ministry_id}${type == 'year' ? '?year='+typeValue : '?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`
    
     let data = await fetchData(url)
+    console.log(data)
   $('#kpiStatus').html(``)
   let card = `
   <div class="row col-lg-6 justify-content-center">
