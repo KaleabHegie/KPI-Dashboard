@@ -204,107 +204,109 @@ $(document).ready(() => {
     chart.render();
   };
 
-
-  const chartGauge2 = (id , percent) => {
-    
+  const chartGauge2 = (id, percent) => {
+    const isMobile = window.innerWidth < 768;  // Define a breakpoint for mobile
+    const chartHeight = isMobile ? '60%' : '40%'; // Larger height for mobile
+    const paneSize = isMobile ? '90%' : '140%'; // Adjust pane size for mobile
+    const labelFontSize = isMobile ? '10px' : '14px'; // Smaller font for mobile
+    const dataLabelFontSize = isMobile ? '12px' : '16px'; // Adjust data label font
+   
     Highcharts.chart(`chartdiv${id}`, {
       chart: {
-          type: 'gauge',
-          plotBackgroundColor: null,
-          plotBackgroundImage: null,
-          plotBorderWidth: 0,
-          plotShadow: false,
-          height: '35%',
-          backgroundColor: 'transparent',
+        type: 'gauge',
+        plotBackgroundColor: null,
+        plotBackgroundImage: null,
+        plotBorderWidth: 0,
+        plotShadow: false,
+        height: chartHeight, // Responsive height
+        backgroundColor: 'transparent',
       },
       credits: {
         enabled: false
       },
       title: {
-          text: ''
+        text: ''
       },
       pane: {
-          startAngle: -90,
-          endAngle: 89.9,
-          background: null,
-          center: ['50%', '75%'],
-          size: '130%'
+        startAngle: -90,
+        endAngle: 89.9,
+        background: null,
+        center: ['50%', '75%'],
+        size: paneSize // Responsive pane size
       },
       yAxis: {
-          min: 0,
-          max: 100,
-          tickPixelInterval: 30,
-          tickPosition: 'inside',
-          tickColor: '#fff',
-          tickLength: 20,
-          tickWidth: 2,
-          minorTickInterval: null,
-          labels: {
-              distance: 20,
-              style: {
-                  fontSize: '14px',
-                  color: '#fff'
-              }
-          },
-          lineWidth: 0,
-          plotBands: [{
-              from: 0,
-              to: 25,
-              text: 'Low',
-              color: '#DF5353', // red
-              thickness: 20,
-          }, {
-              from: 25,
-              to: 50,
-              color: '#ffa500', // orange
-              thickness: 20,
-          }, {
-              from: 50,
-              to: 75,
-              color: '#DDDF0D', // yellow
-              thickness: 20
-          }, {
-              from: 75,
-              to: 100,
-              color: '#55BF3B', // green
-              thickness: 20
-          }]
+        min: 0,
+        max: 100,
+        tickPixelInterval: 30,
+        tickPosition: 'inside',
+        tickColor: '#fff',
+        tickLength: 20,
+        tickWidth: 2,
+        minorTickInterval: null,
+        labels: {
+          distance: 20,
+          style: {
+            fontSize: labelFontSize, // Responsive label font size
+            color: '#fff'
+          }
+        },
+        lineWidth: 0,
+        plotBands: [{
+          from: 0,
+          to: 25,
+          color: '#DF5353', // red
+          thickness: 20,
+        }, {
+          from: 25,
+          to: 50,
+          color: '#ffa500', // orange
+          thickness: 20,
+        }, {
+          from: 50,
+          to: 75,
+          color: '#DDDF0D', // yellow
+          thickness: 20
+        }, {
+          from: 75,
+          to: 100,
+          color: '#55BF3B', // green
+          thickness: 20
+        }]
       },
       exporting: { enabled: false },
       series: [{
-          name: 'Average score',
-          data: [percent], // Only one data point
-          tooltip: {
-              valueSuffix: ''
-          },
-          dataLabels: {
-              format: '{y} ',
-              borderWidth: 0,
-              color: (
-                  Highcharts.defaultOptions.title &&
-                  Highcharts.defaultOptions.title.style &&
-                  Highcharts.defaultOptions.title.style.color
-              ) || '#333333',
-              style: {
-                  fontSize: '16px'
-              }
-          },
-          dial: {
-              radius: '80%',
-              backgroundColor: 'white',
-              baseWidth: 12,
-              baseLength: '0%',
-              rearLength: '0%'
-          },
-          pivot: {
-              backgroundColor: 'white',
-              radius: 6
+        name: 'Average score',
+        data: [Math.floor(percent)], // Only one data point
+        tooltip: {
+          valueSuffix: ''
+        },
+        dataLabels: {
+          format: '{y} ',
+          borderWidth: 0,
+          color: (
+            Highcharts.defaultOptions.title &&
+            Highcharts.defaultOptions.title.style &&
+            Highcharts.defaultOptions.title.style.color
+          ) || '#333333',
+          style: {
+            fontSize: dataLabelFontSize // Responsive data label font size
           }
+        },
+        dial: {
+          radius: '80%',
+          backgroundColor: 'white',
+          baseWidth: 12,
+          baseLength: '0%',
+          rearLength: '0%'
+        },
+        pivot: {
+          backgroundColor: 'white',
+          radius: 6
+        }
       }]
-  });
-
+    });
   }
-
+  
   const chartGauge = (id, percent) => {
     var options = {
       series: [percent],
@@ -369,13 +371,13 @@ $(document).ready(() => {
       let color = randomColor();
 
       return `
-            <div class="col-md-4 col-lg-3 col-sm-5 col-xl-3">
-                <div class="card card-shadow" name="ministry-card" data-ministry="${ministry.id}" data-ministry-name="${ministry.responsible_ministry_eng}" data-ministry-image="${ministry.image}" data-color="${color}">
+            <div class="col-6 col-lg-3">
+                <div class="card card-shadow" style="height: 170px;" name="ministry-card" data-ministry="${ministry.id}" data-ministry-name="${ministry.responsible_ministry_eng}" data-ministry-image="${ministry.image}" data-color="${color}">
                     <div class="card-body">
                         <div class="row mt-3">
                             <div class="col-5">
                                 <div>
-                                    <img src="${ministry.image}" class="img-fluid" style="width: 70px; height: 70px;" alt="">
+                                    <img src="${ministry.image}" class="img-fluid" style="width: 70px;" alt="">
                                 </div>
                                 <div>
                                     <h4 class="mt-2">${ministry.code}</h4>
@@ -441,7 +443,7 @@ $(document).ready(() => {
     let card = goals.policy_area_goal.map((goal) => {
       let avgScoreWidth = goal.ministry_strategic_goal_score_card.avg_score.toFixed(2);
       return `
-      <div class="col-md-6 col-lg-6">
+      <div class="col-md-6">
       <div class="card card-shadow" style="height: 170px; border-style: solid; border-width: 1px; border-color: var(--bs-${color})" name="goal-card" data-goal="${goal.id}" data-goal-name="${goal.goal_name_eng}" data-color="${color}" data-ministryId="${ministry_id}">
           <div class="card-body">
               <div class="h-100">
@@ -501,7 +503,7 @@ $(document).ready(() => {
           </div>
   
       
-      <div id="dash"class="col-md-12 col-lg-12 row mb-4">
+      <div id="dash" class="row justify-content-center mb-4">
       </div>
      
 
@@ -510,20 +512,20 @@ $(document).ready(() => {
     ministry_dashboard.dashboard.forEach((dashboard , index) => {
     $("#dash").append(
       `
-      <div class="col-md-3 col-lg-3">
-      <div  class="m-0 card bg-${colorList[index]}-500"">
-                                <div class="card-body p-3">
-                                    <div class="d-flex align-items-center justify-content-between">
-                                        <div>
-                                            <p class="mb-0 text-white text-opacity-75">${dashboard.title}</p>
-                                        </div>
-                                        <div class="avtar">
-                                            <h4 class="mb-0 text-white">${dashboard.value}</h4>
-                                        </div>
-                                </div>
-                      </div>
+      <div class="col-6 col-md-3 mt-2">
+        <div class="m-0 card bg-${colorList[index]}-500"">
+            <div class="card-body p-3">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <p class="mb-0 text-white text-opacity-75">${dashboard.title}</p>
+                    </div>
+                    <div class="avtar">
+                        <h4 class="mb-0 text-white">${dashboard.value}</h4>
+                    </div>
+            </div>
+          </div>
         </div>
-        </div>
+      </div>
 
       `
     )
@@ -531,7 +533,7 @@ $(document).ready(() => {
     if (ministryData.length == 1) {
       ministryData.forEach(async(policy) => {
         let policyAreaCard = `
-        <div class="col-md-6 col-lg-6" style="margin-bottom: 50px">
+        <div class=" col-lg-6" style="margin-bottom: 50px">
         <div style="background-color: ${bgColorList[Math.floor(Math.random() * bgColorList.length)]}" class="card h-100 dropbox-card" data-ministryId="${ministry_id}">
            <div class="card-body">
                 <div class="d-flex align-items-center justify-content-between">
@@ -544,8 +546,8 @@ $(document).ready(() => {
                         : "fa-tractor"
                     } text-white" style="font-size:80px"></i></div>
                 </div>
-                <div class="d-flex align-items-center h-75">
-                    <div class="col chartdiv" id="chartdiv${policy.id}"></div>
+                <div class="row justify-content-center ">
+                    <div class="col chartdiv  pt-5 w-100 h-100" id="chartdiv${policy.id}"></div>
                 </div>
             </div>
         </div>
@@ -566,7 +568,7 @@ $(document).ready(() => {
       letGoalTest =  await goalListCard(ministry_id, policy.id , color , policy.policyAreaEng)
         // Display goals for the policy
         $("#policyAreaMainCard").append(`
-                  <div class="col-md-6 col-lg-6" style="margin-bottom: 50px">
+                  <div class="" style="margin-bottom: 50px">
                       <h3>Goals</h3>
                       <div class="row h-100 mt-3">
                        ${letGoalTest}
@@ -598,7 +600,7 @@ $(document).ready(() => {
       letGoalTest =  await goalListCard(ministry_id, policy.id , color , policy.policyAreaEng)
       
       let goalListCardHtml = `
-      <div class="col-md-6 col-lg-12" style="margin-bottom: 50px">
+      <div class="" style="margin-bottom: 50px">
          <h3>Goals</h3>
               <div class="row h-100 mt-3">
                ${letGoalTest}
@@ -606,7 +608,7 @@ $(document).ready(() => {
       </div>`
 
       let policyAreaCard = `
-                <div class="col-md-6 col-lg-6" style="margin-bottom: 50px;">
+                <div class="col-lg-6" style="margin-bottom: 50px;">
                     <div style="background-color: ${bgColorList[Math.floor(Math.random() * bgColorList.length)]}" class="card dropbox-card" data-ministryId="${ministry_id}">
                         <div class="card-body" style="height:350px;">
                             <div class="d-flex align-items-center justify-content-between">
@@ -754,37 +756,42 @@ $(document).ready(() => {
   `;
 
   let card2 = `
-  <div class="row col-lg-6 border shadow bg-teal-400 rounded justify-content-center mb-5">
-      <div class="col-md-6 col-xxl-3 mt-5" bis_skin_checked="1">
-          <div class="card shadow-none card-shadow border mb-3" style="height: 200px;" bis_skin_checked="1">
-              <div class="card-body p-3" bis_skin_checked="1">
-                  <div class="bg-primary p-3 pt-4 rounded-4 mt-3 align-items-bottom" bis_skin_checked="1">
+  <div class=" col-lg-6 border">
+
+    <div class="row bg-teal-400 rounded justify-content-center ">
+
+      <div class="col-md-4 p-3">
+          <div class="card" style="height: 200px;">
+              <div class="card-body p-3" >
+                <div class="bg-primary p-3 pt-4 rounded-4 mt-3 align-items-bottom">
                       <h3 class="text-center text-white">${data[0].count_has_performance}</h3>
                   </div>
                   <h6 class="mb-1 text-center mt-2">Indicators with performance</h6>
               </div>
           </div>
       </div>
-       <div class="col-md-6 col-xxl-3 mt-5" bis_skin_checked="1">
-          <div class="card shadow-none card-shadow border mb-3" style="height: 200px;" bis_skin_checked="1">
-              <div class="card-body p-3" bis_skin_checked="1">
-                  <div class="bg-warning p-3 pt-4 rounded-4 mt-3 align-items-bottom" bis_skin_checked="1">
+
+       <div class="col-md-4 p-3">
+          <div class="card" style="height: 200px;">
+              <div class="card-body p-3">
+                  <div class="bg-warning p-3 pt-4 rounded-4 mt-3 align-items-bottom">
                       <h3 class="text-center text-white">${data[0].count_has_no_performance}</h3>
                   </div>
                   <h6 class="mb-1 text-center mt-2">Indicators with target but no performance</h6>
               </div>
           </div>
       </div>
-       <div class="col-md-6 col-xxl-3 mt-5" bis_skin_checked="1">
-          <div class="card shadow-none card-shadow border mb-3" style="height: 200px;" bis_skin_checked="1">
-              <div class="card-body p-3" bis_skin_checked="1">
-                  <div class="bg-danger p-3 pt-4 rounded-4 mt-3 align-items-bottom" bis_skin_checked="1">
+       <div class="col-md-4 p-3">
+          <div class="card" style="height: 200px;">
+              <div class="card-body p-3">
+                  <div class="bg-danger p-3 pt-4 rounded-4 mt-3 align-items-bottom">
                       <h3 class="text-center text-white">${data[0].count_has_no_target}</h3>
                   </div>
                   <h6 class="mb-1 text-center mt-2">Indicators with out target</h6>
               </div>
           </div>
       </div>
+    </div>
 
   </div>
   `;
@@ -845,31 +852,35 @@ $(document).ready(() => {
        <h1 name="indicator-lists" class="d-none">Indicators</h1>
        <p name="indicator-lists" class="d-none fw-bold" >Click on an indicator for values, time series, and metadata.</p>
 
-        <div name="indicator-lists" class="d-none d-flex align-items-center">
-            <div class="flex-shrink-0">
-              <span class="p-2 d-block rounded-circle" style="background-color: #28A745; "></span>
-            </div>
-            <div class="pe-5"> &nbsp Very Good Performance</div>
+        <div name="indicator-lists" class="d-none row gap-2">
 
-            <div class="flex-shrink-0">
-              <span class="p-2 d-block rounded-circle " style="background-color: #8BC34A; "></span>
+            
+            <div class="col-md-2 d-flex align-items-center">
+                <div class="border rounded-circle d-flex" style="height: 20px; width: 20px; background-color: #28A745;"></div>
+                <div class="ms-2">Very Good Performance</div>
             </div>
-            <div class="pe-5"> &nbsp Good Performance</div>
+    
 
-            <div class="flex-shrink-0">
-              <span class="p-2 d-block rounded-circle " style="background-color: #FFC107; "></span>
+            <div class="col-md-2 d-flex align-items-center">
+                <div class="border rounded-circle d-flex" style="height: 20px; width: 20px; background-color: #8BC34A; "></div>
+                <div class="ms-2">&nbsp Good Performance</div>
             </div>
-            <div class="pe-5"> &nbsp Average Performance</div>
 
-            <div class="flex-shrink-0">
-              <span class="p-2 d-block rounded-circle " style="background-color: #FF9800; "></span>
+            <div class="col-md-2 d-flex align-items-center">
+                 <div class="border rounded-circle d-flex" style="height: 20px; width: 20px; background-color: #FFC107; "></div>
+                 <div class="ms-2">&nbsp Average Performance</div>
             </div>
-            <div class="pe-5"> &nbsp Low Performance</div>
 
-            <div class="flex-shrink-0">
-              <span class="p-2 d-block rounded-circle " style="background-color: #DC3545; "></span>
+            <div class="col-md-2 d-flex align-items-center">
+                 <div class="border rounded-circle d-flex" style="height: 20px; width: 20px; background-color: #FF9800; "></div>
+                 <div class="ms-2">&nbsp Low Performance</div>
             </div>
-            <div class="pe-5"> &nbsp Very Poor Performance</div>
+
+            <div class="col-md-2 d-flex align-items-center">
+                <div class="border rounded-circle d-flex" style="height: 20px; width: 20px; background-color: #DC3545; "></div>
+                <div class="ms-2">&nbsp Very Poor Performance</div>
+            </div>
+
         </div>
 
         <p name="indicator-lists" class="mt-4 d-none fw-bold" >Comparing with last year</p>
@@ -972,7 +983,7 @@ $(document).ready(() => {
   const modalIndicatorAnnualPlan = (data) => {
     let previous = 0
       let table = data.map((item) =>{
-        let diff = Math.floor(item.annual_performance - previous)
+        let diff = Math.floor(item.annual_performance - previous) 
         let direction = diff > 1 ? 'fa-arrow-up' : diff >= 0 &&  diff == 0 ? 'fa-arrow-right': 'fa-arrow-down'
         let directionColor = diff > 1 ? 'text-success' : diff >= 0 &&  diff == 0 ? 'text-dark': 'text-danger'
 
@@ -981,16 +992,17 @@ $(document).ready(() => {
             <td>${item.year}</td>
             <td>${item.annual_target || 'None'}</td>
             <td>${item.annual_performance || 'None' }</td>
-            <td class="fw-bold" style="color: ${item.scorecard || 'red'}" >${item.score}</td>
-            <td class="${directionColor} fw-bold"> <i class="fas ${direction} fa-sm "></i> ${diff}</td>
-            <td class="${directionColor} fw-bold">${Math.floor((diff/previous)*100, 2) | "-"}%</td>
+            <td class="fw-bold" style="color: ${item.scorecard || 'red'}" >${item.score || 'None'}</td>
+            <td class="${item.annual_performance ? directionColor : 'text-danger'} fw-bold"> <i class="fas ${item.annual_performance ? direction : 'fa-arrow-down'} fa-sm "></i> ${item.annual_performance ? diff : 'None'}</td>
+            <td class="${item.annual_performance ? directionColor : 'text-danger'} fw-bold">${item.annual_performance && previous > 0 ? Math.floor((diff/previous)*100, 2) : "None"} %</td>
           </tr>
-          ${previous = item.annual_performance}
+          ${previous =  item.annual_performance || 0}
         `
       })
 
       $("#modalAnnualPlanTable").html(table)
   }
+
 
   const indicatorModal = (title, data) =>{
     $('#indicatorModalLabel').html(title)
@@ -1023,8 +1035,8 @@ $(document).ready(() => {
   let card = data.dashboard.map((card, index) =>{
     let color = randomColor()
     return`
-          <div class="col-md-4 col-lg-2 col-sm-5 col-xl-2">
-               <div  class="card social-widget-card bg-${color}-500" style="width:120%;margin-left:-40px;">
+          <div class="col-xl-2 m-0  " >
+               <div class="card social-widget-card p-0 m-0  border bg-${color}-500" style="width: 100%;" >
                    <div class="card-body">
                        <h2 class="text-white m-0">${card.value}</h2>
                        <span class="fw-bold">Total ${card.title}</span>
@@ -1299,6 +1311,7 @@ $(document).ready(() => {
        <p name="indicator-lists" class="d-none fw-bold" >Click on an indicator for values, time series, and metadata.</p>
 
         <div name="indicator-lists" class="d-none d-flex align-items-center">
+        
             <div class="flex-shrink-0">
               <span class="p-2 d-block rounded-circle" style="background-color: #28A745; "></span>
             </div>

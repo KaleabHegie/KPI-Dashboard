@@ -127,7 +127,7 @@ class PolicyArea(models.Model):
               
                 # Use cached strategic_goal_score_card to avoid repeated scorecard calculation
                 if quarter and year:
-                    single_goal = goal.strategic_goal_score_card(year=year)
+                    single_goal = goal.strategic_goal_score_card(year=year, quarter=quarter)
                     
                     score = score + single_goal['sum_score']
                     total_goal_weight = total_goal_weight + single_goal['total_kra_weight']

@@ -136,14 +136,13 @@ $(document).ready(()=>{
     }
 
     const performanceAnalysisCard = (data) =>{
-      console.log(data)
 
       $("#performanceAnalysis").html('')
       
       data.forEach((item,index) =>{
         let card = `
         <div class="col-md-3">
-          <div name="performance-card" data-type="${item.type || 'mike'}" class="card card-shadow social-widget-card text-dark" data-bs-toggle="modal" data-bs-target="#performanceDetailModal">
+          <div name="performance-card" data-type="${item?.type}" class="card card-shadow social-widget-card text-dark">
             <div class="card-body m-0">
                 <div class="row justify-content-center">
                     <div class="col-5">
@@ -162,53 +161,6 @@ $(document).ready(()=>{
         performanceAnalysisPieChart(`total-performance-graph-${index}`, item?.percentage || 0, item.color)
     
       })
-
-
-      //handle on click 
-      $(document).on('click', "[name='performance-card']", async function(){
-        let type = $(this).data('type')
-        let selectedData = data.find((item) => item.type === type)
-
-        console.log(selectedData)
-        $("#performanceDetailModalLabel").html(selectedData?.title)
-
-
-        const indicatorLists = selectedData?.data?.map((item) => {
-          return `
-              <div name="indicator-lists" class="col-lg-4 mt-1">
-                  <div>
-                      <div class="d-flex align-items-center">
-                          <div class="flex-shrink-0">
-                              <span class="p-2 d-block rounded-circle" style="font-size: 22px; background-color:${item?.annual[0]?.annual_target ? item?.annual[0]?.scorecard || 'gray' : 'gray'}"></span>
-                          </div>
-                          <div class="flex-grow-1 mx-2">
-                              <button name="indicator-btn" 
-                                      data-indicator-name="${item?.kpi_name_eng}"  
-                                      data-indicator-id="${item?.id}" 
-                                      class="btn btn-link-secondary mb-0 d-grid text-start" 
-                                      type="button" 
-                                      data-bs-toggle="modal" 
-                                      data-bs-target="#indicatorModal" 
-                                      aria-controls="offcanvasExample">
-                                  <span class="w-100" data-bs-toggle="tooltip" data-bs-placement="top" title="${item?.kpi_name_eng}">${item?.kpi_name_eng?.length > 25 || 0 ? item?.kpi_name_eng?.slice(0,25) + '...' : item?.kpi_name_eng}</span>
-                              </button>
-                          </div>
-                          <div class="badge bg-light-secondary f-12">${item.annual[0]?.score || 'None'}</div>
-                      </div>
-                  </div>
-              </div>
-          `;
-      }).join(''); // Join array into a single HTML string
-      
-      // Insert the generated HTML into the modal body
-      $("#performanceDetailBody").html(indicatorLists || '<h3 class="text-center text-danger">No data</h3>');
-            
-      })
-
-       
-     
-     
-
     }
     const chartProgress = (percent) =>{
       $(`#chart-progress-policy-area`).html('')
@@ -376,7 +328,7 @@ $(document).ready(()=>{
     const modalIndicatorAnnualPlan = (data) => {
       let previous = 0
         let table = data.map((item) =>{
-          let diff = Math.floor(item.annual_performance - previous)
+          let diff = Math.floor(item.annual_performance - previous) 
           let direction = diff > 1 ? 'fa-arrow-up' : diff >= 0 &&  diff == 0 ? 'fa-arrow-right': 'fa-arrow-down'
           let directionColor = diff > 1 ? 'text-success' : diff >= 0 &&  diff == 0 ? 'text-dark': 'text-danger'
 
@@ -385,11 +337,11 @@ $(document).ready(()=>{
               <td>${item.year}</td>
               <td>${item.annual_target || 'None'}</td>
               <td>${item.annual_performance || 'None' }</td>
-              <td class="fw-bold" style="color: ${item.scorecard || 'red'}" >${item.score}</td>
-              <td class="${directionColor} fw-bold"> <i class="fas ${direction} fa-sm "></i> ${diff}</td>
-              <td class="${directionColor} fw-bold">${Math.floor((diff/previous)*100, 2) | "-"}%</td>
+              <td class="fw-bold" style="color: ${item.scorecard || 'red'}" >${item.score || 'None'}</td>
+              <td class="${item.annual_performance ? directionColor : 'text-danger'} fw-bold"> <i class="fas ${item.annual_performance ? direction : 'fa-arrow-down'} fa-sm "></i> ${item.annual_performance ? diff : 'None'}</td>
+              <td class="${item.annual_performance ? directionColor : 'text-danger'} fw-bold">${item.annual_performance && previous > 0 ? Math.floor((diff/previous)*100, 2) : "None"} %</td>
             </tr>
-            ${previous = item.annual_performance}
+            ${previous =  item.annual_performance || 0}
           `
         })
 
@@ -414,13 +366,13 @@ $(document).ready(()=>{
             <div class="col-6 col-sm-4 col-xl-2">
             <div  class="card card-shadow  m-1 " data-policy-area="${area.id}" data-score="${avgScore}" data-color="${index}" name="policy-area-card">
                 <div class="row ">
-                    <div style="height: 150px; background-color: ${policyAreaColors[index]}" class="col-8 rounded-start rounded-start" >
+                    <div style="background-color: ${policyAreaColors[index]}" class="col-8 rounded-start rounded-start" >
                         <div class="row justify-content-center  mt-3 text-white">
                             <div class="col-2  p-0 m-0">
                                 <p class="fw-bold  p-0 m-0 ms-2" style="font-size: 11px;">${index+1}</p>
                             </div>
                             <div class="col-10 p-0 m-0 ">
-                                <p class="font-monospace p-0 m-0  text-start"  data-bs-toggle="tooltip" data-bs-placement="top" title="${area.policyAreaEng}" style="font-size: 9px;">${area.policyAreaEng}</p>
+                                <p class="font-monospace p-0 m-0  text-start"  data-bs-toggle="tooltip" data-bs-placement="top" title="${area.policyAreaEng}" style="font-size: 9px;">${area.policyAreaEng.length > 25 ?area.policyAreaEng.slice(0,25) + "..." : area.policyAreaEng }</p>
                             </div>
                         </div>
                         <div class="row mt-3">
@@ -438,6 +390,35 @@ $(document).ready(()=>{
             </div>
         </div>
             `
+
+        //     return`
+        //     <div class="col-6 col-sm-4 col-xl-2">
+        //     <div  class="card card-shadow  m-1 " data-policy-area="${area.id}" data-score="${avgScore}" data-color="${index}" name="policy-area-card">
+        //         <div class="row ">
+        //             <div style="height: 150px; background-color: ${policyAreaColors[index]}" class="col-8 rounded-start rounded-start" >
+        //                 <div class="row justify-content-center  mt-3 text-white">
+        //                     <div class="col-2  p-0 m-0">
+        //                         <p class="fw-bold  p-0 m-0 ms-2" style="font-size: 11px;">${index+1}</p>
+        //                     </div>
+        //                     <div class="col-10 p-0 m-0 ">
+        //                         <p class="font-monospace p-0 m-0  text-start"  data-bs-toggle="tooltip" data-bs-placement="top" title="${area.policyAreaEng}" style="font-size: 9px;">${area.policyAreaEng}</p>
+        //                     </div>
+        //                 </div>
+        //                 <div class="row mt-3">
+        //                     <i class="fas ${area.icon ? 'fa-'+area.icon.split(',')[1]:'fas fa-tractor'} fa-2x text-center text-white pb-4"></i>
+        //                 </div>
+
+        //             </div>
+        //             <div class="col-4 align-items-center d-flex">
+        //                 <div>
+        //                     <i class="fas ${direction}  fa-3x  text-center" style="color: ${area?.policy_area_score_card?.scorecard_color} "></i>
+        //                     <div class="text-center mt-2 p-1 " style="border-style: solid;  border-width: 1px; border-color: var(--bs-${color})">${Math.floor(area?.policy_area_score_card?.avg_score)}</div>
+        //                 </div>
+        //             </div>
+        //         </div>
+        //     </div>
+        // </div>
+        //     `
         })
 
         $("#policyAreaCardLists").html(card)
@@ -479,12 +460,19 @@ $(document).ready(()=>{
           let diff = Math.floor(indicator?.annual[0]?.annual_performance - previousIndicator?.annual_performance)
           let direction = diff > 1 ? 'fa-arrow-up' : diff >= 0 &&  diff == 0 ? 'fa-arrow-right': 'fa-arrow-down'
           let directionColor = diff > 1 ? 'text-success' : diff >= 0 &&  diff == 0 ? 'text-dark': 'text-danger'
-      
+                
           let hasTarget = indicator?.annual[0]?.annual_target ? 'primary' : 'secondary'
-          let score = indicator?.annual[0]?.score || 0
+          let score = indicator?.annual[0]?.score || 'None'
+
+    
+
+          let performanceType = score >= 70 ? 'good' :( score >= 50 ? 'average' : (score < 50 ? 'poor' : 'nodata'))
+
+
+
           return `
               <div name="indicator-lists" class="col-lg-4 mt-1 d-none">
-                  <div>
+                  <div name="${performanceType}">
                       <div class="d-flex align-items-center">
                           <div class="flex-shrink-0">
                             <span class="p-2 d-block rounded-circle"  style=" font-size: 22px; background-color: ${indicator?.annual[0]?.annual_target ? indicator?.annual[0]?.scorecard || 'red' : 'gray'}"></span>
@@ -1087,32 +1075,28 @@ $(document).ready(()=>{
         value : data?.good_performance?.performance || 0,
         percentage : data?.good_performance?.percentage || 0,
         color : '#2ca87f',
-        data : data?.good_performance?.data,
-        type : 'good' //don't change it for modal detail
+        type : 'good' //don't change it, it's for filter
       },
       {
         title : 'Average Performance',
         value : data?.average_performance?.performance || 0,
         percentage : data?.average_performance?.percentage || 0,
         color : '#ffc107',
-        data : data?.average_performance?.data,
-        type : 'average' //don't change it for modal detail
+        type : 'average' //don't change it, it's for filter
       },
       {
         title : 'Poor Performance',
         value : data?.poor_performance?.performance || 0,
         percentage : data?.poor_performance?.percentage || 0,
         color : '#dc2626',
-        data : data?.poor_performance?.data,
-        type : 'poor' //don't change it for modal detail
+        type : 'poor' //don't change it, it's for filter
       },
       {
         title : 'No data',
         value : data?.no_performance?.performance || 0,
         percentage : data?.no_performance?.percentage || 0,
         color : '#6c757d',
-        data : data?.no_performance?.data,
-        type : 'nodata' //don't change it for modal detail
+        type : 'nodata' //don't change it, it's for filter
       },
       
     ]
@@ -1400,7 +1384,20 @@ $(document).ready(()=>{
 
     handleAutoComplete()
 
+     //handle on click 
+     $(document).on('click', "[name='performance-card']", async function(){
+      let type = $(this).data('type')
+
+      $("[name='indicator-lists']").addClass('d-none')
+      $("[name='kra-lists']").removeClass('mt-3 col-6').addClass('d-none');  
+      $(`[name=${type}]`).parent().parent().prev().removeClass('d-none')
+      $(`[name=${type}]`).parent().parent().prev().prev().removeClass('d-none')
+      $(`[name=${type}]`).parent().parent().prev().prev().prev().removeClass('d-none')
+      $(`[name=${type}]`).parent().removeClass('d-none')
+    })
+
     $(document).on('change', '#showIndicator', async function () {
+      $("[name='kra-lists']").removeClass('d-none');  
       let value = $('#showIndicator').prop('checked')
       value ? $("[name='indicator-lists']").removeClass('d-none') :  $("[name='indicator-lists']").addClass('d-none')
       $("[name='kra-lists']").toggleClass('mt-3 col-6', !value);
