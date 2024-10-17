@@ -259,81 +259,113 @@ $(document).ready(()=>{
       $("#indicator-key-performance-chart").html("")
       var options = {
         series: [{
-        name: 'Target',
-        data: target
-      }, {
-        name: 'Performance',
-        data: performance
-      }],
-        chart: {
-        type: 'bar',
-        height: 350,
-        parentHeightOffset: 0,
-        toolbar: {
-          show: false
-        }
-      },
-      grid: {
-        show: true
-    },
-      plotOptions: {
-        bar: {
-          horizontal: false,
-          columnWidth: '85%',
-          endingShape: 'rounded'
+          name: 'Performance',
+          data: performance
         },
+        ],
+        chart: {
+        height: 350,
+        type: 'line',
+        zoom: {
+          enabled: false
+        }
       },
       dataLabels: {
         enabled: false
       },
       stroke: {
-        show: true,
-        width: 2,
-        colors: ['transparent']
+        curve: 'straight'
+      },
+      grid: {
+        row: {
+          colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
+          opacity: 0.5
+        },
       },
       xaxis: {
         categories: years,
-      },
-      yaxis: {
-      },
-      fill: { colors: ["#2ca87f", "#A0D683"]},
-      colors: ["#2ca87f", "#A0D683;"],
-      stroke: { show: !0, width: 3, colors: ["transparent"] },
-        title: {
-          text: "Target Vs Performance",
-          align: 'left',
-          margin: 15,
-          offsetX: 0,
-          offsetY: 0,
-          floating: false,
-          style: {
-            fontSize:  '14px',
-            fontWeight:  'bold',
-            color:  '#263238'
-          },
-      },
-      tooltip: {
-        y: {
-          formatter: function (val) {
-            return  val 
-          }
-        }
       }
       };
+
+
+    //   var options = {
+    //     series: [{
+    //     name: 'Target',
+    //     data: target
+    //   }, {
+    //     name: 'Performance',
+    //     data: performance
+    //   }],
+    //     chart: {
+    //     type: 'bar',
+    //     height: 350,
+    //     parentHeightOffset: 0,
+    //     toolbar: {
+    //       show: false
+    //     }
+    //   },
+    //   grid: {
+    //     show: true
+    // },
+    //   plotOptions: {
+    //     bar: {
+    //       horizontal: false,
+    //       columnWidth: '85%',
+    //       endingShape: 'rounded'
+    //     },
+    //   },
+    //   dataLabels: {
+    //     enabled: false
+    //   },
+    //   stroke: {
+    //     show: true,
+    //     width: 2,
+    //     colors: ['transparent']
+    //   },
+    //   xaxis: {
+    //     categories: years,
+    //   },
+    //   yaxis: {
+    //   },
+    //   fill: { colors: ["#2ca87f", "#A0D683"]},
+    //   colors: ["#2ca87f", "#A0D683;"],
+    //   stroke: { show: !0, width: 3, colors: ["transparent"] },
+    //     title: {
+    //       text: "Target Vs Performance",
+    //       align: 'left',
+    //       margin: 15,
+    //       offsetX: 0,
+    //       offsetY: 0,
+    //       floating: false,
+    //       style: {
+    //         fontSize:  '14px',
+    //         fontWeight:  'bold',
+    //         color:  '#263238'
+    //       },
+    //   },
+    //   tooltip: {
+    //     y: {
+    //       formatter: function (val) {
+    //         return  val 
+    //       }
+    //     }
+    //   }
+    //   };
 
       var chart = new ApexCharts(document.querySelector("#indicator-key-performance-chart"), options);
       chart.render();
     }
 
-    const modalIndicatorAnnualPlan = (data) => {
+    const modalIndicatorAnnualPlan = (data, year) => {
       let previous = 0
         let table = data.map((item) =>{
+        
           let diff = Math.floor(item.annual_performance - previous) 
           let direction = diff > 1 ? 'fa-arrow-up' : diff >= 0 &&  diff == 0 ? 'fa-arrow-right': 'fa-arrow-down'
           let directionColor = diff > 1 ? 'text-success' : diff >= 0 &&  diff == 0 ? 'text-dark': 'text-danger'
 
           return `
-            <tr>
+            <tr  class="${item.year == year ? 'table-success' : '' }">
               <td>${item.year}</td>
               <td>${item.annual_target || 'None'}</td>
               <td>${item.annual_performance || 'None' }</td>
@@ -611,25 +643,31 @@ $(document).ready(()=>{
     }
 
     const indicatorModal = (title, data) =>{
-      console.log(data)
+      let type = $("#dataType").val()
+      let typeValue = $("#dataTypeLists").val()
+
+
+
       $('#indicatorModalLabel').html(title)
       $('#kpi-unit').html(data.kpi_measurement_units || 'None')
       $('#kpi-char').html(data.kpi_characteristics)
       $('#kpi-weight').html(data.kpi_weight || 'None')
       $('#kpi-kra').html(data.keyResultArea > 5 ? data.keyResultArea.slice(0, 5) : data.keyResultArea)
       $('#kpi-ministry').html(data?.responsible_ministries?.code || 'None')
+      let yearValueUtilCurrent = data.annual_indicators.filter((year) => year.year <= typeValue)
+
       data.annual_indicators.sort((a,b)=>{
         if(a.year < b.year){
           return -1
         }
         return 1
       })
-      let years = data.annual_indicators.map((year) => year.year)
-      let performance = data.annual_indicators.map((performance) => performance.annual_performance || 0)
-      let target = data.annual_indicators.map((target) => target.annual_target || 0)
+      let years = yearValueUtilCurrent.map((year) => year.year)
+      let performance = yearValueUtilCurrent.map((performance) => performance.annual_performance || 0)
+      let target = yearValueUtilCurrent.map((target) => target.annual_target || 0)
 
       chartProgressVsPerformance(years, target, performance) //modal chart
-      modalIndicatorAnnualPlan(data.annual_indicators)
+      modalIndicatorAnnualPlan(data.annual_indicators, typeValue)
 
      
 
@@ -1020,8 +1058,8 @@ $(document).ready(()=>{
       }
 
       
-        let shareGoalNameLists = data?.policy_area_goal?.map((goal)=> goal.goal_name_eng.slice(0,15)+"...")
-        let shareGoalValueLists = data?.policy_area_goal?.map((goal)=>goal.goal_weight || 0)
+        //let shareGoalNameLists = data?.policy_area_goal?.map((goal)=> goal.goal_name_eng.slice(0,15)+"...")
+        //let shareGoalValueLists = data?.policy_area_goal?.map((goal)=>goal.goal_weight || 0)
 
         //ministries share for policy area
         //ministrySharesPyramid(ministriesShare)
