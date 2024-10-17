@@ -149,7 +149,7 @@ $(document).ready(()=>{
                         <div id="total-performance-graph-${index}" class="p-0 m-0"></div>
                     </div>
                     <div class="col-7 d-flex align-items-center">
-                         <div class="w-100"><p class="mb-1 fw-bold">${item.title}</p></div>
+                         <div class="w-100"><h5 class="mb-1 fw-bold">${item.title}</h5></div>
                          <div class="w-100">  <h1 class="w-100 p-2 fw-bold">${item.value}</h1></div>
                     </div>
                 </div>
@@ -503,7 +503,7 @@ $(document).ready(()=>{
 
 
           return `
-              <div name="indicator-lists" class="col-lg-4 mt-1 d-none">
+              <div name="indicator-lists" class="col-lg-4 d-none border">
                   <div name="${performanceType}">
                       <div class="d-flex align-items-center">
                           <div class="flex-shrink-0">
@@ -526,7 +526,7 @@ $(document).ready(()=>{
     const goalWithKraList = (goal,goalName, goalScore, goalColor) =>{        
         let kra_lists = goal.kra_goal.map((kra) =>{
           return `
-          <h6 name="kra-lists" class="pt-3 col-6" ><span class="badge" style="background-color: ${kra?.kra_score_card?.scorecard_color};"> ${Math.floor(kra?.kra_score_card?.avg_score) || 0}% </span> - ${kra.activity_name_eng} </h6>
+          <h6 name="kra-lists" class="p-3 m-0 col-6 border" ><span class="badge" style="background-color: ${kra?.kra_score_card?.scorecard_color};"> ${Math.floor(kra?.kra_score_card?.avg_score) || 0}% </span> - ${kra.activity_name_eng} </h6>
           ${indicatorList(kra.indicators).join('') || '<p name="indicator-lists"  class="d-none fw-bold text-danger" >No indicators</p>'}
           `
         })
