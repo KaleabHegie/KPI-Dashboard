@@ -920,81 +920,113 @@ $(document).ready(() => {
     $("#indicator-key-performance-chart").html("")
     var options = {
       series: [{
-      name: 'Target',
-      data: target
-    }, {
-      name: 'Performance',
-      data: performance
-    }],
-      chart: {
-      type: 'bar',
-      height: 350,
-      parentHeightOffset: 0,
-      toolbar: {
-        show: false
-      }
-    },
-    grid: {
-      show: true
-  },
-    plotOptions: {
-      bar: {
-        horizontal: false,
-        columnWidth: '85%',
-        endingShape: 'rounded'
+        name: 'Performance',
+        data: performance
       },
+      ],
+      chart: {
+      height: 350,
+      type: 'line',
+      zoom: {
+        enabled: false
+      }
     },
     dataLabels: {
       enabled: false
     },
     stroke: {
-      show: true,
-      width: 2,
-      colors: ['transparent']
+      curve: 'straight'
+    },
+    grid: {
+      row: {
+        colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
+        opacity: 0.5
+      },
     },
     xaxis: {
       categories: years,
-    },
-    yaxis: {
-    },
-    fill: { colors: ["#2ca87f", "#A0D683"]},
-    colors: ["#2ca87f", "#A0D683;"],
-    stroke: { show: !0, width: 3, colors: ["transparent"] },
-      title: {
-        text: "Target Vs Performance",
-        align: 'left',
-        margin: 15,
-        offsetX: 0,
-        offsetY: 0,
-        floating: false,
-        style: {
-          fontSize:  '14px',
-          fontWeight:  'bold',
-          color:  '#263238'
-        },
-    },
-    tooltip: {
-      y: {
-        formatter: function (val) {
-          return  val 
-        }
-      }
     }
     };
+
+
+  //   var options = {
+  //     series: [{
+  //     name: 'Target',
+  //     data: target
+  //   }, {
+  //     name: 'Performance',
+  //     data: performance
+  //   }],
+  //     chart: {
+  //     type: 'bar',
+  //     height: 350,
+  //     parentHeightOffset: 0,
+  //     toolbar: {
+  //       show: false
+  //     }
+  //   },
+  //   grid: {
+  //     show: true
+  // },
+  //   plotOptions: {
+  //     bar: {
+  //       horizontal: false,
+  //       columnWidth: '85%',
+  //       endingShape: 'rounded'
+  //     },
+  //   },
+  //   dataLabels: {
+  //     enabled: false
+  //   },
+  //   stroke: {
+  //     show: true,
+  //     width: 2,
+  //     colors: ['transparent']
+  //   },
+  //   xaxis: {
+  //     categories: years,
+  //   },
+  //   yaxis: {
+  //   },
+  //   fill: { colors: ["#2ca87f", "#A0D683"]},
+  //   colors: ["#2ca87f", "#A0D683;"],
+  //   stroke: { show: !0, width: 3, colors: ["transparent"] },
+  //     title: {
+  //       text: "Target Vs Performance",
+  //       align: 'left',
+  //       margin: 15,
+  //       offsetX: 0,
+  //       offsetY: 0,
+  //       floating: false,
+  //       style: {
+  //         fontSize:  '14px',
+  //         fontWeight:  'bold',
+  //         color:  '#263238'
+  //       },
+  //   },
+  //   tooltip: {
+  //     y: {
+  //       formatter: function (val) {
+  //         return  val 
+  //       }
+  //     }
+  //   }
+  //   };
 
     var chart = new ApexCharts(document.querySelector("#indicator-key-performance-chart"), options);
     chart.render();
   }
 
-  const modalIndicatorAnnualPlan = (data) => {
+  const modalIndicatorAnnualPlan = (data, year) => {
     let previous = 0
       let table = data.map((item) =>{
+      
         let diff = Math.floor(item.annual_performance - previous) 
         let direction = diff > 1 ? 'fa-arrow-up' : diff >= 0 &&  diff == 0 ? 'fa-arrow-right': 'fa-arrow-down'
         let directionColor = diff > 1 ? 'text-success' : diff >= 0 &&  diff == 0 ? 'text-dark': 'text-danger'
 
         return `
-          <tr>
+          <tr  class="${item.year == year ? 'table-success' : '' }">
             <td>${item.year}</td>
             <td>${item.annual_target || 'None'}</td>
             <td>${item.annual_performance || 'None' }</td>
@@ -1008,6 +1040,7 @@ $(document).ready(() => {
 
       $("#modalAnnualPlanTable").html(table)
   }
+
 
 
   const indicatorModal = (title, data) =>{
