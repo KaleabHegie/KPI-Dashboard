@@ -611,13 +611,19 @@ $(document).ready(()=>{
     }
 
     const indicatorModal = (title, data) =>{
+      console.log(data)
       $('#indicatorModalLabel').html(title)
       $('#kpi-unit').html(data.kpi_measurement_units || 'None')
       $('#kpi-char').html(data.kpi_characteristics)
       $('#kpi-weight').html(data.kpi_weight || 'None')
       $('#kpi-kra').html(data.keyResultArea > 5 ? data.keyResultArea.slice(0, 5) : data.keyResultArea)
       $('#kpi-ministry').html(data?.responsible_ministries?.code || 'None')
-
+      data.annual_indicators.sort((a,b)=>{
+        if(a.year < b.year){
+          return -1
+        }
+        return 1
+      })
       let years = data.annual_indicators.map((year) => year.year)
       let performance = data.annual_indicators.map((performance) => performance.annual_performance || 0)
       let target = data.annual_indicators.map((target) => target.annual_target || 0)
