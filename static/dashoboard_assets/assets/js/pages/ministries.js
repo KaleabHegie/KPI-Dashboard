@@ -206,7 +206,7 @@ $(document).ready(() => {
 
   const chartGauge2 = (id, percent) => {
     const isMobile = window.innerWidth < 768;  // Define a breakpoint for mobile
-    const chartHeight = isMobile ? '60%' : '40%'; // Larger height for mobile
+    const chartHeight = isMobile ? '50%' : '50%'; // Larger height for mobile
     const paneSize = isMobile ? '90%' : '140%'; // Adjust pane size for mobile
     const labelFontSize = isMobile ? '10px' : '14px'; // Smaller font for mobile
     const dataLabelFontSize = isMobile ? '12px' : '16px'; // Adjust data label font
@@ -533,7 +533,7 @@ $(document).ready(() => {
     if (ministryData.length == 1) {
       ministryData.forEach(async(policy) => {
         let policyAreaCard = `
-        <div class=" col-lg-6" style="margin-bottom: 50px">
+        <div class="col-lg-6" style="margin-bottom: 50px">
         <div style="background-color: ${bgColorList[Math.floor(Math.random() * bgColorList.length)]}" class="card h-100 dropbox-card" data-ministryId="${ministry_id}">
            <div class="card-body">
                 <div class="d-flex align-items-center justify-content-between">
@@ -568,10 +568,11 @@ $(document).ready(() => {
       letGoalTest =  await goalListCard(ministry_id, policy.id , color , policy.policyAreaEng)
         // Display goals for the policy
         $("#policyAreaMainCard").append(`
-                  <div class="" style="margin-bottom: 50px">
+                  <div class="col-lg-6" style="margin-bottom: 50px">
                       <h3>Goals</h3>
                       <div class="row h-100 mt-3">
-                       ${letGoalTest}
+                     
+                      ${letGoalTest}
                       </div>
                   </div>
               `);
@@ -659,20 +660,26 @@ $(document).ready(() => {
   const indicatorList = (indicators) =>{
     return indicators.map((indicator) =>{
 
-      let previousIndicator = indicator?.annual_indicators?.find((item) => item.year == (indicator?.annual[0]?.year-1) )
+      let previousIndicator = indicator?.annual_indicators?.find((item) => item.year == (indicator?.annual[0].year-1) )
       let diff = Math.floor(indicator?.annual[0]?.annual_performance - previousIndicator?.annual_performance)
       let direction = diff > 1 ? 'fa-arrow-up' : diff >= 0 &&  diff == 0 ? 'fa-arrow-right': 'fa-arrow-down'
       let directionColor = diff > 1 ? 'text-success' : diff >= 0 &&  diff == 0 ? 'text-dark': 'text-danger'
-  
+            
       let hasTarget = indicator?.annual[0]?.annual_target ? 'primary' : 'secondary'
-      let score = indicator?.annual[0]?.score || 0
-      
+      let score = indicator?.annual[0]?.score || 'None'
+
+
+
+      let performanceType = score >= 70 ? 'good' :( score >= 50 ? 'average' : (score < 50 ? 'poor' : 'nodata'))
+
+
+
       return `
-          <div name="indicator-lists" class="col-lg-4 mt-1 d-none">
-              <div>
+          <div name="indicator-lists" class="col-lg-4 d-none border">
+              <div name="${performanceType}">
                   <div class="d-flex align-items-center">
                       <div class="flex-shrink-0">
-                        <span class="p-2 d-block rounded-circle"  style=" font-size: 22px; background-color: ${indicator?.annual[0]?.scorecard || 'red'}"></span>
+                        <span class="p-2 d-block rounded-circle"  style=" font-size: 22px; background-color: ${indicator?.annual[0]?.annual_target ? indicator?.annual[0]?.scorecard || 'red' : 'gray'}"></span>
                       </div>
                       <div class="ml-3"> &nbsp <i class="fas ${direction}  ${directionColor}  " style=" font-size: 22px;"></i></div>
                       <div class="flex-grow-1 mx-2">
@@ -688,8 +695,9 @@ $(document).ready(() => {
     })
 }
 
+
+
   const kpiStatuesGraph = async (per) => {
-  console.log(per)  
   var options = {
     series: per,
     labels: [`High Performance ${[per[0]]}`, `Average Performance ${[per[1]]}`, `Low Performance ${[per[2]]}`],
@@ -746,7 +754,7 @@ $(document).ready(() => {
     let url = `/api/ministry/ministry_with_policy_area/${ministry_id}${type == 'year' ? '?year='+typeValue : '?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`
    
     let data = await fetchData(url)
-    console.log(data)
+   
   $('#kpiStatus').html(``)
   let card = `
   <div class="row col-lg-6 justify-content-center">
@@ -762,7 +770,7 @@ $(document).ready(() => {
 
       <div class="col-md-4 p-3">
           <div class="card" style="height: 200px;">
-              <div class="card-body p-3" >
+              <div class="card-body p-3">
                 <div class="bg-primary p-3 pt-4 rounded-4 mt-3 align-items-bottom">
                       <h3 class="text-center text-white">${data[0].count_has_performance}</h3>
                   </div>
@@ -819,8 +827,6 @@ $(document).ready(() => {
     //check is year or quarter
     let url = `/api/ministry/goal_with_kra/${goal_id}?ministry_id=${ministry_id}${type == 'year' ? '&year='+typeValue : '&year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`
     let goal = await fetchData(url)
-    console.log(goal)
-
     $("#goalWithKraList").html(``);
     $("#goalWithKraList").append(
       `<div>
@@ -1012,6 +1018,14 @@ $(document).ready(() => {
     $('#kpi-kra').html(data.keyResultArea > 5 ? data.keyResultArea.slice(0, 5) : data.keyResultArea)
     $('#kpi-ministry').html(data?.responsible_ministries?.code || 'None')
 
+    data.annual_indicators.sort((a,b)=>{
+      if(a.year < b.year){
+        return -1
+      }
+      return 1
+    })
+
+
     let years = data.annual_indicators.map((year) => year.year)
     let performance = data.annual_indicators.map((performance) => performance.annual_performance || 0)
     let target = data.annual_indicators.map((target) => target.annual_target || 0)
@@ -1022,7 +1036,7 @@ $(document).ready(() => {
 
 
 
-  
+
 
 // Dashboard top cards
   const dashboardCard = async() =>{
@@ -1063,6 +1077,26 @@ $(document).ready(() => {
       500
     );
   });
+
+
+  $(document).on('click', "[name='performance-card']", async function(){
+    let type = $(this).data('type')
+    console.log(type)
+
+    $("[name='indicator-lists']").addClass('d-none')
+    $("[name='kra-lists']").removeClass('mt-3 col-6').addClass('d-none');  
+    $(`[name=${type}]`).parent().parent().prev().removeClass('d-none')
+    $(`[name=${type}]`).parent().parent().prev().prev().removeClass('d-none')
+    $(`[name=${type}]`).parent().parent().prev().prev().prev().removeClass('d-none')
+    $(`[name=${type}]`).parent().removeClass('d-none')
+    $("html, body").animate(
+      {
+        scrollTop: $("#performanceAnalysis").offset().top,
+      },
+      300
+    );
+
+  })
 
 
 
@@ -1255,6 +1289,37 @@ $(document).ready(() => {
 };
 
 // Function to handle ministry card click and fetch detailed KRA data
+
+
+
+
+const performanceAnalysisCard = (data) =>{
+
+  $("#performanceAnalysis").html('')
+  console.log(data)
+  data.forEach((item,index) =>{
+    let card = `
+    <div class="col-md-3">
+      <div name="performance-card" data-name="kpi-status" data-type="${item?.type}" data-ministry-id="1" class="card card-shadow social-widget-card text-dark">
+        <div class="card-body m-0">
+            <div class="row justify-content-center">
+                <div class="col-5">
+                    <div id="total-performance-graph-${index}" class="p-0 m-0"></div>
+                </div>
+                <div class="col-7 d-flex align-items-center">
+                     <div class="w-100"><h6 class="mb-1 fw-bold">${item.title}</h6></div>
+                     <div class="w-100">  <h1 class="w-100 p-2 fw-bold">${item.value}</h1></div>
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>`
+
+    $("#performanceAnalysis").append(card)
+    performanceAnalysisPieChart(`total-performance-graph-${index}`, item?.percentage || 0, item.color)
+
+  })
+}
   const ministryIndicatorShareClicked = async (ministry_id , ministry_name , ministry_image) => {
 
 
@@ -1262,6 +1327,47 @@ $(document).ready(() => {
     let typeValue = $("#dataTypeLists").val()
 
     let url = `/api/ministry/ministry_kra_serializer/${ministry_id}/${type == 'year' ? '?year='+typeValue : '?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`;
+
+
+
+
+    let urlDash = `/api/ministry/ministry_with_policy_area/${ministry_id}${type == 'year' ? '?year='+typeValue : '?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`
+   
+    let data = await fetchData(urlDash)
+    let totalData = data[0]?.average_performance + data[0]?.high_performance + data[0]?.low_performance + data[0]?.count_has_no_performance
+    let percentage = [data[0]?.average_performance / totalData * 100 , data[0]?.high_performance / totalData * 100 , data[0]?.low_performance / totalData * 100 , data[0]?.count_has_no_performance / totalData * 100]
+
+
+    const performanceData = [{
+      title : 'Good Per',
+      value : data[0]?.high_performance || 0,
+      percentage : percentage[1] || 0,
+      color : '#2ca87f',
+      type : 'good' //don't change it, it's for filter
+    },
+    {
+      title : 'Average Per',
+      value : data[0]?.average_performance || 0,
+      percentage : percentage[0] || 0,
+      color : '#ffc107',
+      type : 'average' //don't change it, it's for filter
+    },
+    {
+      title : 'Poor Per',
+      value : data[0]?.low_performance || 0,
+      percentage : percentage[2] || 0,
+      color : '#dc2626',
+      type : 'poor' //don't change it, it's for filter
+    },
+    {
+      title : 'No data',
+      value : data[0]?.count_has_no_performance || 0,
+      percentage :  percentage[3] || 0,
+      color : '#6c757d',
+      type : 'nodata' //don't change it, it's for filter
+    },
+    
+  ]
 
     // Fetch ministry KRA details based on ministry ID and year
     $('#ministryKra').html('')
@@ -1278,16 +1384,21 @@ $(document).ready(() => {
 
     $("#ministryKra").append(
       `
+
            <div class="mt-5">
              <h3>${ministry_name} <img src="${ministry_image}" alt="" class="img-fluid float-end mb-5" style="height:80px;width:95px" /> </h3>
              <hr class="mt-2">
           </div>
-
-
           <h3 class="text-center text-info"> KRA with indicators </h3>
+
+  
+
       `
     )
     
+    performanceAnalysisCard(performanceData)
+
+
     if (ministryDetails.length > 0) {
       let kra_lists = ministryDetails.map((kra) => {
         return `
@@ -1363,6 +1474,54 @@ $(document).ready(() => {
       <h4 class="text-center text-danger mb-5">No data found for this goal</h4>
       `);
     }};
+
+
+
+    
+    
+    const performanceAnalysisPieChart = (id,value,color) =>{
+      $("#"+id).html('')
+      
+      var options = {
+        series: [value],
+        chart: { height: 190, type: "radialBar",  parentHeightOffset: 0,  sparkline: {enabled: true}},
+        colors: [color],
+        plotOptions: {
+          radialBar: {
+            hollow: {
+              margin: 0,
+              size: "60%",
+              background: "transparent",
+              imageOffsetX: 0,
+              imageOffsetY: 0,
+              position: "front",
+        },
+        track: { background: "#f2f2f2", strokeWidth: "150%" },
+        dataLabels: {
+          show: !0,
+          name: { show: !1 },
+          value: {
+            formatter: function (e) {
+              return parseInt(e) + "%";
+            },
+            offsetY: 7,
+            color: color,
+            fontSize: "20px",
+            fontWeight: "700",
+            show: !0,
+          },
+        },
+      },
+    },
+    stroke: { lineCap: "round" },
+    fill: { type: "solid" },
+      };
+
+      var chart = new ApexCharts(document.querySelector(`#${id}`), options);
+      chart.render();
+    }
+   
+
 
  
 });

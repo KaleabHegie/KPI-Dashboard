@@ -205,4 +205,35 @@ class QuarterSerializer(serializers.ModelSerializer):
 
 
 
+class MinistryIndicatorPerformanceSerializer(serializers.ModelSerializer):
+    average_performance = serializers.SerializerMethodField()
+    low_performance = serializers.SerializerMethodField()
+    high_performance = serializers.SerializerMethodField()
 
+    class Meta:
+        model = ResponsibleMinistry
+        fields = '__all__'
+    def get_average_performance(self, obj):
+        ministry_id = self.context.get('ministry_id')
+        request = self.context.get('request')
+        year = request.query_params.get('year')
+        indicators = Indicator.objects.filter(responsible_ministries__id=ministry_id)
+        average_performance = AnnualPlan.objects.filter(indicator__in=indicators, year__year_amh=year, annual_target__isnull=False ,annual_performance__gte = 0.5* F('annual_target') ,   annual_performance__lt = 0.7* F('annual_target'))
+        average_performance_serializer = AnnualSerializer(average_performance, many=True)
+        return average_performance_serializer.data
+    def get_low_performance(self, obj):
+        ministry_id = self.context.get('ministry_id')
+        request = self.context.get('request')
+        year = request.query_params.get('year')
+        indicators = Indicator.objects.filter(responsible_ministries__id=ministry_id)
+        low_performance = AnnualPlan.objects.filter(indicator__in=indicators, year__year_amh=year,  annual_target__isnull=False , annual_performance__lt = 0.5* F('annual_target'))
+        low_performance_serializer = AnnualSerializer(low_performance, many=True)
+        return low_performance_serializer.data
+    def get_high_performance(self, obj):
+        ministry_id = self.context.get('ministry_id')
+        request = self.context.get('request')
+        year = request.query_params.get('year')
+        indicators = Indicator.objects.filter(responsible_ministries__id=ministry_id)
+        high_performance = AnnualPlan.objects.filter(indicator__in=indicators, year__year_amh=year, annual_target__isnull=False, annual_performance__gte = 0.5* F('annual_target'))
+        high_performance_serializer = AnnualSerializer(high_performance, many=True)
+        return high_performance_serializer.data

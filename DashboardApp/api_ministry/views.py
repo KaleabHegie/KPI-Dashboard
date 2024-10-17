@@ -30,6 +30,16 @@ def ministry_with_policy_area(request, ministry_id=None):
     serializer = PolicyAreaSerializer(policy_areas, many=True, context={'request': request , 'ministry_id' : ministry_id})
     return Response(serializer.data)
 
+
+
+
+@api_view(['GET'])
+def ministry_indicator_performance(request, ministry_id):
+    if request.method == 'GET':
+        ministry = ResponsibleMinistry.objects.get(id=ministry_id)
+        serializer = MinistryIndicatorPerformanceSerializer(ministry, context={'request': request , 'ministry_id' : ministry_id})
+        return Response(serializer.data)
+
 @api_view(['GET'])
 def policy_area_with_goal(request, id):
     try:
