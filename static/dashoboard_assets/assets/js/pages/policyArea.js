@@ -507,9 +507,9 @@ $(document).ready(()=>{
                   <div name="${performanceType}">
                       <div class="d-flex align-items-center">
                           <div class="flex-shrink-0">
-                            <span class="p-2 d-block rounded-circle"  style=" font-size: 22px; background-color: ${indicator?.annual[0]?.annual_target ? indicator?.annual[0]?.scorecard || 'red' : 'gray'}"></span>
+                            <span class="p-2 d-block rounded-circle"  style="height: 30px; width: 30px; font-size: 70px; background-color: ${indicator?.annual[0]?.annual_target ? indicator?.annual[0]?.scorecard || 'red' : 'gray'}"></span>
                           </div>
-                          <div class="ml-3"> &nbsp <i class="fas ${direction}  ${directionColor}  " style=" font-size: 22px;"></i></div>
+                          <div class="ml-3"> &nbsp <i class="fas ${direction}  ${directionColor}  " style=" font-size: 30px;"></i></div>
                           <div class="flex-grow-1 mx-2">
                               <button name="indicator-btn" data-indicator-name="${indicator.kpi_name_eng}"  data-indicator-id="${indicator.id}" class="btn btn btn-link-secondary mb-0 d-grid text-start" type="button" data-bs-toggle="modal" data-bs-target="#indicatorModal" aria-controls="offcanvasExample">
                                   <span class="w-100" data-bs-toggle="tooltip" data-bs-placement="top" title="${indicator.kpi_name_eng}">${indicator.kpi_name_eng.length > 25 ? indicator.kpi_name_eng.slice(0,25) + '...' : indicator.kpi_name_eng}</span>
@@ -554,28 +554,28 @@ $(document).ready(()=>{
 
             
             <div class="col-md-2 d-flex align-items-center">
-                <div class="border rounded-circle d-flex" style="height: 20px; width: 20px; background-color: #28A745;"></div>
+                <div class="border rounded-circle d-flex" style="height: 30px; width: 30px; background-color: #28A745;"></div>
                 <div class="ms-2">Very Good Perf <br>  (95% - 100%)</div>
             </div>
     
 
             <div class="col-md-2 d-flex align-items-center">
-                <div class="border rounded-circle d-flex" style="height: 20px; width: 20px; background-color: #8BC34A; "></div>
+                <div class="border rounded-circle d-flex" style="height: 30px; width: 30px; background-color: #8BC34A; "></div>
                 <div class="ms-2">&nbsp Good Perf <br> &nbsp; (85% - 94%) </div>
             </div>
 
             <div class="col-md-2 d-flex align-items-center">
-                 <div class="border rounded-circle d-flex" style="height: 20px; width: 20px; background-color: #FFC107; "></div>
+                 <div class="border rounded-circle d-flex" style="height: 30px; width: 30px; background-color: #FFC107; "></div>
                  <div class="ms-2">&nbsp Average Perf <br> &nbsp; (65% - 84%)</div>
             </div>
 
             <div class="col-md-2 d-flex align-items-center">
-                 <div class="border rounded-circle d-flex" style="height: 20px; width: 20px; background-color: #FF9800; "></div>
+                 <div class="border rounded-circle d-flex" style="height: 30px; width: 30px; background-color: #FF9800; "></div>
                  <div class="ms-2">&nbsp Low Perf <br> &nbsp; (50% - 64%)</div>
             </div>
 
             <div class="col-md-2 d-flex align-items-center">
-                <div class="border rounded-circle d-flex" style="height: 20px; width: 20px; background-color: #DC3545; "></div>
+                <div class="border rounded-circle d-flex" style="height: 30px; width: 30px; background-color: #DC3545; "></div>
                 <div class="ms-2">&nbsp Very Poor Perf <br> &nbsp; (0% - 49%) </div>
             </div>
 
