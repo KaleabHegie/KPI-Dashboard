@@ -679,9 +679,9 @@ $(document).ready(() => {
               <div name="${performanceType}">
                   <div class="d-flex align-items-center">
                       <div class="flex-shrink-0">
-                        <span class="p-2 d-block rounded-circle"  style=" font-size: 22px; background-color: ${indicator?.annual[0]?.annual_target ? indicator?.annual[0]?.scorecard || 'red' : 'gray'}"></span>
+                        <span class="p-2 d-block rounded-circle"  style="height: 30px; width: 30px; font-size: 22px; background-color: ${indicator?.annual[0]?.annual_target ? indicator?.annual[0]?.scorecard || 'red' : 'gray'}"></span>
                       </div>
-                      <div class="ml-3"> &nbsp <i class="fas ${direction}  ${directionColor}  " style=" font-size: 22px;"></i></div>
+                      <div class="ml-3"> &nbsp <i class="fas ${direction}  ${directionColor}" style=" font-size: 30px;"></i></div>
                       <div class="flex-grow-1 mx-2">
                           <button name="indicator-btn" data-indicator-name="${indicator.kpi_name_eng}"  data-indicator-id="${indicator.id}" class="btn btn btn-link-secondary mb-0 d-grid text-start" type="button" data-bs-toggle="modal" data-bs-target="#indicatorModal" aria-controls="offcanvasExample">
                               <span class="w-100" data-bs-toggle="tooltip" data-bs-placement="top" title="${indicator.kpi_name_eng}">${indicator.kpi_name_eng.length > 25 ? indicator.kpi_name_eng.slice(0,25) + '...' : indicator.kpi_name_eng}</span>
@@ -848,68 +848,73 @@ $(document).ready(() => {
               ${kra_lists.join("")}
           </div> `;
 
-      $("#goalWithKraList").append(`
-       <div class="form-check mb-2">
-          <input class="form-check-input" type="checkbox" value="" id="showIndicator"> 
-          <label class="form-check-label" for="showIndicator">Show with Indicator</label>
-       </div>
- 
+          $("#goalWithKraList").html(`
 
-       <h1 name="indicator-lists" class="d-none">Indicators</h1>
-       <p name="indicator-lists" class="d-none fw-bold" >Click on an indicator for values, time series, and metadata.</p>
-
-        <div name="indicator-lists" class="d-none row gap-2">
-
-            
-            <div class="col-md-2 d-flex align-items-center">
-                <div class="border rounded-circle d-flex" style="height: 20px; width: 20px; background-color: #28A745;"></div>
-                <div class="ms-2">Very Good Performance</div>
+            <div class="form-check mb-2">
+               <input class="form-check-input" type="checkbox" value="" id="showIndicator"> 
+               <label class="form-check-label" for="showIndicator">Show with Indicator</label>
             </div>
-    
-
-            <div class="col-md-2 d-flex align-items-center">
-                <div class="border rounded-circle d-flex" style="height: 20px; width: 20px; background-color: #8BC34A; "></div>
-                <div class="ms-2">&nbsp Good Performance</div>
-            </div>
-
-            <div class="col-md-2 d-flex align-items-center">
-                 <div class="border rounded-circle d-flex" style="height: 20px; width: 20px; background-color: #FFC107; "></div>
-                 <div class="ms-2">&nbsp Average Performance</div>
-            </div>
-
-            <div class="col-md-2 d-flex align-items-center">
-                 <div class="border rounded-circle d-flex" style="height: 20px; width: 20px; background-color: #FF9800; "></div>
-                 <div class="ms-2">&nbsp Low Performance</div>
-            </div>
-
-            <div class="col-md-2 d-flex align-items-center">
-                <div class="border rounded-circle d-flex" style="height: 20px; width: 20px; background-color: #DC3545; "></div>
-                <div class="ms-2">&nbsp Very Poor Performance</div>
-            </div>
-
-        </div>
-
-        <p name="indicator-lists" class="mt-4 d-none fw-bold" >Comparing with last year</p>
-        <div name="indicator-lists" class="d-none d-flex align-items-center ">
-            <div class="flex-shrink-0">
-               <i class="fas fa-arrow-up text-success " style=" font-size: 22px;"></i>
-            </div>
-            <div class="pe-5"> &nbsp Increasing</div>
-    
-            <div class="flex-shrink-0">
-              <i class="fas fa-arrow-right " style=" font-size: 22px;"></i>
-            </div>
-            <div class="pe-5"> &nbsp Constant</div>
-    
-            <div class="flex-shrink-0">
-                <i class="fas fa-arrow-down text-danger " style=" font-size: 22px;"></i>
-            </div>
-            
-            <div class="pe-5"> &nbsp Decreasing</div>
-        </div>
-       ${goalHtml}
-       `);
-    } else {
+      
+     
+            <h1 name="indicator-lists" class="d-none">Indicators</h1>
+            <p name="indicator-lists" class="d-none fw-bold" >Click on an indicator for values, time series, and metadata.</p>
+     
+            <div name="indicator-lists" class="d-none row gap-2">
+     
+                 
+                 <div class="col-md-2 d-flex align-items-center">
+                     <div class="border rounded-circle d-flex" style="height: 30px; width: 30px; background-color: #28A745;"></div>
+                     <div class="ms-2">Very Good Perf <br>  (95% - 100%)</div>
+                 </div>
+         
+     
+                 <div class="col-md-2 d-flex align-items-center">
+                     <div class="border rounded-circle d-flex" style="height: 30px; width: 30px; background-color: #8BC34A; "></div>
+                     <div class="ms-2">&nbsp Good Perf <br> &nbsp; (85% - 94%) </div>
+                 </div>
+     
+                 <div class="col-md-2 d-flex align-items-center">
+                      <div class="border rounded-circle d-flex" style="height: 30px; width: 30px; background-color: #FFC107; "></div>
+                      <div class="ms-2">&nbsp Average Perf <br> &nbsp; (65% - 84%)</div>
+                 </div>
+     
+                 <div class="col-md-2 d-flex align-items-center">
+                      <div class="border rounded-circle d-flex" style="height: 30px; width: 30px; background-color: #FF9800; "></div>
+                      <div class="ms-2">&nbsp Low Perf <br> &nbsp; (50% - 64%)</div>
+                 </div>
+     
+                 <div class="col-md-2 d-flex align-items-center">
+                     <div class="border rounded-circle d-flex" style="height: 30px; width: 30px; background-color: #DC3545; "></div>
+                     <div class="ms-2">&nbsp Very Poor Perf <br> &nbsp; (0% - 49%) </div>
+                 </div>
+     
+             </div>
+     
+     
+             <p name="indicator-lists" class="mt-4 d-none fw-bold" >Comparing with last year</p>
+             <div name="indicator-lists" class="d-none d-flex align-items-center ">
+                 <div class="flex-shrink-0">
+                    <i class="fas fa-arrow-up text-success " style=" font-size: 22px;"></i>
+                 </div>
+                 <div class="pe-5"> &nbsp Increasing</div>
+         
+                 <div class="flex-shrink-0">
+                   <i class="fas fa-arrow-right " style=" font-size: 22px;"></i>
+                 </div>
+                 <div class="pe-5"> &nbsp Constant</div>
+         
+                 <div class="flex-shrink-0">
+                     <i class="fas fa-arrow-down text-danger " style=" font-size: 22px;"></i>
+                 </div>
+                 
+                 <div class="pe-5"> &nbsp Decreasing</div>
+             </div>
+     
+     
+            ${goalHtml}
+            `)
+         }
+    else {
       $("#goalWithKraList").append(`
       <h4 class="text-center text-danger mb-5">No data found for this goal</h4>
       `);
@@ -1451,7 +1456,7 @@ const performanceAnalysisCard = (data) =>{
           </div> `;
 
       $("#ministryKra").append(`
-       <div class="form-check mt-5 mb-2">
+       <div class="form-check mb-2">
           <input class="form-check-input" type="checkbox" value="" id="showIndicator"> 
           <label class="form-check-label" for="showIndicator">Show with Indicator</label>
        </div>
@@ -1460,33 +1465,37 @@ const performanceAnalysisCard = (data) =>{
        <h1 name="indicator-lists" class="d-none">Indicators</h1>
        <p name="indicator-lists" class="d-none fw-bold" >Click on an indicator for values, time series, and metadata.</p>
 
-        <div name="indicator-lists" class="d-none d-flex align-items-center">
-        
-            <div class="flex-shrink-0">
-              <span class="p-2 d-block rounded-circle" style="background-color: #28A745; "></span>
-            </div>
-            <div class="pe-5"> &nbsp Very Good Performance</div>
+       <div name="indicator-lists" class="d-none row gap-2">
 
-            <div class="flex-shrink-0">
-              <span class="p-2 d-block rounded-circle " style="background-color: #8BC34A; "></span>
+            
+            <div class="col-md-2 d-flex align-items-center">
+                <div class="border rounded-circle d-flex" style="height: 30px; width: 30px; background-color: #28A745;"></div>
+                <div class="ms-2">Very Good Perf <br>  (95% - 100%)</div>
             </div>
-            <div class="pe-5"> &nbsp Good Performance</div>
+    
 
-            <div class="flex-shrink-0">
-              <span class="p-2 d-block rounded-circle " style="background-color: #FFC107; "></span>
+            <div class="col-md-2 d-flex align-items-center">
+                <div class="border rounded-circle d-flex" style="height: 30px; width: 30px; background-color: #8BC34A; "></div>
+                <div class="ms-2">&nbsp Good Perf <br> &nbsp; (85% - 94%) </div>
             </div>
-            <div class="pe-5"> &nbsp Average Performance</div>
 
-            <div class="flex-shrink-0">
-              <span class="p-2 d-block rounded-circle " style="background-color: #FF9800; "></span>
+            <div class="col-md-2 d-flex align-items-center">
+                 <div class="border rounded-circle d-flex" style="height: 30px; width: 30px; background-color: #FFC107; "></div>
+                 <div class="ms-2">&nbsp Average Perf <br> &nbsp; (65% - 84%)</div>
             </div>
-            <div class="pe-5"> &nbsp Low Performance</div>
 
-            <div class="flex-shrink-0">
-              <span class="p-2 d-block rounded-circle " style="background-color: #DC3545; "></span>
+            <div class="col-md-2 d-flex align-items-center">
+                 <div class="border rounded-circle d-flex" style="height: 30px; width: 30px; background-color: #FF9800; "></div>
+                 <div class="ms-2">&nbsp Low Perf <br> &nbsp; (50% - 64%)</div>
             </div>
-            <div class="pe-5"> &nbsp Very Poor Performance</div>
+
+            <div class="col-md-2 d-flex align-items-center">
+                <div class="border rounded-circle d-flex" style="height: 30px; width: 30px; background-color: #DC3545; "></div>
+                <div class="ms-2">&nbsp Very Poor Perf <br> &nbsp; (0% - 49%) </div>
+            </div>
+
         </div>
+
 
         <p name="indicator-lists" class="mt-4 d-none fw-bold" >Comparing with last year</p>
         <div name="indicator-lists" class="d-none d-flex align-items-center ">
@@ -1506,8 +1515,10 @@ const performanceAnalysisCard = (data) =>{
             
             <div class="pe-5"> &nbsp Decreasing</div>
         </div>
+
+
        ${kraHTML}
-       `);
+       `)
     } else {
       $("#ministryKra").append(`
       <h4 class="text-center text-danger mb-5">No data found for this goal</h4>
