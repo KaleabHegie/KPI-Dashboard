@@ -138,7 +138,7 @@ class GoalWithKraSerializers(serializers.ModelSerializer):
                             indicators__quarter_indicators__quarter_target__isnull=False,
                             indicators__quarter_indicators__year__year_amh=year,
                             indicators__quarter_indicators__quarter__quarter_eng=quarter,
-                            indicators__quarter_indicators__quarter_performance__gte=0.7 * F('indicators__quarter_indicators__quarter_target')
+                            indicators__quarter_indicators__quarter_performance__gte=0.84 * F('indicators__quarter_indicators__quarter_target')
                             ).aggregate(
                             good_performance=Count('indicators__quarter_indicators')
                             )['good_performance']
@@ -157,7 +157,7 @@ class GoalWithKraSerializers(serializers.ModelSerializer):
             performance = obj.kra_goal.filter(
                             indicators__annual_indicators__annual_target__isnull=False,
                             indicators__annual_indicators__year__year_amh=year,
-                            indicators__annual_indicators__annual_performance__gte=0.7 * F('indicators__annual_indicators__annual_target')
+                            indicators__annual_indicators__annual_performance__gte=0.84 * F('indicators__annual_indicators__annual_target')
                             ).aggregate(
                             good_performance=Count('indicators__annual_indicators')
                             )['good_performance']
@@ -183,8 +183,8 @@ class GoalWithKraSerializers(serializers.ModelSerializer):
                     indicators__quarter_indicators__quarter_target__isnull=False,
                     indicators__quarter_indicators__year__year_amh=year,
                     indicators__quarter_indicators__quarter__quarter_eng=quarter,
-                    indicators__quarter_indicators__quarter_performance__gte=0.5 * F('indicators__quarter_indicators__quarter_target'),
-                    indicators__quarter_indicators__quarter_performance__lt=0.7 * F('indicators__quarter_indicators__quarter_target')
+                    indicators__quarter_indicators__quarter_performance__gte=0.64 * F('indicators__quarter_indicators__quarter_target'),
+                    indicators__quarter_indicators__quarter_performance__lt=0.85 * F('indicators__quarter_indicators__quarter_target')
                     ).aggregate(
                     avg_performance=Count('indicators__quarter_indicators')
                     )['avg_performance']
@@ -206,8 +206,8 @@ class GoalWithKraSerializers(serializers.ModelSerializer):
             performance = obj.kra_goal.filter(
             indicators__annual_indicators__annual_target__isnull=False,
             indicators__annual_indicators__year__year_amh=year,
-            indicators__annual_indicators__annual_performance__gte=0.5 * F('indicators__annual_indicators__annual_target'),
-            indicators__annual_indicators__annual_performance__lt=0.7 * F('indicators__annual_indicators__annual_target')
+            indicators__annual_indicators__annual_performance__gte=0.64 * F('indicators__annual_indicators__annual_target'),
+            indicators__annual_indicators__annual_performance__lt=0.85 * F('indicators__annual_indicators__annual_target')
             ).aggregate(
             avg_performance=Count('indicators__annual_indicators')
             )['avg_performance']
@@ -216,7 +216,6 @@ class GoalWithKraSerializers(serializers.ModelSerializer):
                 'performance': performance,
                 'percentage' : (performance/ total_target) * 100 if total_target > 0 else 0
             }
-
 
     def get_poor_performance(self, obj):
         request = self.context.get('request')
@@ -237,7 +236,7 @@ class GoalWithKraSerializers(serializers.ModelSerializer):
                             Q(indicators__quarter_indicators__quarter_target__isnull=False),
                             Q(indicators__quarter_indicators__year__year_amh=year),
                             Q(indicators__quarter_indicators__quarter__quarter_eng=quarter),
-                            Q(indicators__quarter_indicators__quarter_performance__lt=0.5 * F('indicators__quarter_indicators__quarter_target')) | 
+                            Q(indicators__quarter_indicators__quarter_performance__lt=0.65 * F('indicators__quarter_indicators__quarter_target')) | 
                             Q(indicators__quarter_indicators__quarter_performance__isnull=True)
                             ).aggregate(
                             low_performance=Count('indicators__quarter_indicators')
@@ -259,7 +258,7 @@ class GoalWithKraSerializers(serializers.ModelSerializer):
             performance = obj.kra_goal.filter(
                         Q(indicators__annual_indicators__annual_target__isnull=False),
                         Q(indicators__annual_indicators__year__year_amh=year),
-                        Q(indicators__annual_indicators__annual_performance__lt=0.5 * F('indicators__annual_indicators__annual_target')) | 
+                        Q(indicators__annual_indicators__annual_performance__lt=0.65 * F('indicators__annual_indicators__annual_target')) | 
                         Q(indicators__annual_indicators__annual_performance__isnull=True)
                         ).aggregate(
                             low_performance=Coalesce(Count('indicators__annual_indicators'), 0)

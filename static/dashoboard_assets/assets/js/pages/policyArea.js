@@ -550,39 +550,37 @@ $(document).ready(()=>{
        <h1 name="indicator-lists" class="d-none">Indicators</h1>
        <p name="indicator-lists" class="d-none fw-bold" >Click on an indicator for values, time series, and metadata.</p>
 
-        <div name="indicator-lists" class="d-none d-flex align-items-center">
-            <div class="flex-shrink-0">
-              <span class="p-2 d-block rounded-circle" style="background-color: #28A745; "></span>
-            </div>
-            <div class="pe-5"> &nbsp Very Good Performance</div>
+       <div name="indicator-lists" class="d-none row gap-2">
 
-            <div class="flex-shrink-0">
-              <span class="p-2 d-block rounded-circle " style="background-color: #8BC34A; "></span>
+            
+            <div class="col-md-2 d-flex align-items-center">
+                <div class="border rounded-circle d-flex" style="height: 20px; width: 20px; background-color: #28A745;"></div>
+                <div class="ms-2">Very Good Perf <br>  (95% - 100%)</div>
             </div>
-            <div class="pe-5"> &nbsp Good Performance</div>
+    
 
-            <div class="flex-shrink-0">
-              <span class="p-2 d-block rounded-circle " style="background-color: #FFC107; "></span>
+            <div class="col-md-2 d-flex align-items-center">
+                <div class="border rounded-circle d-flex" style="height: 20px; width: 20px; background-color: #8BC34A; "></div>
+                <div class="ms-2">&nbsp Good Perf <br> &nbsp; (85% - 94%) </div>
             </div>
-            <div class="pe-5"> &nbsp Average Performance</div>
 
-            <div class="flex-shrink-0">
-              <span class="p-2 d-block rounded-circle " style="background-color: #FF9800; "></span>
+            <div class="col-md-2 d-flex align-items-center">
+                 <div class="border rounded-circle d-flex" style="height: 20px; width: 20px; background-color: #FFC107; "></div>
+                 <div class="ms-2">&nbsp Average Perf <br> &nbsp; (65% - 84%)</div>
             </div>
-            <div class="pe-5"> &nbsp Low Performance</div>
 
-            <div class="flex-shrink-0">
-              <span class="p-2 d-block rounded-circle " style="background-color: #DC3545; "></span>
+            <div class="col-md-2 d-flex align-items-center">
+                 <div class="border rounded-circle d-flex" style="height: 20px; width: 20px; background-color: #FF9800; "></div>
+                 <div class="ms-2">&nbsp Low Perf <br> &nbsp; (50% - 64%)</div>
             </div>
-            <div class="pe-5"> &nbsp Very Poor Performance</div>
 
-            <div class="flex-shrink-0">
-              <span class="p-2 d-block rounded-circle " style="background-color: gray; "></span>
+            <div class="col-md-2 d-flex align-items-center">
+                <div class="border rounded-circle d-flex" style="height: 20px; width: 20px; background-color: #DC3545; "></div>
+                <div class="ms-2">&nbsp Very Poor Perf <br> &nbsp; (0% - 49%) </div>
             </div>
-            <div class="pe-5"> &nbsp No Target</div>
-
 
         </div>
+
 
         <p name="indicator-lists" class="mt-4 d-none fw-bold" >Comparing with last year</p>
         <div name="indicator-lists" class="d-none d-flex align-items-center ">
