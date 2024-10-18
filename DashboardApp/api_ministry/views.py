@@ -106,11 +106,11 @@ def dashboard(request):
 
         context = {
             'dashboard' : [
-                {'title' : 'Policy Area', 'value' : num_policy_area},
-                {'title' : 'Goal', 'value' : goal},
-                {'title' : 'KRA', 'value' : kra},
-                {'title' : 'Indicator', 'value' : indicator},
-                {'title' : 'Ministry', 'value' : ministries},
+                {'title' : 'Policy Areas', 'value' : num_policy_area},
+                {'title' : 'Goals', 'value' : goal},
+                {'title' : 'KRAs', 'value' : kra},
+                {'title' : 'Indicators', 'value' : indicator},
+                {'title' : 'Institutions', 'value' : ministries},
             ]
             }
         return Response(context)

@@ -848,7 +848,7 @@ $(document).ready(() => {
               ${kra_lists.join("")}
           </div> `;
 
-          $("#goalWithKraList").html(`
+          $("#goalWithKraList").append(`
 
             <div class="form-check mb-2">
                <input class="form-check-input" type="checkbox" value="" id="showIndicator"> 
@@ -1097,7 +1097,7 @@ $(document).ready(() => {
                <div class="card social-widget-card p-0 m-0  border bg-${color}-500" style="width: 100%;" >
                    <div class="card-body">
                        <h2 class="text-white m-0">${card.value}</h2>
-                       <span class="fw-bold">Total ${card.title}</span>
+                       <span class="fw-bold">${card.title}</span>
                        <i style="font-size: 80px;" class="fas fa-${icon[index]}"></i>
                    </div>
                </div>
