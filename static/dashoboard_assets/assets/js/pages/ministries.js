@@ -1041,15 +1041,19 @@ $(document).ready(() => {
       $("#modalAnnualPlanTable").html(table)
   }
 
-
-
   const indicatorModal = (title, data) =>{
+    let type = $("#dataType").val()
+    let typeValue = $("#dataTypeLists").val()
+
+
+
     $('#indicatorModalLabel').html(title)
     $('#kpi-unit').html(data.kpi_measurement_units || 'None')
     $('#kpi-char').html(data.kpi_characteristics)
     $('#kpi-weight').html(data.kpi_weight || 'None')
     $('#kpi-kra').html(data.keyResultArea > 5 ? data.keyResultArea.slice(0, 5) : data.keyResultArea)
     $('#kpi-ministry').html(data?.responsible_ministries?.code || 'None')
+    let yearValueUtilCurrent = data.annual_indicators.filter((year) => year.year <= typeValue)
 
     data.annual_indicators.sort((a,b)=>{
       if(a.year < b.year){
@@ -1057,14 +1061,16 @@ $(document).ready(() => {
       }
       return 1
     })
-
-
-    let years = data.annual_indicators.map((year) => year.year)
-    let performance = data.annual_indicators.map((performance) => performance.annual_performance || 0)
-    let target = data.annual_indicators.map((target) => target.annual_target || 0)
+    let years = yearValueUtilCurrent.map((year) => year.year)
+    let performance = yearValueUtilCurrent.map((performance) => performance.annual_performance || 0)
+    let target = yearValueUtilCurrent.map((target) => target.annual_target || 0)
 
     chartProgressVsPerformance(years, target, performance) //modal chart
-    modalIndicatorAnnualPlan(data.annual_indicators)
+    modalIndicatorAnnualPlan(data.annual_indicators, typeValue)
+
+   
+
+
   }
 
 
