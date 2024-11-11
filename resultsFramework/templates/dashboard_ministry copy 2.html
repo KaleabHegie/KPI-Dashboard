@@ -1,0 +1,391 @@
+{% load static %}
+{% load mptt_tags %}
+<!DOCTYPE html>
+<html lang="en">
+  {% include "head.html" %}
+
+    <link rel="stylesheet" href="//cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+
+  <style>
+    .indicator {
+      font-weight: bold;
+    }
+
+    .sub-indicator {
+      padding-left: 24px;
+    }
+
+    .expandable-table-caret {
+      cursor: pointer;
+    }
+
+
+    td {
+      text-align: left;
+    }
+  </style>
+
+
+
+  <body class="hold-transition sidebar-mini">
+    <div class="wrapper">
+      {% include "navbar.html" %}
+      {% include "sidebar.html" %}
+      <div class="content-wrapper">
+        <section class="content">
+          <div class="container-fluid mt-5">
+            <div class="row">
+              <div class="col-12">
+                <div class="card">
+                  <div class="card-header">
+                    <h3 class="card-title">Development Plan</h3>
+                  </div>
+                  <div class="card-body p-0">
+                    <div class="table-responsive">
+                      <div class="input-group mb-3">
+                        <input type="text" class="form-control" id="search-input" placeholder="Search Indicators">
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary" type="button" id="search-button">Search</button>
+                        </div>
+                    </div>
+                
+
+                    <!-- Performance Modal -->
+<!-- Performance Modal -->
+<div class="modal fade" id="performanceModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Update Performance</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+          <div class="modal-body">
+              <div class="form-group">
+                  <label for="kpiName">KPI Name:</label>
+                  <input type="text" class="form-control" id="kpiName" readonly>
+              </div>
+              <div class="form-group">
+                  <label for="annualTarget">Annual Target:</label>
+                  <input type="number"  class="form-control" id="annualTarget" readonly>
+              </div>
+              <div class="form-group">
+                  <label for="newPerformance">New Performance:</label>
+                  <input type="number" class="form-control" id="newPerformance">
+                  <input type="hidden" class="form-control" value="" id="annualPlanIdNew">
+              </div>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary" id="savePerformance">Save Performance</button>
+          </div>
+      </div>
+  </div>
+</div>
+
+<!-- Your Table -->
+
+<table class="table table-hover table-sm" id="indicator-table">
+  <thead>
+      <tr>
+          <th class="align-middle">Indicator</th>
+          {% for year in years %}
+          <th class="align-middle">{{ year }}</th>
+          {% endfor %}
+          <!-- Add more years as needed -->
+      </tr>
+  </thead>
+  <tbody>
+      {% for indicator in indicators %}
+      <tr>
+          <td class="border-0 indicator">{{ indicator.kpi_name_eng }}</td>
+          {% for year in years %}
+          <td>
+              {% for plan in annual_plans %}
+              {% if plan.indicator == indicator and plan.year == year %}
+              <button type="button" class="btn btn-block bg-gradient-primary btn-xs" data-toggle="modal" data-target="#performanceModal" data-kpi-name="{{ indicator.kpi_name_eng }}" data-annual-target="{{ plan.annual_target }}" data-annual-performance="{{ plan.annual_performance }}" data-annual-plan-id="{{ plan.id }}"> {{ plan.annual_target }} </button>
+
+              {% if plan.annual_performance %}
+              <button type="button" class="btn btn-block btn-outline-info btn-xs" data-toggle="modal" data-target="#performanceModal" data-kpi-name="{{ indicator.kpi_name_eng }}" data-annual-target="{{ plan.annual_target }}" data-annual-performance="{{ plan.annual_performance }}" data-annual-plan-id="{{ plan.id }}"> {{ plan.annual_performance }} </button>
+              {% endif %}
+              {% endif %}
+              {% endfor %}
+          </td>
+          {% endfor %}
+      </tr>
+      {% if indicator.sub_kpi.all %}
+      {% recursetree indicator.sub_kpi.all %}
+      <tr data-widget="expandable-table" aria-expanded="false">
+          <td>
+              <i class="expandable-table-caret fas fa-caret-right fa-fw"></i>
+              {{ node.sub_kpi_name_eng }}
+          </td>
+          {% for year in years %}
+          <td>
+              {% for plan in annual_plans %}
+              {% if plan.sub_indicator == node and plan.year == year %}
+              <button type="button" class="btn btn-block bg-gradient-primary btn-xs" data-toggle="modal" data-target="#performanceModal" data-kpi-name="{{ node.sub_kpi_name_eng }}" data-annual-target="{{ plan.annual_target }}" data-annual-performance="{{ plan.annual_performance }}" data-annual-plan-id="{{ plan.id }}"> {{ plan.annual_target }} </button>
+
+              {% if plan.annual_performance %}
+              <button type="button" class="btn btn-block btn-outline-info btn-xs" data-toggle="modal" data-target="#performanceModal" data-kpi-name="{{ node.sub_kpi_name_eng }}" data-annual-target="{{ plan.annual_target }}" data-annual-performance="{{ plan.annual_performance }}" data-annual-plan-id="{{ plan.id }}"> {{ plan.annual_performance }} </button>
+              {% endif %}
+              {% endif %}
+              {% endfor %}
+          </td>
+          {% endfor %}
+      </tr>
+      {% if not node.is_leaf_node %}
+      <tr class="expandable-body">
+          <td colspan="12">
+              <div class="p-0">
+                  <!-- Sub-Indicator 1.1.1 -->
+                  <table class="table table-hover table-sm sub-indicator">
+                      <tbody>
+                          <tr>
+                              <td>{{ children }}</td>
+                              {% for year in years %}
+                              <td class="sub-indicato">
+                                  {% for plan in annual_plans %}
+                                  {% if plan.sub_indicator == children and plan.year == year %}
+                                  <button type="button" class="btn btn-block bg-gradient-primary btn-xs" data-toggle="modal" data-target="#performanceModal" data-kpi-name="{{ children.sub_kpi_name_eng }}" data-annual-target="{{ plan.annual_target }}" data-annual-performance="{{ plan.annual_performance }}" data-annual-plan-id="{{ plan.id }}"> {{ plan.annual_target }} </button>
+                                  
+                                  {% if plan.annual_performance %}
+                                  <button type="button" class="btn btn-block btn-outline-info btn-xs" data-toggle="modal" data-target="#performanceModal" data-kpi-name="{{ children.sub_kpi_name_eng }}" data-annual-target="{{ plan.annual_target }}" data-annual-performance="{{ plan.annual_performance }}" data-annual-plan-id="{{ plan.id }}"> {{ plan.annual_performance }} </button>
+                                  {% endif %}
+                                  {% endif %}
+                                  {% endfor %}
+                              </td>
+                              {% endfor %}
+                          </tr>
+                          <!-- Sub-Indicator 1.1.1.1 -->
+                      </tbody>
+                  </table>
+              </div>
+          </td>
+      </tr>
+      {% endif %}
+      {% endrecursetree %}
+      {% endif %}
+      {% endfor %}
+  </tbody>
+</table>
+
+
+                  
+
+                      <!-- Pagination -->
+
+
+
+
+                      <nav aria-label="Page navigation example">
+                        <ul class="pagination pagination-circle pagination-outline justify-content-center" >
+                        {% if indicators.has_previous %}
+                          <li class="page-item">
+                          <a class="page-link" href="?page={{ indicators.previous_page_number }}">Previous</a>
+                          </li>
+                        {% else %}
+                          <li class="page-item disabled">
+                          <a class="page-link" href="#" tabindex="-1" aria-disabled="True">Previous</a>
+                          </li>
+                        {% endif %}
+                    
+                        {% if indicators.number|add:'-4' > 1 %}
+                          <li class="page-item"><a class="page-link" href="?page={{ indicators.number|add:'-5' }}">&hellip;</a></li>
+                        {% endif %}
+                    
+                        {% for i in indicators.paginator.page_range %}
+                          {% if indicators.number == i %}
+                            <li class="page-item active" aria-current="page">
+                            <span class="page-link">
+                            {{ i }}
+                            <span class="sr-only">(current)</span>
+                            </span>
+                          </li>
+                          {% elif i > indicators.number|add:'-5' and i < indicators.number|add:'5' %}
+                             <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                          {% endif %}
+                        {% endfor %}
+                    
+                        {% if indicators.paginator.num_pages > indicators.number|add:'4' %}
+                           <li class="page-item"><a class="page-link" href="?page={{ indicators.number|add:'5' }}">&hellip;</a></li>
+                        {% endif %}
+                    
+                        {% if indicators.has_next %}
+                          <li class="page-item">
+                          <a class="page-link" href="?page={{ indicators.next_page_number }}">Next</a>
+                          </li>
+                        {% else %}
+                          <li class="page-item disabled">
+                          <a class="page-link" href="#" tabindex="-1" aria-disabled="True">Next</a>
+                          </li>
+                        {% endif %}
+                        </ul>
+                      </nav>
+                                                
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      {% include "footer.html" %}
+    
+    
+
+
+      <script>
+      $(document).ready(function() {
+          // Function to update the table with search results
+          function updateTable(indicators) {
+              // Clear the table body
+              $('#indicator-table tbody').empty();
+      
+              // Recursive function to process nested indicators and sub-KPIs
+              function processIndicators(indicator) {
+                  var row;
+                  if (indicator.kpi_name_eng) {
+                      row = '<tr><td class="border-0 indicator">' + indicator.kpi_name_eng + '</td>';
+                  } else if (indicator.sub_kpi_name_eng) {
+                      row = '<tr><td>' + indicator.sub_kpi_name_eng + '</td>';
+                  }
+      
+                  // Loop through years and add cells for each year
+                  {% for year in years %}
+                      row += '<td>';
+                      var plan = indicator.plans[{{ forloop.counter0 }}];
+                      if (plan) {
+                          row += '<button type="button" class="btn btn-block bg-gradient-primary btn-xs">' + plan.annual_target + '</button>';
+                          if (plan.annual_performance) {
+                              row += '<button type="button" class="btn btn-block btn-outline-info btn-xs">' + plan.annual_performance + '</button>';
+                          }
+                      }
+                      row += '</td>';
+                  {% endfor %}
+      
+                  row += '</tr>';
+                  $('#indicator-table tbody').append(row);
+      
+                  // Process sub-KPIs recursively
+                  if (indicator.sub_kpi.length > 0 || indicator.sub_kpi_name_eng) {
+                      $.each(indicator.sub_kpi, function(index, subIndicator) {
+                          processIndicators(subIndicator);
+                      });
+                  }
+              }
+      
+              // Process the search results
+              $.each(indicators, function(index, indicator) {
+                  processIndicators(indicator);
+              });
+          }
+      
+          // Handle the search button click
+          $('#search-button').on('click', function() {
+              var searchQuery = $('#search-input').val();
+      
+              // Send an AJAX request to fetch filtered data
+              $.ajax({
+                  url: '{% url "ajax_search_indicators" %}',
+                  data: {'q': searchQuery},
+                  dataType: 'json',
+                  success: function(data) {
+                      updateTable(data.indicators);
+                  }
+              });
+          });
+      });
+      </script>
+      
+
+
+
+      {% comment %} <script src="{% static 'performance.js' %}"></script> {% endcomment %}
+  
+      <script>
+        $(document).ready(function() {
+            // Function to handle modal opening and data retrieval
+            function openPerformanceModal(kpiName, annualTarget, annualPerformance, annualPlanId) {
+                // Set the modal content
+                $('#kpiName').val(kpiName);
+                $('#annualTarget').val(annualTarget);
+                $('#newPerformance').val(annualPerformance);
+                $('#annualPlanIdNew').val(annualPlanId); // Set the annual plan ID
+        
+                // Show the modal
+                $('#performanceModal').modal('show');
+            }
+        
+            // Event handler for performance buttons only
+            $('.btn[data-annual-performance]').on('click', function() {
+                var kpiName = $(this).data('kpi-name');
+                var annualTarget = $(this).data('annual-target');
+                var annualPerformance = $(this).data('annual-performance');
+                var annualPlanId = $(this).data('annual-plan-id'); // Get the annual plan ID
+        
+                // Open modal with performance data
+                openPerformanceModal(kpiName, annualTarget, annualPerformance, annualPlanId);
+            });
+        
+            // AJAX request to save performance data
+            $('#savePerformance').on('click', function() {
+                var newPerformance = $('#newPerformance').val();
+                var kpiName = $('#kpiName').val();
+                var annualPlanId = $('#annualPlanIdNew').val(); // Get the annual plan ID
+        
+                // Perform AJAX request to update performance data
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url "update_performance" %}',
+                    data: {
+                        'performance': newPerformance,
+                        'kpi_name': kpiName,
+                        'annual_plan_id': annualPlanId, // Include annual plan ID
+                        csrfmiddlewaretoken: '{{ csrf_token }}', // Include CSRF token
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            // Check if the performance button already exists
+                            var performanceButton =  $('#performanceButton_' + annualPlanId);
+                            if (performanceButton.length > 0) {
+                                // Update the existing performance button text with the new performance value
+                                performanceButton.text(newPerformance);
+                            } else {
+                                // Create a new performance button
+                                var newPerformanceButton = $('<button>', {
+                                    'type': 'button',
+                                    'class': 'btn btn-block btn-outline-info btn-xs',
+                                    'data-toggle': 'modal',
+                                    'data-target': '#performanceModal',
+                                    'data-kpi-name': kpiName,
+                                    'data-annual-target': annualTarget,
+                                    'data-annual-performance': newPerformance, // Set the new performance value
+                                    'data-annual-plan-id': annualPlanId,
+                                }).text(newPerformance); // Set the button text to the new performance value
+        
+                                // Append the new performance button after the target button
+                                $('.btn[data-annual-plan-id="' + annualPlanId + '"][data-annual-performance=""]').after(newPerformanceButton);
+                            }
+                        } else {
+                            alert('Failed to update performance.');
+                        }
+        
+                        // Close the modal
+                        $('#performanceModal').modal('hide');
+                    },
+                    error: function() {
+                        alert('An error occurred while updating performance.');
+                    },
+                });
+            });
+        });
+    </script>
+    
+    
+    </div>
+  </body>
+</html>

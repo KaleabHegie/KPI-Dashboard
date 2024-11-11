@@ -1,5 +1,5 @@
 from django import forms
-from DashboardApp.models import DashboardSetting
+from resultsFramework.models import DashboardSetting
 
 from django import forms
 

@@ -1,0 +1,35 @@
+{% load static %}
+<div class="modal fade" id="performanceModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Update Performance</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="updatePerformanceForm">
+                    <div class="form-group">
+                        <label for="kpiName">KPI Name:</label>
+                        <input type="text" id="kpiName" class="form-control" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="annualTarget">Annual Target:</label>
+                        <input type="text" id="annualTarget" class="form-control" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="newPerformance">New Performance:</label>
+                        <input type="number" id="newPerformance" class="form-control" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" id="savePerformance" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>

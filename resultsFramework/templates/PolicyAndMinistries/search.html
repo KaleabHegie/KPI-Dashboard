@@ -1,0 +1,87 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<!-- [Body] Start -->
+{% include 'PolicyAndMinistries/include/head.html' %}
+
+<body data-pc-preset="preset-1" data-pc-sidebar-caption="true" data-pc-layout="vertical" data-pc-direction="ltr"
+    data-pc-theme_contrast="" data-pc-theme="light">
+
+    {% include 'PolicyAndMinistries/include/header.html'%}
+
+
+
+    <div class="pc-container">
+        <div class="pc-content container-sm">
+            <!-- [ Main Content ] start -->
+            <div class="">
+
+                <div class="card-body pc-component">
+                    {% include 'PolicyAndMinistries/include/navbar.html' %}
+                    <div class="container">
+                        <form id="search" class="d-flex ">
+                            <input id="searchValue" list="datalistOptions" class="form-control me-2" id="tags"
+                                type="search" placeholder="Type to search" aria-label="Search">
+                            <button class="btn btn-sm btn-outline-success" type="submit">Search</button>
+                        </form>
+
+
+                        <datalist id="datalistOptions"> </datalist>
+                    </div>
+
+                    <!--Search result-->
+                    <div class="mt-5" id="searchResult"></div>
+                </div>
+
+
+                <!-- Modal  Search Kra-->
+                <div class="modal fade" id="searchKraDetail" tabindex="-1" aria-labelledby="searchKraDetailLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-xl">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="searchKraDetailLabel">Key Result Area Details</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body" id="searchKeyResultAreaDetails">
+                                ...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Modal  Search Goal-->
+                <div class="modal fade" id="searchGoalDetail" tabindex="-1" aria-labelledby="searchGoalDetailLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-xl">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="searchGoalDetailLabel">Goal Details</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body" id="searchGoalDetails">
+                                ...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>
+
+    </div>
+
+
+
+    {% include "PolicyAndMinistries/include/script.html" %}
+    <script src="{% static 'dashoboard_assets/assets//js//pages//policyArea.js' %}"></script>
+
+</body>
+
+</html>

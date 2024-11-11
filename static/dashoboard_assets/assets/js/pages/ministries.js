@@ -444,7 +444,7 @@ $(document).ready(() => {
       let avgScoreWidth = goal.ministry_strategic_goal_score_card.avg_score.toFixed(2);
       return `
       <div class="col-md-6">
-      <div class="card card-shadow" style="height: 170px; border-style: solid; border-width: 1px; border-color: var(--bs-${color})" name="goal-card" data-goal="${goal.id}" data-goal-name="${goal.goal_name_eng}" data-color="${color}" data-ministryId="${ministry_id}">
+      <div class="card card-shadow" style="height: 170px; border-style: solid; border-width: 1px; border-color: var(--bs-${color})" name="goal-card" data-goal="${goal.id}" data-goal-name="${goal.goal_name_eng}" data-color="${color}" data-score-color="${goal.ministry_strategic_goal_score_card.scorecard_color}" data-score="${avgScoreWidth}"  data-ministryId="${ministry_id}">
           <div class="card-body">
               <div class="h-100">
                  <h6 class="mb-2 f-w-400  data-bs-toggle="tooltip" data-bs-placement="top" title="${goal.goal_name_eng}" text-muted">${goal.goal_name_eng.length > 45 ? goal.goal_name_eng.slice(0,45)+'...' : goal.goal_name_eng}</h6>
@@ -660,12 +660,12 @@ $(document).ready(() => {
   const indicatorList = (indicators) =>{
     return indicators.map((indicator) =>{
 
-      let previousIndicator = indicator?.annual_indicators?.find((item) => item.year == (indicator?.annual[0].year-1) )
+      let previousIndicator = indicator?.annual_indicators?.find((item) => item?.year == (indicator?.annual[0]?.year-1) )
       let diff = Math.floor(indicator?.annual[0]?.annual_performance - previousIndicator?.annual_performance)
       let direction = diff > 1 ? 'fa-arrow-up' : diff >= 0 &&  diff == 0 ? 'fa-arrow-right': 'fa-arrow-down'
       let directionColor = diff > 1 ? 'text-success' : diff >= 0 &&  diff == 0 ? 'text-dark': 'text-danger'
             
-      let hasTarget = indicator?.annual[0]?.annual_target ? 'primary' : 'secondary'
+      let hasTarget = indicator?.annual[0]?.annual_target ? 'primary' : 'primary'
       let score = indicator?.annual[0]?.score || 'None'
 
 
@@ -679,9 +679,9 @@ $(document).ready(() => {
               <div name="${performanceType}">
                   <div class="d-flex align-items-center">
                       <div class="flex-shrink-0">
-                        <span class="p-2 d-block rounded-circle"  style=" font-size: 22px; background-color: ${indicator?.annual[0]?.annual_target ? indicator?.annual[0]?.scorecard || 'red' : 'gray'}"></span>
+                        <span class="p-2 d-block rounded-circle"  style="height: 30px; width: 30px; font-size: 70px; background-color: ${indicator?.annual[0]?.annual_target || indicator?.annual[0]?.quarter_target  ? indicator?.annual[0]?.scorecard || 'red' : 'gray'}"></span>
                       </div>
-                      <div class="ml-3"> &nbsp <i class="fas ${direction}  ${directionColor}  " style=" font-size: 22px;"></i></div>
+                      <div class="ml-3"> &nbsp <i class="fas ${ indicator?.annual[0]?.annual_target ? direction : 'fa-arrow-up'}  ${indicator?.annual[0]?.annual_target ? directionColor : 'text-muted' }  " style=" font-size: 30px;"></i></div>
                       <div class="flex-grow-1 mx-2">
                           <button name="indicator-btn" data-indicator-name="${indicator.kpi_name_eng}"  data-indicator-id="${indicator.id}" class="btn btn btn-link-secondary mb-0 d-grid text-start" type="button" data-bs-toggle="modal" data-bs-target="#indicatorModal" aria-controls="offcanvasExample">
                               <span class="w-100" data-bs-toggle="tooltip" data-bs-placement="top" title="${indicator.kpi_name_eng}">${indicator.kpi_name_eng.length > 25 ? indicator.kpi_name_eng.slice(0,25) + '...' : indicator.kpi_name_eng}</span>
@@ -819,9 +819,10 @@ $(document).ready(() => {
   }
   }
 
-  const selectedGoalCard = async (goal_id ,ministry_id , color) => {
+  const selectedGoalCard = async (goal_id ,ministry_id , color, score, scoreColor) => {
     let type = $("#dataType").val()
     let typeValue = $("#dataTypeLists").val()
+    
     preLoading('goalWithKraList', 3 , 4)
 
     //check is year or quarter
@@ -830,7 +831,7 @@ $(document).ready(() => {
     $("#goalWithKraList").html(``);
     $("#goalWithKraList").append(
       `<div>
-         <h3 style="color: var(--bs-${color})"><span class="badge" style="background-color: ${goal?.ministry_strategic_goal_score_card?.scorecard_color};">  ${Math.floor(goal?.ministry_strategic_goal_score_card?.avg_score) || 0}</span> &nbsp${goal.goal_name_eng}</h3>
+         <h3 style="color: var(--bs-${color})"><span class="badge" style="background-color: ${scoreColor};">  ${score} </span> &nbsp${goal.goal_name_eng}</h3>
          <hr>
        </div>
       `
@@ -848,68 +849,73 @@ $(document).ready(() => {
               ${kra_lists.join("")}
           </div> `;
 
-      $("#goalWithKraList").append(`
-       <div class="form-check mb-2">
-          <input class="form-check-input" type="checkbox" value="" id="showIndicator"> 
-          <label class="form-check-label" for="showIndicator">Show with Indicator</label>
-       </div>
- 
+          $("#goalWithKraList").append(`
 
-       <h1 name="indicator-lists" class="d-none">Indicators</h1>
-       <p name="indicator-lists" class="d-none fw-bold" >Click on an indicator for values, time series, and metadata.</p>
-
-        <div name="indicator-lists" class="d-none row gap-2">
-
-            
-            <div class="col-md-2 d-flex align-items-center">
-                <div class="border rounded-circle d-flex" style="height: 20px; width: 20px; background-color: #28A745;"></div>
-                <div class="ms-2">Very Good Performance</div>
+            <div class="form-check mb-2">
+               <input class="form-check-input" type="checkbox" value="" id="showIndicator"> 
+               <label class="form-check-label" for="showIndicator">Show with Indicator</label>
             </div>
-    
-
-            <div class="col-md-2 d-flex align-items-center">
-                <div class="border rounded-circle d-flex" style="height: 20px; width: 20px; background-color: #8BC34A; "></div>
-                <div class="ms-2">&nbsp Good Performance</div>
-            </div>
-
-            <div class="col-md-2 d-flex align-items-center">
-                 <div class="border rounded-circle d-flex" style="height: 20px; width: 20px; background-color: #FFC107; "></div>
-                 <div class="ms-2">&nbsp Average Performance</div>
-            </div>
-
-            <div class="col-md-2 d-flex align-items-center">
-                 <div class="border rounded-circle d-flex" style="height: 20px; width: 20px; background-color: #FF9800; "></div>
-                 <div class="ms-2">&nbsp Low Performance</div>
-            </div>
-
-            <div class="col-md-2 d-flex align-items-center">
-                <div class="border rounded-circle d-flex" style="height: 20px; width: 20px; background-color: #DC3545; "></div>
-                <div class="ms-2">&nbsp Very Poor Performance</div>
-            </div>
-
-        </div>
-
-        <p name="indicator-lists" class="mt-4 d-none fw-bold" >Comparing with last year</p>
-        <div name="indicator-lists" class="d-none d-flex align-items-center ">
-            <div class="flex-shrink-0">
-               <i class="fas fa-arrow-up text-success " style=" font-size: 22px;"></i>
-            </div>
-            <div class="pe-5"> &nbsp Increasing</div>
-    
-            <div class="flex-shrink-0">
-              <i class="fas fa-arrow-right " style=" font-size: 22px;"></i>
-            </div>
-            <div class="pe-5"> &nbsp Constant</div>
-    
-            <div class="flex-shrink-0">
-                <i class="fas fa-arrow-down text-danger " style=" font-size: 22px;"></i>
-            </div>
-            
-            <div class="pe-5"> &nbsp Decreasing</div>
-        </div>
-       ${goalHtml}
-       `);
-    } else {
+      
+     
+            <h1 name="indicator-lists" class="d-none">Indicators</h1>
+            <p name="indicator-lists" class="d-none fw-bold" >Click on an indicator for values, time series, and metadata.</p>
+     
+            <div name="indicator-lists" class="d-none row gap-2">
+     
+                 
+                 <div class="col-md-2 d-flex align-items-center">
+                     <div class="border rounded-circle d-flex" style="height: 30px; width: 30px; background-color: #28A745;"></div>
+                     <div class="ms-2">Very Good Perf <br>  (95% - 100%)</div>
+                 </div>
+         
+     
+                 <div class="col-md-2 d-flex align-items-center">
+                     <div class="border rounded-circle d-flex" style="height: 30px; width: 30px; background-color: #8BC34A; "></div>
+                     <div class="ms-2">&nbsp Good Perf <br> &nbsp; (85% - 94%) </div>
+                 </div>
+     
+                 <div class="col-md-2 d-flex align-items-center">
+                      <div class="border rounded-circle d-flex" style="height: 30px; width: 30px; background-color: #FFC107; "></div>
+                      <div class="ms-2">&nbsp Average Perf <br> &nbsp; (65% - 84%)</div>
+                 </div>
+     
+                 <div class="col-md-2 d-flex align-items-center">
+                      <div class="border rounded-circle d-flex" style="height: 30px; width: 30px; background-color: #FF9800; "></div>
+                      <div class="ms-2">&nbsp Low Perf <br> &nbsp; (50% - 64%)</div>
+                 </div>
+     
+                 <div class="col-md-2 d-flex align-items-center">
+                     <div class="border rounded-circle d-flex" style="height: 30px; width: 30px; background-color: #DC3545; "></div>
+                     <div class="ms-2">&nbsp Very Poor Perf <br> &nbsp; (0% - 49%) </div>
+                 </div>
+     
+             </div>
+     
+     
+             <p name="indicator-lists" class="mt-4 d-none fw-bold" >Comparing with last year</p>
+             <div name="indicator-lists" class="d-none d-flex align-items-center ">
+                 <div class="flex-shrink-0">
+                    <i class="fas fa-arrow-up text-success " style=" font-size: 22px;"></i>
+                 </div>
+                 <div class="pe-5"> &nbsp Increasing</div>
+         
+                 <div class="flex-shrink-0">
+                   <i class="fas fa-arrow-right " style=" font-size: 22px;"></i>
+                 </div>
+                 <div class="pe-5"> &nbsp Constant</div>
+         
+                 <div class="flex-shrink-0">
+                     <i class="fas fa-arrow-down text-danger " style=" font-size: 22px;"></i>
+                 </div>
+                 
+                 <div class="pe-5"> &nbsp Decreasing</div>
+             </div>
+     
+     
+            ${goalHtml}
+            `)
+         }
+    else {
       $("#goalWithKraList").append(`
       <h4 class="text-center text-danger mb-5">No data found for this goal</h4>
       `);
@@ -1016,65 +1022,100 @@ $(document).ready(() => {
     var chart = new ApexCharts(document.querySelector("#indicator-key-performance-chart"), options);
     chart.render();
   }
-
   const modalIndicatorAnnualPlan = (data, year) => {
-    let previous = 0
-      let table = data.map((item) =>{
-      
-        let diff = Math.floor(item.annual_performance - previous) 
-        let direction = diff > 1 ? 'fa-arrow-up' : diff >= 0 &&  diff == 0 ? 'fa-arrow-right': 'fa-arrow-down'
-        let directionColor = diff > 1 ? 'text-success' : diff >= 0 &&  diff == 0 ? 'text-dark': 'text-danger'
 
-        return `
-          <tr  class="${item.year == year ? 'table-success' : '' }">
-            <td>${item.year}</td>
-            <td>${item.annual_target || 'None'}</td>
-            <td>${item.annual_performance || 'None' }</td>
-            <td class="fw-bold" style="color: ${item.scorecard || 'red'}" >${item.score || 'None'}</td>
-            <td class="${item.annual_performance ? directionColor : 'text-danger'} fw-bold"> <i class="fas ${item.annual_performance ? direction : 'fa-arrow-down'} fa-sm "></i> ${item.annual_performance ? diff : 'None'}</td>
-            <td class="${item.annual_performance ? directionColor : 'text-danger'} fw-bold">${item.annual_performance && previous > 0 ? Math.floor((diff/previous)*100, 2) : "None"} %</td>
-          </tr>
-          ${previous =  item.annual_performance || 0}
-        `
-      })
-
-      $("#modalAnnualPlanTable").html(table)
-  }
-
-  const indicatorModal = (title, data) =>{
-    let type = $("#dataType").val()
+    let type = $("#dataType").val() // identify whether it is year or quarter
     let typeValue = $("#dataTypeLists").val()
 
+    let table = data.map((item) => {
+      let changePercentage = item?.previous_year_performance_data ? Math.round(item?.previous_year_performance_data[0] * 100)/100 : null
+      let changeInAbsolute = item?.previous_year_performance_data ? Math.round(item?.previous_year_performance_data[1] * 100)/100 : null
+      
+      
 
 
-    $('#indicatorModalLabel').html(title)
-    $('#kpi-unit').html(data.kpi_measurement_units || 'None')
-    $('#kpi-char').html(data.kpi_characteristics)
-    $('#kpi-weight').html(data.kpi_weight || 'None')
-    $('#kpi-kra').html(data.keyResultArea > 5 ? data.keyResultArea.slice(0, 5) : data.keyResultArea)
-    $('#kpi-ministry').html(data?.responsible_ministries?.code || 'None')
-    let yearValueUtilCurrent = data.annual_indicators.filter((year) => year.year <= typeValue)
+      let direction = changePercentage > 1 ? 'fa-arrow-up' : changePercentage >= 0 &&  changePercentage == 0 ? 'fa-arrow-right': 'fa-arrow-down'
+      let directionColor = changePercentage > 1 ? 'text-success' : changePercentage >= 0 &&  changePercentage == 0 ? 'text-dark': 'text-danger'
+  
+      return `
+        <tr  class="${item.year == year ? 'table-success' : '' }">
+          <td>${type == 'year' ? item?.year : item?.quarter}</td>
+          <td>${item?.annual_target || item?.quarter_target || 'None'}</td>
+          <td>${item.annual_performance || item.quarter_performance || 'None' }</td>
+          <td class="fw-bold" style="color: ${item.scorecard || 'red'}" >${item.score || 'None'}</td>
+          <td class="${item.annual_performance || item.quarter_performance   ? directionColor : 'text-danger'} fw-bold"> <i class="fas ${item.annual_performance || item.quarter_performance ? direction : 'fa-arrow-down'} fa-sm "></i>${changePercentage}</td>
+          <td class="${item.annual_performance ||  item.quarter_performance  ? directionColor : 'text-danger'} fw-bold">${changeInAbsolute}%</td>
+        </tr>
+      `
+    })
+    $("#table-title").html(type == 'year' ? 'Annual Plan' : 'Quarter Plan ' + typeValue.split('-')[0])
+    $("#table-year-type").html(type == 'year' ? 'Year' : 'Quarter' )
+    $("#modalAnnualPlanTable").html(table)
+}
 
-    data.annual_indicators.sort((a,b)=>{
-      if(a.year < b.year){
+
+const indicatorModal = (title, data) =>{
+  let type = $("#dataType").val()
+  let typeValue = $("#dataTypeLists").val()
+
+  $('#indicatorModalLabel').html(title)
+  $('#kpi-unit').html(data.kpi_measurement_units || 'None')
+  $('#kpi-char').html(data.kpi_characteristics)
+  $('#kpi-weight').html(data.kpi_weight || 'None')
+  $('#kpi-kra').html(data.keyResultArea > 5 ? data.keyResultArea.slice(0, 5) : data.keyResultArea)
+  $('#kpi-ministry').html(data?.responsible_ministries?.code || 'None')
+  let yearValueUtilCurrent = data.annual_indicators.filter((year) => year.year <= typeValue)
+
+  data.annual_indicators.sort((a, b) => {
+
+    function splitNumberAndText(input) {
+      const match = input.match(/^(\d+)(\D+)$/);
+      if (match) {
+        const [numberPart, textPart] = match.slice(1, 3);
+        return [ numberPart, textPart ];
+      } else {
+        return { error: "Input format is incorrect" };
+      }
+    }
+
+    
+    if (a.quarter && b.quarter) {
+      const numberPartA= splitNumberAndText(a.quarter);
+      const numberPartB= splitNumberAndText(b.quarter);
+
+      if (Number(numberPartA[0]) < Number(numberPartB[0])) {
+       
         return -1
       }
       return 1
-    })
-    let years = yearValueUtilCurrent.map((year) => year.year)
-    let performance = yearValueUtilCurrent.map((performance) => performance.annual_performance || 0)
-    let target = yearValueUtilCurrent.map((target) => target.annual_target || 0)
 
-    chartProgressVsPerformance(years, target, performance) //modal chart
-    modalIndicatorAnnualPlan(data.annual_indicators, typeValue)
+    } else {
+      if (a.year < b.year) {
+        return -1
+      }
+      return 1
+    }
+    return -1
+  })
 
-   
+  
+
+  let years = yearValueUtilCurrent.map((year) => year.year)
+  let quarter =  data.annual_indicators.map((item) => item.quarter)
+
+  let performance = yearValueUtilCurrent.map((performance) => performance.annual_performance || 0)
+  let performanceQuarter =  data.annual_indicators.map((item) => item.quarter_performance || 0)
+  
+  let target = yearValueUtilCurrent.map((target) => target.annual_target || 0)
+  let targetQuarter =  data.annual_indicators.map((item) => item.quarter_target || 0)
+
+  chartProgressVsPerformance(type == 'year' ? years : quarter, type == 'year' ? target : targetQuarter, type == 'year' ? performance :performanceQuarter ) //modal chart
+  modalIndicatorAnnualPlan(data.annual_indicators, typeValue)
+
+ 
 
 
-  }
-
-
-
+}
 
 
 // Dashboard top cards
@@ -1092,7 +1133,7 @@ $(document).ready(() => {
                <div class="card social-widget-card p-0 m-0  border bg-${color}-500" style="width: 100%;" >
                    <div class="card-body">
                        <h2 class="text-white m-0">${card.value}</h2>
-                       <span class="fw-bold">Total ${card.title}</span>
+                       <span class="fw-bold">${card.title}</span>
                        <i style="font-size: 80px;" class="fas fa-${icon[index]}"></i>
                    </div>
                </div>
@@ -1108,7 +1149,10 @@ $(document).ready(() => {
     const goal_id = $(this).data("goal");
     const ministry_id = $(this).data("ministryid");
     const color = $(this).data("color");
-    selectedGoalCard(goal_id , ministry_id ,color);
+    let score = $(this).data("score")
+    let scoreColor = $(this).data("scoreColor")
+
+    selectedGoalCard(goal_id , ministry_id ,color, score, scoreColor);
     $("html, body").animate(
       {
         scrollTop: $("#goalWithKraList").offset().top,
@@ -1120,7 +1164,6 @@ $(document).ready(() => {
 
   $(document).on('click', "[name='performance-card']", async function(){
     let type = $(this).data('type')
-    console.log(type)
 
     $("[name='indicator-lists']").addClass('d-none')
     $("[name='kra-lists']").removeClass('mt-3 col-6').addClass('d-none');  
@@ -1144,7 +1187,11 @@ $(document).ready(() => {
     const indicatorName = $(this).data('indicatorName')
     const goal = $(this).data('goal')
 
-    let data = await fetchData(`/api/ministry/indicator/${indicatorId}/`)
+    let type = $("#dataType").val()
+    let typeValue = $("#dataTypeLists").val()
+    let data = await fetchData(`/api/ministry/indicator/${indicatorId}/${type == 'year' ? '?year='+typeValue : '?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`)
+
+
 
     $('#kpi-goal').html(goal || 'None')
     indicatorModal(indicatorName, data)
@@ -1335,7 +1382,6 @@ $(document).ready(() => {
 const performanceAnalysisCard = (data) =>{
 
   $("#performanceAnalysis").html('')
-  console.log(data)
   data.forEach((item,index) =>{
     let card = `
     <div class="col-md-3">
@@ -1451,7 +1497,7 @@ const performanceAnalysisCard = (data) =>{
           </div> `;
 
       $("#ministryKra").append(`
-       <div class="form-check mt-5 mb-2">
+       <div class="form-check mb-2">
           <input class="form-check-input" type="checkbox" value="" id="showIndicator"> 
           <label class="form-check-label" for="showIndicator">Show with Indicator</label>
        </div>
@@ -1460,33 +1506,37 @@ const performanceAnalysisCard = (data) =>{
        <h1 name="indicator-lists" class="d-none">Indicators</h1>
        <p name="indicator-lists" class="d-none fw-bold" >Click on an indicator for values, time series, and metadata.</p>
 
-        <div name="indicator-lists" class="d-none d-flex align-items-center">
-        
-            <div class="flex-shrink-0">
-              <span class="p-2 d-block rounded-circle" style="background-color: #28A745; "></span>
-            </div>
-            <div class="pe-5"> &nbsp Very Good Performance</div>
+       <div name="indicator-lists" class="d-none row gap-2">
 
-            <div class="flex-shrink-0">
-              <span class="p-2 d-block rounded-circle " style="background-color: #8BC34A; "></span>
+            
+            <div class="col-md-2 d-flex align-items-center">
+                <div class="border rounded-circle d-flex" style="height: 30px; width: 30px; background-color: #28A745;"></div>
+                <div class="ms-2">Very Good Perf <br>  (95% - 100%)</div>
             </div>
-            <div class="pe-5"> &nbsp Good Performance</div>
+    
 
-            <div class="flex-shrink-0">
-              <span class="p-2 d-block rounded-circle " style="background-color: #FFC107; "></span>
+            <div class="col-md-2 d-flex align-items-center">
+                <div class="border rounded-circle d-flex" style="height: 30px; width: 30px; background-color: #8BC34A; "></div>
+                <div class="ms-2">&nbsp Good Perf <br> &nbsp; (85% - 94%) </div>
             </div>
-            <div class="pe-5"> &nbsp Average Performance</div>
 
-            <div class="flex-shrink-0">
-              <span class="p-2 d-block rounded-circle " style="background-color: #FF9800; "></span>
+            <div class="col-md-2 d-flex align-items-center">
+                 <div class="border rounded-circle d-flex" style="height: 30px; width: 30px; background-color: #FFC107; "></div>
+                 <div class="ms-2">&nbsp Average Perf <br> &nbsp; (65% - 84%)</div>
             </div>
-            <div class="pe-5"> &nbsp Low Performance</div>
 
-            <div class="flex-shrink-0">
-              <span class="p-2 d-block rounded-circle " style="background-color: #DC3545; "></span>
+            <div class="col-md-2 d-flex align-items-center">
+                 <div class="border rounded-circle d-flex" style="height: 30px; width: 30px; background-color: #FF9800; "></div>
+                 <div class="ms-2">&nbsp Low Perf <br> &nbsp; (50% - 64%)</div>
             </div>
-            <div class="pe-5"> &nbsp Very Poor Performance</div>
+
+            <div class="col-md-2 d-flex align-items-center">
+                <div class="border rounded-circle d-flex" style="height: 30px; width: 30px; background-color: #DC3545; "></div>
+                <div class="ms-2">&nbsp Very Poor Perf <br> &nbsp; (0% - 49%) </div>
+            </div>
+
         </div>
+
 
         <p name="indicator-lists" class="mt-4 d-none fw-bold" >Comparing with last year</p>
         <div name="indicator-lists" class="d-none d-flex align-items-center ">
@@ -1506,8 +1556,10 @@ const performanceAnalysisCard = (data) =>{
             
             <div class="pe-5"> &nbsp Decreasing</div>
         </div>
+
+
        ${kraHTML}
-       `);
+       `)
     } else {
       $("#ministryKra").append(`
       <h4 class="text-center text-danger mb-5">No data found for this goal</h4>

@@ -1,0 +1,114 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  {% include "head.html" %}
+
+  <body class="hold-transition sidebar-mini">
+    <div class="wrapper">
+      {% include "navbar.html" %} {% include "sidebar.html" %}
+      <div class="content-wrapper">
+
+
+
+
+        
+<div class="content-header">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-6">
+          <h3 class="card-title">
+              <a class ="text-decoration-none" href="{{request.META.HTTP_REFERER|escape}}">
+                  <i class="fa fa-arrow-left text-info" aria-hidden="true"></i>
+              </a>
+          </h3>
+      </div><!-- /.col -->
+      <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-right">
+          <li class="breadcrumb-item"><a href="#">Report</a></li>
+          <li class="breadcrumb-item active">Master Report</li>
+        </ol>
+      </div><!-- /.col -->
+    </div><!-- /.row -->
+  </div><!-- /.container-fluid -->
+</div>
+<section class="content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-12">
+          <div class="input-group mb-3">
+            {% comment %} <form action="{% url 'search' %}" method="get" class="input-group">
+              <input name="search_query" type="text" class="form-control" placeholder="Search" aria-label="Search" aria-describedby="search-addon" />
+              <div class="input-group-prepend">
+                  <button type="submit" class="btn btn-info">
+                      <i class="fas fa-search"></i>
+                  </button>
+                </div>
+              </form> {% endcomment %}
+            </div>
+        <div class="card">
+          <div class="card-header">
+              <div class="card-toolbar ml-12">
+                  {% if deadline %}
+                  <span class="d-inline-block" tabindex="0" data-toggle="tooltip" title="Deadline for creating report has passed">
+                      <button class="btn btn-md btn-outline-info btn-flat" style="pointer-events: none;" type="button" disabled><i class="fa fa-plus"></i> Add Report</button>
+                  </span>
+                  {% else %}
+                  <a href="{% url 'create_report' %}" class="btn btn-md btn-outline-info btn-flat"><i class="fa fa-plus"></i> Add Report</a>
+                  {% endif %}
+                  <span>
+                      {% comment %} <a href="{% url 'grid_master_report' %}" class="btn btn-md btn-info btn-flat">Grid View</a> {% endcomment %}
+                  </span>
+          </div>
+          </div>
+          <div class="card-body">
+            <table id="example2" class="table table-bordered table-hover">
+              <thead>
+                  <tr class="fs-7 fw-bold text-gray-400 border-bottom-0">
+                      <th class="px-3">Name</th>
+                      <th class="px-3">Report Type</th>
+                      <th class="px-3">Recorded By</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  {% for report in master_reports %}
+                  <tbody>
+
+                      <tr class='clickable-row' data-href="">
+                              <td class="px-3">
+                                  <a href="" class="text-dark">
+                                      {{ report.alternative_name }} 
+                                  </a>
+                              </td>
+                         
+                          <td class="px-3">
+                              {{ report.report_type }}
+                          </td>
+                          <td class="px-3">
+                              {{ report.recorded_by }}
+                          </td>
+                      </tr>
+                      
+                  </tbody>
+                  {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          <!-- /.card-body -->
+        </div>
+        <!-- /.card -->
+      </div>
+      <!-- /.col -->
+    </div>
+    <!-- /.row -->
+  </div>
+  <!-- /.container-fluid -->
+</section>
+      </div>
+      
+
+
+      {% include "footer.html" %}
+
+      
+  </body>
+</html>

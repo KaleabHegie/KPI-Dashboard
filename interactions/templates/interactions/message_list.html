@@ -1,0 +1,252 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}
+    Sent Messages
+{% endblock %}
+{% block content %}
+<div class="app-main flex-column flex-row-fluid" id="kt_app_main">
+    <!--begin::Content wrapper-->
+    <div class="d-flex flex-column flex-column-fluid">
+        <!--begin::Toolbar-->
+        <div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
+            <!--begin::Toolbar container-->
+            <div id="kt_app_toolbar_container" class="app-container container-xxl d-flex flex-stack">
+                <!--begin::Page title-->
+                <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
+                    <!--begin::Title-->
+                    <h1 class="page-heading d-flex text-dark fw-bold fs-3 flex-column justify-content-center my-0">Messages</h1>
+                    <!--end::Title-->
+                    <!--begin::Breadcrumb-->
+                    <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
+                        <!--begin::Item-->
+                        <li class="breadcrumb-item text-muted">
+                            <a href="../../index.html" class="text-muted text-hover-primary">Home</a>
+                        </li>
+                        <!--end::Item-->
+                        <!--begin::Item-->
+                        <li class="breadcrumb-item">
+                            <span class="bullet bg-gray-400 w-5px h-2px"></span>
+                        </li>
+                        <!--end::Item-->
+                        <!--begin::Item-->
+                        <li class="breadcrumb-item text-muted">Inbox</li>
+                        <!--end::Item-->
+                    </ul>
+                    <!--end::Breadcrumb-->
+                </div>
+                <!--end::Page title-->
+            </div>
+            <!--end::Toolbar container-->
+        </div>
+        <!--end::Toolbar-->
+        <!--begin::Content-->
+        <div id="kt_app_content" class="app-content flex-column-fluid">
+            <!--begin::Content container-->
+            <div id="kt_app_content_container" class="app-container container-xxl">
+                <!--begin::Inbox App - Messages -->
+                <div class="d-flex flex-column flex-lg-row">
+                    <!--begin::Sidebar-->
+                    <div class="d-none d-lg-flex flex-column flex-lg-row-auto w-100 w-lg-275px" data-kt-drawer="true" data-kt-drawer-name="inbox-aside" data-kt-drawer-activate="{default: true, lg: false}" data-kt-drawer-overlay="true" data-kt-drawer-width="225px" data-kt-drawer-direction="start" data-kt-drawer-toggle="#kt_inbox_aside_toggle">
+                        <!--begin::Sticky aside-->
+                        <div class="card card-flush mb-0" data-kt-sticky="true" data-kt-sticky-name="inbox-aside-sticky" data-kt-sticky-offset="{default: false, xl: '100px'}" data-kt-sticky-width="{lg: '275px'}" data-kt-sticky-left="auto" data-kt-sticky-top="100px" data-kt-sticky-animation="false" data-kt-sticky-zindex="95">
+                            <!--begin::Aside content-->
+                            <div class="card-body">
+                                <!--begin::Button-->
+                                <a href="{% url 'interactions:compose_new_message' %}" class="btn btn-primary fw-bold w-100 mb-8">New Message</a>
+                                <!--end::Button-->
+                                <!--begin::Menu-->
+                                <div class="menu menu-column menu-rounded menu-state-bg menu-state-title-primary menu-state-icon-primary menu-state-bullet-primary mb-10">
+                                    <!--begin::Menu item-->
+                                    <div class="menu-item mb-3">
+                                        <!--begin::Sent-->
+                                        <a href="{% url 'interactions:sent_messages' %}">
+                                            <span class="menu-link active">
+                                                <span class="menu-icon">
+                                                    <!--begin::Svg Icon | path: icons/duotune/general/gen016.svg-->
+                                                    <span class="svg-icon svg-icon-2 me-3">
+                                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                            <path d="M15.43 8.56949L10.744 15.1395C10.6422 15.282 10.5804 15.4492 10.5651 15.6236C10.5498 15.7981 10.5815 15.9734 10.657 16.1315L13.194 21.4425C13.2737 21.6097 13.3991 21.751 13.5557 21.8499C13.7123 21.9488 13.8938 22.0014 14.079 22.0015H14.117C14.3087 21.9941 14.4941 21.9307 14.6502 21.8191C14.8062 21.7075 14.9261 21.5526 14.995 21.3735L21.933 3.33649C22.0011 3.15918 22.0164 2.96594 21.977 2.78013C21.9376 2.59432 21.8452 2.4239 21.711 2.28949L15.43 8.56949Z" fill="currentColor" />
+                                                            <path opacity="0.3" d="M20.664 2.06648L2.62602 9.00148C2.44768 9.07085 2.29348 9.19082 2.1824 9.34663C2.07131 9.50244 2.00818 9.68731 2.00074 9.87853C1.99331 10.0697 2.04189 10.259 2.14054 10.4229C2.23919 10.5869 2.38359 10.7185 2.55601 10.8015L7.86601 13.3365C8.02383 13.4126 8.19925 13.4448 8.37382 13.4297C8.54839 13.4145 8.71565 13.3526 8.85801 13.2505L15.43 8.56548L21.711 2.28448C21.5762 2.15096 21.4055 2.05932 21.2198 2.02064C21.034 1.98196 20.8409 1.99788 20.664 2.06648Z" fill="currentColor" />
+                                                        </svg>
+                                                    </span>
+                                                    <!--end::Svg Icon-->
+                                                </span>
+                                                <span class="menu-title fw-bold">Sent</span>
+                                            </span>
+                                        </a>
+                                        <!--end::Sent-->
+                                    </div>
+                                    <!--end::Menu item-->
+                                    <!--begin::Menu item-->
+                                    <div class="menu-item">
+                                        <!--begin::Trash-->
+                                        <a href="{% url 'interactions:deleted_message_list' %}">
+                                            <span class="menu-link">
+                                                <span class="menu-icon">
+                                                    <!--begin::Svg Icon | path: icons/duotune/general/gen027.svg-->
+                                                    <span class="svg-icon svg-icon-2 me-3">
+                                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                            <path d="M5 9C5 8.44772 5.44772 8 6 8H18C18.5523 8 19 8.44772 19 9V18C19 19.6569 17.6569 21 16 21H8C6.34315 21 5 19.6569 5 18V9Z" fill="currentColor" />
+                                                            <path opacity="0.5" d="M5 5C5 4.44772 5.44772 4 6 4H18C18.5523 4 19 4.44772 19 5V5C19 5.55228 18.5523 6 18 6H6C5.44772 6 5 5.55228 5 5V5Z" fill="currentColor" />
+                                                            <path opacity="0.5" d="M9 4C9 3.44772 9.44772 3 10 3H14C14.5523 3 15 3.44772 15 4V4H9V4Z" fill="currentColor" />
+                                                        </svg>
+                                                    </span>
+                                                    <!--end::Svg Icon-->
+                                                </span>
+                                                <span class="menu-title fw-bold">Trash</span>
+                                            </span>
+                                        </a>
+                                        <!--end::Trash-->
+                                    </div>
+                                    <!--end::Menu item-->
+                                </div>
+                                <!--end::Menu-->
+                            </div>
+                            <!--end::Aside content-->
+                        </div>
+                        <!--end::Sticky aside-->
+                    </div>
+                    <!--end::Sidebar-->
+                    <!--begin::Content-->
+                    <div class="flex-lg-row-fluid ms-lg-7 ms-xl-10">
+                        <!--begin::Card-->
+                        <div class="card">
+                            <div class="card-header align-items-center py-5 gap-2 gap-md-5">
+                                <!--begin::Actions-->
+                                <div class="d-flex flex-wrap gap-2">
+                                    <!--begin::Checkbox-->
+                                    <div class="form-check form-check-sm form-check-custom form-check-solid me-4 me-lg-7">
+                                        <input class="form-check-input" type="checkbox" data-kt-check="true" data-kt-check-target="#kt_inbox_listing .form-check-input" value="0" />
+                                    </div>
+                                    <!--end::Checkbox-->
+                                    <!--begin::Delete-->
+                                    <a href="#" onclick="document.getElementById('deleteMessages').submit();" class="btn btn-sm btn-icon btn-light btn-active-light-primary" data-bs-toggle="tooltip" data-bs-dismiss="click" data-bs-placement="top" title="Delete">
+                                        <!--begin::Svg Icon | path: icons/duotune/general/gen027.svg-->
+                                        <span class="svg-icon svg-icon-2">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M5 9C5 8.44772 5.44772 8 6 8H18C18.5523 8 19 8.44772 19 9V18C19 19.6569 17.6569 21 16 21H8C6.34315 21 5 19.6569 5 18V9Z" fill="currentColor" />
+                                                <path opacity="0.5" d="M5 5C5 4.44772 5.44772 4 6 4H18C18.5523 4 19 4.44772 19 5V5C19 5.55228 18.5523 6 18 6H6C5.44772 6 5 5.55228 5 5V5Z" fill="currentColor" />
+                                                <path opacity="0.5" d="M9 4C9 3.44772 9.44772 3 10 3H14C14.5523 3 15 3.44772 15 4V4H9V4Z" fill="currentColor" />
+                                            </svg>
+                                        </span>
+                                        <!--end::Svg Icon-->
+                                    </a>
+                                    <!--end::Delete-->
+                                    <!--begin::Reload-->
+                                    <a href="{% url 'interactions:sent_messages' %}" class="btn btn-sm btn-icon btn-light btn-active-light-primary" data-bs-toggle="tooltip" data-bs-dismiss="click" data-bs-placement="top" title="Reload">
+                                        <!--begin::Svg Icon | path: icons/duotune/arrows/arr029.svg-->
+                                        <span class="svg-icon svg-icon-2">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M14.5 20.7259C14.6 21.2259 14.2 21.826 13.7 21.926C13.2 22.026 12.6 22.0259 12.1 22.0259C9.5 22.0259 6.9 21.0259 5 19.1259C1.4 15.5259 1.09998 9.72592 4.29998 5.82592L5.70001 7.22595C3.30001 10.3259 3.59999 14.8259 6.39999 17.7259C8.19999 19.5259 10.8 20.426 13.4 19.926C13.9 19.826 14.4 20.2259 14.5 20.7259ZM18.4 16.8259L19.8 18.2259C22.9 14.3259 22.7 8.52593 19 4.92593C16.7 2.62593 13.5 1.62594 10.3 2.12594C9.79998 2.22594 9.4 2.72595 9.5 3.22595C9.6 3.72595 10.1 4.12594 10.6 4.02594C13.1 3.62594 15.7 4.42595 17.6 6.22595C20.5 9.22595 20.7 13.7259 18.4 16.8259Z" fill="currentColor" />
+                                                <path opacity="0.3" d="M2 3.62592H7C7.6 3.62592 8 4.02592 8 4.62592V9.62589L2 3.62592ZM16 14.4259V19.4259C16 20.0259 16.4 20.4259 17 20.4259H22L16 14.4259Z" fill="currentColor" />
+                                            </svg>
+                                        </span>
+                                        <!--end::Svg Icon-->
+                                    </a>
+                                    <!--end::Reload-->
+                                </div>
+                                <!--end::Actions-->
+                                <!--begin::Actions-->
+                                <div class="d-flex align-items-center flex-wrap gap-2">
+                                    <!--begin::Search-->
+                                    <div class="d-flex align-items-center position-relative">
+                                        <!--begin::Svg Icon | path: icons/duotune/general/gen021.svg-->
+                                        <span class="svg-icon svg-icon-2 position-absolute ms-4">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <rect opacity="0.5" x="17.0365" y="15.1223" width="8.15546" height="2" rx="1" transform="rotate(45 17.0365 15.1223)" fill="currentColor" />
+                                                <path d="M11 19C6.55556 19 3 15.4444 3 11C3 6.55556 6.55556 3 11 3C15.4444 3 19 6.55556 19 11C19 15.4444 15.4444 19 11 19ZM11 5C7.53333 5 5 7.53333 5 11C5 14.4667 7.53333 17 11 17C14.4667 17 17 14.4667 17 11C17 7.53333 14.4667 5 11 5Z" fill="currentColor" />
+                                            </svg>
+                                        </span>
+                                        <!--end::Svg Icon-->
+                                        <input type="text" data-kt-inbox-listing-filter="search" class="form-control form-control-sm form-control-solid mw-100 min-w-125px min-w-lg-150px min-w-xxl-200px ps-12" placeholder="Search Inbox" />
+                                    </div>
+                                    <!--end::Search-->
+                                </div>
+                                <!--end::Actions-->
+                            </div>
+                            <div class="card-body p-0">
+                                <!--begin::Table-->
+                                <table class="table table-hover table-row-dashed fs-6 gy-5 my-0" id="kt_inbox_listing">
+                                    <!--begin::Table head-->
+                                    <thead class="d-none">
+                                        <tr>
+                                            <th>Checkbox</th>
+                                            <th>Actions</th>
+                                            <th>Author</th>
+                                            <th>Title</th>
+                                            <th>Date</th>
+                                        </tr>
+                                    </thead>
+                                    <!--end::Table head-->
+                                    <!--begin::Table body-->
+                                    <tbody>
+                                        <form id="deleteMessages" action="{% url 'interactions:delete_messages' %}" method="POST">
+                                            {% csrf_token %}
+                                            {% for message in message_list %}
+                                                {% include "interactions/receivers_modal.html" %}
+                                                <tr>
+                                                    <td class="ps-9">
+                                                        <!--begin::Checkbox-->
+                                                        <div class="form-check form-check-sm form-check-custom form-check-solid mt-3">
+                                                            <input name="messageId" class="form-check-input" type="checkbox" value="{{ message.id }}" />
+                                                        </div>
+                                                        <!--end::Checkbox-->
+                                                    </td>
+                                                    <!--begin::Author-->
+                                                    <td class="w-150px w-md-175px">
+                                                        <a href="#" class="d-flex align-items-center text-dark">
+                                                            <!--begin::Name-->
+                                                            <a href="#" class="btn btn-primary er fs-6 px-4 py-2" data-bs-toggle="modal" data-bs-target="#recvModal{{message.id}}">
+                                                                Receivers
+                                                            </a>
+                                                            <!--end::Name-->
+                                                        </a>
+                                                    </td>
+                                                    <!--end::Author-->
+                                                    <!--begin::Title-->
+                                                    <td>
+                                                        <div class="text-dark mb-1">
+                                                            <!--begin::Heading-->
+                                                            <a href="{% url 'interactions:message_detail' message.id  %}" class="text-dark">
+                                                                <span class="fw-bold">{{ message.subject }}</span>
+                                                                <span class="fw-bold d-none d-md-inine">-</span>
+                                                                <span class="d-none d-md-inine text-muted">Thank you for ordering UFC 240 Holloway vs Edgar Alternate camera angles...</span>
+                                                            </a>
+                                                            <!--end::Heading-->
+                                                        </div>
+                                                        <!--begin::Badges-->
+                                                        {% for med in message.medium.all %}
+                                                            <div class="badge {% if forloop.counter == 1%} badge-light-success {% else %} badge-light-primary {% endif %}">{{ med.code }}</div>
+                                                        {% endfor %}
+                                                        <!-- <div class="badge badge-light-primary">inbox</div>
+                                                        <div class="badge badge-light-warning">task</div> -->
+                                                        <!--end::Badges-->
+                                                    </td>
+                                                    <!--end::Title-->
+                                                    <!--begin::Date-->
+                                                    <td class="w-100px text-end fs-7 pe-9">
+                                                        <span class="fw-semibold">{{ message.sent_at|date:'M d H:i' }}</span>
+                                                    </td>
+                                                    <!--end::Date-->
+                                                </tr>
+                                            {% endfor %}
+                                        </form>
+                                    </tbody>
+                                    <!--end::Table body-->
+                                </table>
+                                <!--end::Table-->
+                            </div>
+                        </div>
+                        <!--end::Card-->
+                    </div>
+                    <!--end::Content-->
+                </div>
+                <!--end::Inbox App - Messages -->
+            </div>
+            <!--end::Content container-->
+        </div>
+        <!--end::Content-->
+    </div>
+    <!--end::Content wrapper-->
+</div>
+{% endblock %}

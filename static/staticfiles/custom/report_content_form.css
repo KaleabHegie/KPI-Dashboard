@@ -1,0 +1,77 @@
+/* .report-content-div {
+    border: 1px solid rgba(190, 183, 183, 0.4);
+    padding: 3% 3%;
+    border-radius: 10px;
+} */
+
+/* .report-content {
+    margin-bottom: 10px;
+} */
+
+#report-content-title {
+    font-weight: bold;
+}
+
+.report-content-form-btns {
+    display: flex;
+    justify-content: end;
+}
+
+.report-content-form-btns i {
+    color: white;
+}
+
+#report-content-container {
+    margin-top: 20px;
+}
+
+.content-container {
+    display: none;
+}
+
+#report-form-dynamic-title {
+    margin-bottom: 20px;
+}
+.guidline-errors {
+    color: red;
+    display: none;
+}
+
+.guidline-correct {
+    /* margin: 2% 2% 0% 2% !important; */
+    color: green;
+    display: none;
+}
+
+.headers{
+    display: flex;
+    justify-content: space-between;
+    padding:0 2rem 0 0;
+}
+
+[type="file"] {
+    /* Style the color of the message that says 'No file chosen' */
+      color: #515151;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      padding: 0rem;
+    }
+    [type="file"]::-webkit-file-upload-button {
+      background: #c8d6da;
+      border: 2px solid #c8d6da;
+      border-radius: 0.5px;
+      color: #fff;
+      cursor: pointer;
+      font-size: 12px;
+      outline: none;
+      padding: 10px 25px;
+      text-transform: uppercase;
+      transition: all 1s ease;
+      margin-bottom: 3rem;
+    }
+    
+    /* [type="file"]::-webkit-file-upload-button:hover {
+      background: #fff;
+      border: 2px solid #535353;
+      color: #000;
+    } */

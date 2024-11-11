@@ -1,0 +1,433 @@
+{% load static %} {% load fontawesome_5 %}
+<!DOCTYPE html>
+<html lang="en">
+<!-- [Head] start -->
+<!-- Mirrored from ableproadmin.com/dashboard/index.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 16 May 2024 06:39:22 GMT -->
+
+<head>
+  <style>
+    #cke_id_text table {
+      width: fit-content !important;
+    }
+  </style>
+
+
+<style>
+   .unique-card .truncate-text {
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;  
+      font-weight: bold;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      height: 20px;
+    }
+
+
+</style>
+
+
+
+  <style>
+    /* Hide sidebar for tablets and desktops */
+    @media (min-width: 800px) {
+      .pc-sidebar {
+        display: none;
+      }
+    }
+  </style>
+  <title>Home | National dashboard</title>
+  <!-- [Meta] -->
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=800">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="description"
+    content="Ethiopian National Aggregated Data Dashboard: Real-Time Data Visualization and Sectoral Insights">
+  <meta name="author" content="MoPD">
+  <!-- [Favicon] icon -->
+  <link rel="icon" href="https://ableproadmin.com/assets/images/favicon.svg" type="image/x-icon" />
+  <!-- [Font] Family -->
+  <link rel="stylesheet" href="{% static 'dashoboard_assets/assets/fonts/inter/inter.css' %}" id="main-font-link" />
+  <!-- [Tabler Icons] https://tablericons.com -->
+  <link rel="stylesheet" href="{% static 'dashoboard_assets/assets/fonts/tabler-icons.min.css' %}" />
+  <!-- [Feather Icons] https://feathericons.com -->
+  <link rel="stylesheet" href="{% static 'dashoboard_assets/assets/fonts/feather.css' %}" />
+  <!-- [Font Awesome Icons] https://fontawesome.com/icons -->
+  <link rel="stylesheet" href="{% static 'dashoboard_assets/assets/fonts/fontawesome.css' %}" />
+  <!-- [Material Icons] https://fonts.google.com/icons -->
+  <link rel="stylesheet" href="{% static 'dashoboard_assets/assets/fonts/material.css' %}" />
+  <!-- [Template CSS Files] -->
+  <link rel="stylesheet" href="{% static 'dashoboard_assets/assets/css/style.css' %}" id="main-style-link" />
+  <link rel="stylesheet" href="{% static 'dashoboard_assets/assets/css/style-preset.css' %}" />
+  <link rel="stylesheet" href="{% static 'dashoboard_assets/assets/css/skeleton.css' %}" />
+
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css"
+    integrity="sha512-dPXYcDub/aeb08c63jRq/k6GaKccl256JQy/AnOq7CAnEZ9FzSL9wSbcZkMp4R26vBsMLFYH4kQ67/bbV8XaCQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+
+  <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}admin/css/widgets.css" />
+  <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}admin/css/base.css" />
+  <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}admin/css/forms.css" />
+
+  {% fontawesome_5_static %}
+  <script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
+  <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+  <script src="https://code.highcharts.com/stock/highstock.js"></script>
+  <script src="jquery-3.7.1.min.js"></script>
+  <link rel="stylesheet" src="{% static 'dashoboard_assets/assets/css/bigPie.css' %}" />
+</head><!-- [Head] end --><!-- [Body] Start -->
+
+<body data-pc-preset="preset-1" data-pc-sidebar-caption="true" data-pc-layout="vertical" data-pc-direction="ltr"
+  data-pc-theme_contrast="" data-pc-theme="light" id="body">
+  <!-- script for echarts 
+    <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js' %}"></script>
+  echart end -->
+  <!-- [ Pre-loader ] start -->
+  <div class="page-loader">
+    <div class="bar"></div>
+  </div>
+
+
+  <!-- [ Project Detail Modal ]  -->
+  <div class="modal fade" id="detailProjects" tabindex="-1" aria-labelledby="detailProjectsLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="detailProjectsLabel">
+            Project Information
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div id="ProjectdetailModalBody" class="modal-body"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- [ Header Topbar ] start -->
+  <header class="pc-header">
+    <div class="header-wrapper"><!-- [Mobile Media Block] start -->
+      <div class="me-auto pc-mob-drp">
+        <ul class="list-unstyled"><!-- ======= Menu collapse Icon ===== -->
+          <li class="pc-h-item pc-sidebar-popup"><a href="#" class="pc-head-link ms-0" id="mobile-collapse"><i
+                class="ti ti-menu-2"></i></a>
+          </li>
+          <div class="m-header">
+            <a href="#" class="b-brand text-primary"><!-- ========   Change your logo from here   ============ --> <img
+                src="{% static 'dashoboard_assets/assets/images/logo-dark.svg' %}" class="img-fluid logo-lg" alt="logo">
+              <span class="badge bg-light-success rounded-pill ms-2 ">Ministry of Planning and
+                Development</span></a>
+          </div>
+
+        
+        </ul>
+      </div><!-- [Mobile Media Block end] -->
+
+      <div class="ms-auto">
+        <ul class="list-unstyled">
+          <li class="dropdown pc-h-item">
+            <form class="d-flex" id="searchItemForm">
+              <input class="form-control me-2" style="width: 500px;" id="searchItemValue" list="autocomplete"
+                type="text" name="q" type="search" placeholder="Search" aria-label="Search"
+                placeholder="Enter Key Word">
+              <button type="submit" class="btn btn-primary rounded-circle">
+                <i class="bi bi-search"></i>
+              </button>
+              <datalist id="autocomplete"> </datalist>
+            </form>
+
+
+          </li>
+          <li class="dropdown pc-h-item"><a class="pc-head-link dropdown-toggle arrow-none me-0"
+              data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false"><svg
+                class="pc-icon">
+                <use xlink:href="#custom-sun-1"></use>
+              </svg></a>
+            <div class="dropdown-menu dropdown-menu-end pc-h-dropdown"><a href="#!" class="dropdown-item"
+                onclick="layout_change('dark')"><svg class="pc-icon">
+                  <use xlink:href="#custom-moon"></use>
+                </svg> <span>Dark</span> </a><a href="#!" class="dropdown-item" onclick="layout_change('light')"><svg
+                  class="pc-icon">
+                  <use xlink:href="#custom-sun-1"></use>
+                </svg> <span>Light</span> </a><a href="#!" class="dropdown-item" onclick="layout_change_default()"><svg
+                  class="pc-icon">
+                  <use xlink:href="#custom-setting-2"></use>
+                </svg> <span>Default</span></a></div>
+          </li>
+          <li class="dropdown pc-h-item"><a class="pc-head-link dropdown-toggle arrow-none me-0"
+              data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false"><svg
+                class="pc-icon">
+                <use xlink:href="#custom-setting-2"></use>
+              </svg></a>
+            <div class="dropdown-menu dropdown-menu-end pc-h-dropdown">
+              <a href="{% url "logout_url" %}" class="dropdown-item"><i class="ti ti-power"></i>
+                <span>Logout</span></a>
+            </div>
+          </li>
+
+        </ul>
+      </div>
+
+    </div>
+  </header>
+
+
+  <div class="pc-container">
+    <div class="pc-content">
+      <!-- [ Main Content ] start -->
+      <div class="row">
+        <div class="col-12">
+          <div class="card welcome-banner bg-blue-800">
+            <div class="card-body">
+              <div class="row">
+
+                <div class="col-lg-12  col-12">
+                  <div class="p-4">
+
+                    <div class="row">
+
+                    <div class="col-md-6  col-xl-4 d-none d-md-block topic-card"  data-id="Performance Tracking"  bis_skin_checked="1">
+                      <div class="card  social-widget-card bg-success">
+                                  <div class="card-body d-flex justify-content-between align-items-center p-2" bis_skin_checked="1">
+                                      <div class="d-flex flex-column" bis_skin_checked="1">
+                                          <h5 class="text-white m-1">Policy level Performance Tracking</h5>
+                                          <span class=" text-white m-t-10">24</span>
+                                      </div>
+                                      <i class="fa fa-briefcase" aria-hidden="true"></i>
+                
+                                  </div>
+                              </div>
+                          </div>
+                    
+                    
+
+
+                          <div class="col-md-6  col-xl-4 d-none d-md-block topic-card"  data-id="Performance Tracking"  bis_skin_checked="1">
+                            <div class="card  social-widget-card bg-success">
+                                        <div class="card-body d-flex justify-content-between align-items-center p-2" bis_skin_checked="1">
+                                            <div class="d-flex flex-column" bis_skin_checked="1">
+                                                <h5 class="text-white m-1">ministry Performance Tracking</h5>
+                                                <span class=" text-white m-t-10">24</span>
+                                            </div>
+                                            <i class="fa fa-briefcase" aria-hidden="true"></i>
+                      
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+                    
+                        </div>
+                </div>
+
+                
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===   Ministry Lists === -->
+      <div class="row" id="ministry-card-lists"></div>
+
+      <img src="" alt="">
+      <!--Loading Skeleton-->
+      <div class="row" id="loading-skeleton-topic"></div>
+      <!-- end -->
+
+
+      <div class="row container-fluid justify-content-center">
+        <div class="container-fluid m-3 p-2 ">
+          <form id="searchItemForm">
+            <div class="row justify-content-center">
+              <div class="col-md-8" id="arrow">
+                <label id="goalDropDownOptionLabel" for="goalDropDownOption" class="fw-bold h2">Goal</label>
+                <select id="goalDropDownOption" class="form-control text-center p-4 shadow">
+                </select>
+              </div>
+          </form>
+        </div>
+        <div>
+
+          <h2 id="ministry_name"></h2>
+          <div class="row container-fluid justify-content-center">
+            <div class="container-fluid m-3 p-2 ">
+
+            </div>
+            <div>
+
+              <h2 class="text-success">
+               
+              </h2>
+            </div>
+
+
+
+            <!--
+            ===   Category Lists ===
+            -->
+            <div class="row container-fluid justify-content-start" id="kra-card-list"></div>
+
+            <!--Loading Skeleton-->
+            <div class="row justify-content-center" id="loading-skeleton-category"></div>
+          </div>
+          <!-- [ Main Content ] end -->
+
+          <!-- Modal -->
+          <!-- Modal -->
+          <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-fullscreen-lg-down modal-dialog-scrollable">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel"></h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="analytics-tab-1-pane" role="tabpanel"
+                      aria-labelledby="analytics-tab-1" tabindex="0">
+                      <div id="spinnerLoading"></div>
+
+                      <div class="row">
+                        <div class="col-md-4">
+                          <div class="card" style="width: 22rem;">
+                            <div class="card-header bg-success text-white" id="kpi-name">Header</div>
+                            <ul class="list-group list-group-flush">
+                              <li class="list-group-item  d-flex justify-content-between "><span>KPI
+                                  Measurment</span><span class="badge bg-success text-wrap" id="kpi-measure"></span>
+                              </li>
+                              <li class="list-group-item  d-flex justify-content-between"><span>KPI
+                                  Charcteristics</span><span class="badge bg-success text-wrap" id="kpi-char"> </span>
+                              </li>
+                              <li class="list-group-item  d-flex justify-content-between"><span>KPI Weight
+                                </span><span class="badge bg-success text-wrap" id="kpi-Weight"></span></li>
+                              <li class="list-group-item  d-flex justify-content-between"><span
+                                  class="me-5">KRA</span><span class="badge bg-success text-wrap" id="kpi-KRA"></span>
+                              </li>
+                              <li class="list-group-item  d-flex justify-content-between"><span
+                                  class="me-5">Goal</span><span class="badge bg-success text-wrap" id="kpi-Goal"></span>
+                              </li>
+                              <li class="list-group-item  d-flex justify-content-between">
+                                <span>Ministry</span><span class="badge bg-success text-wrap" id="kpi-Minstry"></span>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                        <div class="col-md-8">
+                          <h5 class="text-center" id="Year-table"></h5>
+                          <div id="Year-detail-table"></div>
+                          <div class="card">
+
+
+                          </div>
+
+                        </div>
+                      </div>
+                      <div class="mt-1 container">
+                        <h5 class="text-center" id="Quarter-table"></h5>
+                        <div class="col-12" id="Quarter-detail-table"></div>
+
+                      </div>
+
+                      <div class="row mt-1 container">
+                        <h5 class="text-center" id="Month-table"></h5>
+                        <div class="col-12" id="Month-detail-table"></div>
+                      </div>
+
+                      <div class="row">
+                        <div class="col-md-6 pt-5" id="bar-container">
+                          <figure class="highcharts-figure">
+                            <div id="bar"></div>
+                          </figure>
+                        </div>
+                        <div class="col-md-6" id="quarter-chart">
+                          <select class="form-select form-select-sm mt-1" id="yearSelect"></select>
+                          <figure class="highcharts-figure">
+                            <div id="QuarterBar"></div>
+                          </figure>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-12" id="month-chart">
+                          <select class="form-select form-select-sm" id="yearMonthSelect"></select>
+                          <figure class="highcharts-figure mt-1">
+                            <div id="area"></div>
+                          </figure>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Pagination -->
+        <div class="m-5" id="Pagination"></div>
+      </div>
+    </div>
+  </div>
+  <!-- [ Main Content ] end -->
+
+  <footer class="pc-footer">
+    <div class="footer-wrapper container-fluid">
+      <div class="row">
+        <div class="col my-1">
+          <p class="m-0">
+            Dashboard &#9829; crafted by Team
+            <a href="#">MoPD</a>
+          </p>
+        </div>
+        <div class="col-auto my-1">
+          <ul class="list-inline footer-link mb-0">
+            <li class="list-inline-item">
+              <a href="https://mopd.gov.et/en/" target="_blank">Home</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+
+
+  <!-- [ Main Content ] end -->
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"
+  integrity="sha512-k37wQcV4v2h6jgYf5IUz1MoSKPpDs630XGSmCaCCOXxy2awgAWKHGZWr9nMyGgk3IOxA1NxdkN8r1JHgkUtMoQ=="
+  crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+<script src="{% static 'dashoboard_assets/assets/js/plugins/apexcharts.min.js' %}"></script>
+<script src="{% static 'dashoboard_assets/assets/js/pages/dashboard-default.js' %}"></script>
+<!-- [Page Specific JS] end --><!-- Required Js -->
+<script src="{% static 'dashoboard_assets/assets/js/plugins/popper.min.js' %}"></script>
+<script src="{% static 'dashoboard_assets/assets/js/plugins/simplebar.min.js' %}"></script>
+<script src="{% static 'dashoboard_assets/assets/js/plugins/bootstrap.min.js' %}"></script>
+<script src="{% static 'dashoboard_assets/assets/js/fonts/custom-font.js' %}"></script>
+<script src="{% static 'dashoboard_assets/assets/js/pcoded.js' %}"></script>
+<script src="{% static 'dashoboard_assets/assets/js/plugins/feather.min.js' %}"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="{% static 'dashoboard_assets/assets/js/Dashobard-api.js' %}"></script>
+<script src="{% static 'dashoboard_assets/assets/js/indicator-detail.js' %}"></script>
+<script src="https://code.highcharts.com/modules/sunburst.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://code.highcharts.com/maps/modules/exporting.js"></script>
+
+
+
+
+</html>

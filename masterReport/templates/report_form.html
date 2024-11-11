@@ -1,0 +1,199 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  {% include "head.html" %}
+  <link href="{% static 'custom/base_form.css' %}" rel="stylesheet" type="text/css" />
+  <link href="{% static 'custom/report_content_form.css' %}" rel="stylesheet" type="text/css" />
+  
+  <script src="{% static 'plugins/js/tinymce/tinymce.min.js' %}"></script>
+
+  <body class="hold-transition sidebar-mini">
+    <div class="wrapper">
+      {% include "navbar.html" %} 
+	  
+	  {% include "sidebar.html" %}
+      <div class="content-wrapper">
+
+
+
+
+
+
+		
+<div class="content-header mb-2">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-6">
+            <h3 class="card-title">
+                <a class ="text-decoration-none" href="{{request.META.HTTP_REFERER|escape}}">
+                    <i class="fa fa-arrow-left text-info" aria-hidden="true"></i>
+                </a>
+            </h3>
+        </div><!-- /.col -->
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="#">Report</a></li>
+            <li class="breadcrumb-item active">Report Form</li>
+          </ol>
+        </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+
+  <section class="content">
+		<div class="container-fluid">
+			<div class="card card-danger h-md-100 form-card">
+				{% if rep_type == 0%}
+				<div class="card card-custom bg-light-warning card-stretch gutter-b">
+					<div class="card-body">
+						<div class="d-flex align-items-center justify-content-between p-6 flex-lg-wrap flex-xl-nowrap">
+							<div class="d-flex flex-column ml-6">
+								<a href="#" class="h4 text-warning text-hover-primary mb-5">
+									<i class="fa fa-exclamation-triangle text-warning" aria-hidden="true"></i> You have passed the deadline for this report.</a>
+							</div>
+						</div>
+					</div>
+				</div>
+				{% else %}
+				<div class="">
+					<div class="card card-info">
+						<h5 class="card-header">
+							<strong>
+								{{ form_title }}
+							</strong>
+						</h5>
+					</div>
+				</div>
+					<div class="card-body d-flex flex-column justify-content-between bgi-no-repeat bgi-size-cover bgi-position-x-center pb-10 mb-10">
+						<form method={{form_method}} {% if filefield %} enctype="multipart/form-data" {% endif %}>
+							{% csrf_token %}
+							
+							{% if form.errors %}
+								<p class="error-text">Please correct the following fields</p>
+								{% for field in form %}
+
+									{% for error in field.errors %}
+											<p class="error-text">{{field.label}}: {{ error|escape }}<p>
+									{% endfor %}
+
+								{% endfor %}
+							{% endif %}
+							
+							<div id="report_type_content_container">
+								{% comment %} <p class="form-title" id="report-form-dynamic-title">{{ rep_type.name }}</p> {% endcomment %}
+								<input type="hidden" value="{{ rep_type.id }}" name="report_type" required/> 
+								<div id="main-container">
+									{% comment %} <input type="hidden" id="id_selected_report_type" name="selected_report_type"/> {% endcomment %}
+									
+									{% comment %} {% for rep_type in rep_types %} {% endcomment %}
+										
+										<div class="" id="content-container-main-{{ rep_type.id }}">
+											<div id="content-{{ rep_type.id }}-container">
+												{% for inp in rep_type.report_guideline.all %}
+													<div class="">
+														<div class="headers"  style="margin-bottom:0.5rem">
+															<label for="id_content_{{ inp.id }}" class="" required>{{ inp.section_title }}</label>
+															<span class="word-limit" style="margin-left:35rem;">Word limit: <strong>{{ inp.section_word_limit }}</strong></span>
+														</div>
+														<textarea name="{{ inp.title }}_content" id="id_content_{{ inp.id }}" class="section-content" data-word-limit={{inp.section_word_limit}}>
+														</textarea>
+														<input type="hidden"/>
+														<p id="id_content_{{ inp.id }}_error" class="guidline-errors">Word count has exceeded the word limit for this section.</p>
+													</div>
+													<hr  style="margin:2rem"/>
+												{% endfor %}
+											</div>
+										</div>
+
+									{% comment %} {% endfor %} {% endcomment %}
+
+								</div>
+							</div>
+
+							
+							{% for field in form %}
+								<div class="mb-10">
+									<label for="{{ field.auto_id }}" class="required form-label">{{ field.label }}</label>
+									{% if field.errors %}
+										<div class="invalid-form-field mb-10">
+											{{ field }}
+										</div>
+										{% for error in field.errors %}
+											<p class="error-text">{{ error }}</p>
+										{% endfor %}
+									{% else %}
+									{% comment %} <div class="input-group"> {% endcomment %}
+										{{ field }}
+									{% comment %} </div> {% endcomment %}
+										{% comment %} {% if current_table %}
+											<p>Current table: {{  current_table }}</p>
+										{% endif %} {% endcomment %}
+									{% endif %}
+										
+									<p class="help-text">{{ field.help_text }}</p>
+								</div>
+							{% endfor %}
+							
+							<input type="submit" value="{{ form_button }}" class="btn btn-md btn-info" id="form-submit-button">
+
+						</form>
+					</div>
+				{% endif %}
+			</div>
+		</div>
+	</section>
+
+
+
+	  </div>
+      
+
+
+      {% include "footer.html" %}
+	 
+	  <script>
+		function characterCount() {
+			const wordcount = tinymce.activeEditor.plugins.wordcount;
+			alert(wordcount.body.getWordCount());
+		}
+	
+		function getWordLimit() {
+			return tinymce.activeEditor.targetElm.getAttribute('data-word-limit');
+		}
+	
+		tinymce.init({
+		smart_paste: true, // Disable automatic style cleanup
+		plugins: 'advlist print autolink lists link image charmap preview anchor pagebreak code visualchars wordcount table paste fullscreen insertdatetime media',
+		toolbar: 'undo redo bold italic underline paste strikethrough fontselect fontsizeselect formatselect alignleft alignright alignjustify outdent indent numlist bullist checklist forecolor backcolor casechange permanentpen formatpainter removeformat pagebreak charmap emoticons fullscreen preview save print insertfile image media pageembed template link anchor codesample a11ycheck',
+		selector: ".section-content",
+			toolbar: '',
+	
+			setup: function(ed) {
+	
+				ed.on('KeyUp', function(e) {
+					let wordLimit = parseInt(getWordLimit(), 10); // Get the word limit
+					let wordCount = tinymce.activeEditor.plugins.wordcount.getCount();
+	
+					if (wordCount >= wordLimit) {
+						document.getElementById(`${ed.targetElm.id}_error`).style.display = 'block';
+						let allowedKeys = [8, 9, 16, 17];
+						if (allowedKeys.indexOf(e.keyCode) === -1) {
+							ed.setContent(ed.getContent().substr(0, wordLimit)); // Limit content length
+						}
+					} else {
+						document.getElementById(`${ed.targetElm.id}_error`).style.display = 'none';
+					}
+				});
+	
+				ed.on('change', function(e) {
+					ed.targetElm.textContent = ed.getContent();
+				});
+			}
+		});
+	</script>
+	
+
+
+      
+  </body>
+</html>

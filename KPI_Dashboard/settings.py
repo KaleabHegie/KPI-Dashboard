@@ -41,14 +41,20 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'DashboardApp',
+    'resultsFramework',
     'userManagement',
     'import_export',
+    'masterReport',
     'fontawesome_5',
+    'mptt',
+    'tinymce',
+    'widget_tweaks',
+    'interactions',
     'User_Admin',
     'colorfield',
-     'corsheaders',
-     'rest_framework',
+    'corsheaders',
+    'rest_framework',
+    'comment',
 ]
 
 MIDDLEWARE = [
@@ -71,7 +77,7 @@ ROOT_URLCONF = 'KPI_Dashboard.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['templates'],
+        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -165,3 +171,12 @@ EMAIL_HOST_USER = 'mikiyasmebrate2656@gmail.com'
 EMAIL_HOST_PASSWORD = 'xtajckwklnucoblh'  # Replace with your actual Gmail password
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
+
+SMS_KEY = os.getenv('SMS_KEY')
+SMS_DEVICE_ID = os.getenv('SMS_DEVICE_ID')
+
+WHATSAPP = {
+    'access_token': os.getenv('WHATSAPP_ACCESS_TOKEN'),
+    'phone_id': os.getenv('WHATSAPP_PHONE_ID'),
+    'template_name': os.getenv('WHATSAPP_TEMPLATE') or 'hello_world',
+}

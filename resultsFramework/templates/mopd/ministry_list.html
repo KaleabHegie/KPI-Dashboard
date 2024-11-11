@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+  {% include "head.html" %}
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.css" />
+  
+
+  
+  <body class="hold-transition sidebar-mini">
+    <div class="wrapper">
+      {% include "navbar.html" %} {% include "sidebar.html" %}
+    <div class="content-wrapper">
+
+        <div class="container-fluid">
+            <div class="row ">
+                <div class="col-lg-12">
+                  <div class="card  mt-4">
+                    <div class="card-header">
+                      
+                      <span class="badge bg-info mb-1">percent of no target kpi/year </span>   
+                      <span class=" badge bg-danger mt-1">percent of no performance kpi/ year</span> 
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                      <table id="example2" class="table table-hover table-sm">
+                        <thead>
+                            <tr>
+                              <th>#</th>
+                                <th>Ministry Name</th>
+                                <th>Indicator Count</th>
+                      
+                                {% for year in years %}
+                                <th>{{ year.year_amh }}</th>
+                       
+                            {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for ministry in ministry_data %}
+                            <tr>
+                              <td>{{forloop.counter}}</td>
+                                <td>{{ ministry.ministry_name }}</td>
+                                <td>{{ ministry.indicator_count }}</td>
+                          
+
+                                 {% comment %} <td>{{ministry.annual_plan_counts}}</td>  {% endcomment %}
+                                
+                                {% for  year_data, value in ministry.annual_plan_counts.items %}
+
+                                {% comment %} {{ value.percentage_no_performance}} {% endcomment %}
+                                
+                                <td>  <span class="badge  mb-1" style="background-color:{{value.color1}}">{{value.percentage_no_target|floatformat:2}}</span>   
+                                    {% if year_data == 2017 or year_data == 2018 %}
+                                  
+                                    {% else %}
+                                    <span class=" badge  mt-1" style="background-color:{{value.color2}}">{{value.percentage_no_performance|floatformat:2}}</span>
+                                    {% endif %}
+                                
+                                
+                                </td>
+                            
+                                
+                                {% endfor %}
+                          
+                              
+                              
+
+
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                    <!-- /.card-body -->
+                    
+                  </div>
+                  <!-- /.card -->
+      
+                  
+                  <!-- /.card -->
+                </div>
+                <!-- /.col -->
+             
+                <!-- /.col -->
+            </div>
+
+
+
+        </div>
+    </div>
+      
+
+
+      {% include "footer.html" %}
+
+      <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.js"></script>
+      <script>
+        $(function () {
+        
+          $('#example2').DataTable({
+            "paging": true,
+            "lengthChange": true,
+            "searching": true,
+            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+            "ordering": true,
+            "info": true,
+            "autoWidth": true,
+            "responsive": true,
+          });
+        });
+      </script>
+      
+  </body>
+</html>

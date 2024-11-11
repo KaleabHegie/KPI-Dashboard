@@ -1,0 +1,433 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Responsible nationalPlan</title>
+    {% include 'head.html'%}
+  </head>
+  <body class="hold-transition sidebar-mini layout-fixed">
+    {% include 'navbar.html'%} 
+    {% include 'userAdmin/sidebar.html'%}
+
+    {% include 'userAdmin/messages.html' %}
+
+    <!--Body Start-->
+      <!--Add Excel Data-->
+  <div class="modal fade" id="nationalPlanExcel" tabindex="-1" aria-labelledby="nationalPlanExcelLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="nationalPlanExcelLabel">
+            Strategic Goal
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form method='POST' name="fileTopic" enctype="multipart/form-data">
+          <div class="modal-body">
+
+            {% csrf_token %}
+            <p class="text-info">Click Download button to download sample Excel format.
+              <a href="{% static 'SampleExcel/strategic_goal_SampleExcel.xlsx' %}" download="CategorySample.xlsx"
+              class="btn btn-info">Download</a>
+            </p>
+
+
+            <div class="row justify-content-start mt-5">
+              <div class="col-12">
+                <label for="">Add Excel</label>
+                {{formFile.as_p}}
+
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+              Cancel
+            </button>
+            <button type="submit" name="fileNationalPlanValue" class="btn btn-primary">Add Goal</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  </div>
+
+    <!--Edit Strategic Goal Modal-->
+  <!-- Modal -->
+  <div class="modal fade" id="EditStrategicGoalModal" tabindex="-1" aria-labelledby="EditStrategicGoalModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="EditStrategicGoalModalLabel">Edit Plan</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form id="updateGoalForm">
+          <div class="modal-body">
+            <input type="hidden" class="form-control" value="" id="goalId">
+            {{form.as_p}}
+            </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button id="savePlan" type="submit" class="btn btn-primary">Save changes</button>
+            <button style="display: none;" id="btnLoadding" class="btn btn-primary" type="button" disabled>
+              <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+              Loading...
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <!--End Modal -->
+
+          <!--Delete Strategic Goal  Modal-->
+  <!-- Modal -->
+  <div class="modal fade" id="deleteGoalModal" tabindex="-1" aria-labelledby="deleteGoalModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteGoalModalLabel">Delete Strategic Goal</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p class="h4 fw-normal" id="deleteMessageGoal"></p>
+        </div> 
+          
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <a href="#" id="deleteGoalAnchor" type="submit" class="btn btn-danger">Delete</a>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+  <!--End Modal -->
+  
+    <!--Add new Strategic Goal Modal-->
+  <!-- Modal -->
+  <div class="modal fade" id="addNationalGoalModal" tabindex="-1" aria-labelledby="addNationalGoalModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addNationalGoalModalLabel">Add Strategic Goal</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form name="addStrategicGoalForm" method="post">
+          {%csrf_token%}
+          <div class="modal-body">
+            {{form.as_p}}
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" name="addStrategicGoalForm" class="btn btn-primary">Save changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <!--End Modal -->
+
+
+
+
+
+
+    <div class="content-wrapper">
+      <div class="content-header">
+
+        <!--Multi Insert-->
+        <button type="button" class="btn btn-success mb-2" data-bs-toggle="modal" data-bs-target="#nationalPlanExcel"
+        data-bs-whatever="@mdo">
+        <i class="fa fa-database"></i> Multi-Insert
+      </button>
+
+      <!-- Add Goal -->
+      <button type="button" class="btn btn-success mb-2" data-bs-toggle="modal" data-bs-target="#addNationalGoalModal"
+        data-bs-whatever="@mdo">
+        + Add Goal
+      </button>
+
+      <a type="button"  href="{% url 'export_strategic_goal' %}"   download  class="btn float-end btn-primary me-3 mb-2">
+        <i class="fa fa-download"></i> Download
+     </a>
+
+      {% include 'messages.html' %}
+      <div class="row justify-content-center">
+        <div class="col-6">
+          {% if form.errors %}
+          <ul class="text-danger">
+            {% for field, errors in form.errors.items %}
+            {% for error in errors %}
+            <li>{{ field }}: {{ error }}</li>
+            {% endfor %}
+            {% endfor %}
+          </ul>
+          {% endif %}
+        </div>
+      </div>
+
+
+        <div class="">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th scope="col" >#</th>
+                  <th scope="col">English</th>
+                  <th scope="col">Amharic</th>
+                  <th scope="col">Goal Weight</th>
+                  <th scope="col">National Plan</th>
+                  <th scope="col">Responsible Minisry</th>
+                  <th scope="col">Is Goal Shared</th>
+                  <th scope="col">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for goal in strategicGoals %}
+                <tr>
+                  <td class="fw-bold" scope="row">{{count | add:forloop.counter}}</td> 
+                  <td id="goal_name_eng_{{goal.id}}">{{goal.goal_name_eng}}</td>
+                  <td id="goal_name_amh_{{goal.id}}">{{goal.goal_name_amh}}</td>
+                  <td><div class="btn btn-primary btn-xs" id="goal_weight_{{goal.id}}">{{goal.goal_weight}}</div></td>
+                  <td  id="national_plan_{{goal.id}}">{{goal.national_plan}}</td>
+                  <td id="responsible_ministries_{{goal.id}}">{{goal.responsible_ministries}}</td>
+                  <td id="goal_is_shared_{{goal.id}}">
+                  {% if goal.goal_is_shared %}
+                  <div class="text-success fw-bold">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-patch-check-fill" viewBox="0 0 16 16">
+                      <path d="M10.067.87a2.89 2.89 0 0 0-4.134 0l-.622.638-.89-.011a2.89 2.89 0 0 0-2.924 2.924l.01.89-.636.622a2.89 2.89 0 0 0 0 4.134l.637.622-.011.89a2.89 2.89 0 0 0 2.924 2.924l.89-.01.622.636a2.89 2.89 0 0 0 4.134 0l.622-.637.89.011a2.89 2.89 0 0 0 2.924-2.924l-.01-.89.636-.622a2.89 2.89 0 0 0 0-4.134l-.637-.622.011-.89a2.89 2.89 0 0 0-2.924-2.924l-.89.01zm.287 5.984-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7 8.793l2.646-2.647a.5.5 0 0 1 .708.708"/>
+                    </svg>
+                  </div>
+                  {% else %}
+                 <div class="text-danger">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
+                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z"/>
+                  </svg>
+                 </div>
+                  {% endif %}
+                  </td>
+
+                  <td>
+                    <button  id="goalButton_{{goal.id}}" type="button" class="btn btn-outline-warning btn-sm m-2 btn-edit "
+                      data-name-amh="{{goal.goal_name_eng}}"
+                      data-name-eng="{{goal.goal_name_amh}}"
+                      data-weight="{{goal.goal_weight}}"
+                      data-is-shared="{{goal.goal_is_shared}}"
+                      data-national-plan="{{goal.national_plan.id}}"
+                      data-responsible-ministries="{{goal.responsible_ministries.id}}"
+                      data-id="{{goal.id}}"
+                      data-bs-toggle="modal" 
+                      data-bs-target="#EditStrategicGoalModal"
+                      data-bs-whatever="@mdo"><i class="fa fa-pen"></i> </button>
+                    <button  class="btn btn-outline-danger btn-sm btn-delete m-2"  data-bs-toggle="modal" data-bs-target="#deleteGoalModal"
+                    data-bs-whatever="@mdo"  data-name-eng="{{goal.goal_name_eng}}"   data-id="{{goal.id}}"><i class="fa fa-trash"></i> </button>
+                  </td>
+
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+
+             <!-- Pagination -->
+             <nav aria-label="Page navigation example">
+                <ul class="pagination pagination-circle pagination-outline justify-content-center" >
+                {% if strategicGoals.has_previous %}
+                  <li class="page-item">
+                  <a class="page-link" href="?page={{ strategicGoals.previous_page_number }}">Previous</a>
+                  </li>
+                {% else %}
+                  <li class="page-item disabled">
+                  <a class="page-link" href="#" tabindex="-1" aria-disabled="True">Previous</a>
+                  </li>
+                {% endif %}
+            
+                {% if strategicGoals.number|add:'-4' > 1 %}
+                  <li class="page-item"><a class="page-link" href="?page={{ strategicGoals.number|add:'-5' }}">&hellip;</a></li>
+                {% endif %}
+            
+                {% for i in strategicGoals.paginator.page_range %}
+                  {% if strategicGoals.number == i %}
+                    <li class="page-item active" aria-current="page">
+                    <span class="page-link">
+                    {{ i }}
+                    <span class="sr-only">(current)</span>
+                    </span>
+                  </li>
+                  {% elif i > strategicGoals.number|add:'-5' and i < strategicGoals.number|add:'5' %}
+                     <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                  {% endif %}
+                {% endfor %}
+            
+                {% if strategicGoals.paginator.num_pages > strategicGoals.number|add:'4' %}
+                   <li class="page-item"><a class="page-link" href="?page={{ strategicGoals.number|add:'5' }}">&hellip;</a></li>
+                {% endif %}
+            
+                {% if strategicGoals.has_next %}
+                  <li class="page-item">
+                  <a class="page-link" href="?page={{ strategicGoals.next_page_number }}">Next</a>
+                  </li>
+                {% else %}
+                  <li class="page-item disabled">
+                  <a class="page-link" href="#" tabindex="-1" aria-disabled="True">Next</a>
+                  </li>
+                {% endif %}
+                </ul>
+              </nav>
+
+              
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!--Body End-->
+    {% include 'footer.html' %}
+
+    <script>
+      $(document).ready(function(){
+
+        //Event handler that handle on Click to delete
+       $(".btn-delete").on('click', function(){
+          const buttonData = $(this).data()
+          $("#deleteGoalAnchor").attr("href", `/delete_strategic_goal/${buttonData.id}`)
+          $("#deleteMessageGoal").html(`Are you sure you want to delete <div> <code> ${buttonData.nameEng}</code>? </div> `)
+        })
+
+
+        //function update and set modal data
+        function handleUpdateModalStrategicGoal(goalNameEng, goalNameAmh, goalWeight, goalIsShared, nationalPlan, responsibleMinistries, id){
+          //format date
+            $("#id_goal_name_eng").val(goalNameEng)
+            $("#id_goal_name_amh").val(goalNameAmh)
+            $("#id_goal_weight").val(goalWeight)
+            $("#id_goal_is_shared").prop( "checked", goalIsShared == "True" ? true : false );
+            $("#id_national_plan").val(nationalPlan).change();
+            $("#id_responsible_ministries").val(responsibleMinistries).change();;
+            $("#goalId").val(id)
+        };
+
+
+        //Event handler that handle button on Click
+        $(".btn-edit").on('click', function(){
+          const buttonData = $(this).data()
+          //Open Modal
+          handleUpdateModalStrategicGoal(buttonData.nameEng, buttonData.nameAmh, buttonData.weight, buttonData.isShared,  buttonData.nationalPlan, buttonData.responsibleMinistries, buttonData.id)
+        });
+
+        // Function to show toast messages
+        function showToast(title, body, cssClass) {
+          $(document).Toasts('create', {
+              class: cssClass,
+              title: title,
+              subtitle: 'MoPD',
+              autohide: true,
+              delay: 3000, // Autohide after 3 seconds
+              body: body
+          });
+        }
+
+         //Event handler that handle form on submit 
+         $("#updateGoalForm").on('submit', function(e){
+          e.preventDefault()
+          let goalNameEng = $("#id_goal_name_eng").val()
+          let goalNameAmh = $("#id_goal_name_amh").val()
+          let goalWeight = $("#id_goal_weight").val()
+          let goalShared = $("#id_goal_is_shared").prop( "checked")
+          let goalNationalPlan = $("#id_national_plan").val()
+          let goalResponsibleMinistries = $("#id_responsible_ministries").val()
+          let id = $("#goalId").val()
+
+
+    
+         $.ajax({
+            type: 'POST',
+            url : '{% url "update_strategic_goal" %}',
+            data: {
+              'goal_name_eng' : goalNameEng,
+              'goal_name_amh' : goalNameAmh,
+              'goal_weight' : goalWeight,
+              'goal_is_shared' : goalShared,
+              'national_plan' : goalNationalPlan,
+              'responsible_ministries' : goalResponsibleMinistries,
+              'id' : id,
+              csrfmiddlewaretoken: '{{csrf_token}}'
+            },
+            beforeSend: function() {
+              $('#savePlan').hide()
+               $("#btnLoadding").show();
+             },
+             // hides the loader after completion of request, whether successfull or failor.             
+             complete: function() {
+              //Show save button finished 
+               $('#savePlan').show()
+               $("#btnLoadding").hide();
+             },
+            success: function(response){
+                  
+              if(response.success){
+                //Show Success Message
+                showToast('&#128515 Hello, User', 'Successfully Updated', 'bg-success' )
+                
+               let goalNameEngHtml = $('#goal_name_eng_'+id)
+               let goalNameAmhHtml = $('#goal_name_amh_'+id)
+               let goalWeightHtml = $('#goal_weight_'+id)
+               let nationalPlanHtml = $('#national_plan_'+id)
+               let responsibleMinistriesHtml = $('#responsible_ministries_'+id)
+               let goalIsSharedHtml = $('#goal_is_shared_'+id)
+               let goalButtonHtml = $("#goalButton_"+id)
+             
+    
+                //update table value
+                goalNameEngHtml.text(goalNameEng)
+                goalNameAmhHtml.text(goalNameAmh)
+                goalWeightHtml.text(goalWeight)
+                goalIsSharedHtml.html(goalShared ? 
+                ` <div class="text-success fw-bold">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-patch-check-fill" viewBox="0 0 16 16">
+                      <path d="M10.067.87a2.89 2.89 0 0 0-4.134 0l-.622.638-.89-.011a2.89 2.89 0 0 0-2.924 2.924l.01.89-.636.622a2.89 2.89 0 0 0 0 4.134l.637.622-.011.89a2.89 2.89 0 0 0 2.924 2.924l.89-.01.622.636a2.89 2.89 0 0 0 4.134 0l.622-.637.89.011a2.89 2.89 0 0 0 2.924-2.924l-.01-.89.636-.622a2.89 2.89 0 0 0 0-4.134l-.637-.622.011-.89a2.89 2.89 0 0 0-2.924-2.924l-.89.01zm.287 5.984-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7 8.793l2.646-2.647a.5.5 0 0 1 .708.708"/>
+                    </svg>
+                  </div>` : 
+                  `  <div class="text-danger">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
+                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z"/>
+                  </svg>
+                 </div>`)
+                nationalPlanHtml.text($("#id_national_plan option[value="+goalNationalPlan+"]").text())
+                responsibleMinistriesHtml.text($("#id_responsible_ministries option[value="+goalResponsibleMinistries+"]").text())
+                
+
+    
+              //   //update button value
+                goalButtonHtml.data("name-amh" ,goalNameAmh)
+                goalButtonHtml.data("name-eng" ,goalNameEng)
+                goalButtonHtml.data("weight" ,goalWeight)
+                goalButtonHtml.data("is-shared" ,goalShared == true ? "True" : "False" )  
+                goalButtonHtml.data("national-plan" ,goalNationalPlan)
+                goalButtonHtml.data("responsible-ministries" ,goalResponsibleMinistries)
+               
+              }else{
+                // Show an error toast message
+                showToast('&#128532 Hello User', 'Failed to update Strategic Goal.', 'bg-danger');
+              }
+    
+             $('#EditStrategicGoalModal').modal('hide');
+              
+            },
+            error: function() {
+              // Show an error toast message
+              showToast('&#128532 Hello User', 'An error occurred while updating Strategic goal', 'bg-danger');
+            },
+         })
+    
+        })
+    
+
+        
+
+      })
+    </script>
+  </body>
+</html>

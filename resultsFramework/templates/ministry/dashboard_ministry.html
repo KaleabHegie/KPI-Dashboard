@@ -1,0 +1,640 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  {% include "head.html" %}
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/highcharts-more.js"></script>
+  <script src="https://code.highcharts.com/modules/exporting.js"></script>
+  <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+
+  <style>
+
+.group-header {
+        background-color: #094504; /* Light gray background */
+        font-weight: bold;
+    }
+
+
+    .highcharts-figure,
+    .highcharts-data-table table {
+      min-width: 320px;
+      max-width: 800px;
+      margin: 1em auto;
+    }
+
+    .highcharts-data-table table {
+      font-family: Verdana, sans-serif;
+      border-collapse: collapse;
+      border: 1px solid #ebebeb;
+      margin: 10px auto;
+      text-align: center;
+      width: 100%;
+      max-width: 500px;
+    }
+
+    .highcharts-data-table caption {
+      padding: 1em 0;
+      font-size: 1.2em;
+      color: #555;
+    }
+
+    .highcharts-data-table th {
+      font-weight: 600;
+      padding: 0.5em;
+    }
+
+    .highcharts-data-table td,
+    .highcharts-data-table th,
+    .highcharts-data-table caption {
+      padding: 0.5em;
+    }
+
+    .highcharts-data-table thead tr,
+    .highcharts-data-table tr:nth-child(even) {
+      background: #f8f8f8;
+    }
+
+    .highcharts-data-table tr:hover {
+      background: #f1f7ff;
+    }
+  </style>
+  <body class="hold-transition sidebar-mini">
+    <div class="wrapper">
+      {% include "navbar.html" %} {% include "sidebar.html" %}
+      <div class="content-wrapper">
+        <div class="row my-4 mx-1">
+          <div class="col-md-3 col-sm-6 col-12">
+            <!-- Widget: user widget style 1 -->
+            <div class="card card-widget widget-user">
+              <!-- Add the bg color to the header using any of the bg-* classes -->
+              <div class="widget-user-header group-header"></div>
+              <div class="widget-user-image">
+                {% if request.user.user_image %}
+                <img
+                  class="img-circle elevation-2"
+                  src="{{request.user.user_image.url }}"
+                  alt="User Avatar"
+                />
+                {% else %}
+                <img
+                  class="img-circle elevation-2"
+                  src="{% static 'dist/img/user2-160x160.jpg' %}"
+                  alt="User Avatar"
+                />
+                {% endif %}
+              </div>
+              <div class="card-footer">
+                <div class="row">
+                  <div class="col-sm-12 border-right">
+                    <div class="description-block">
+                      <h5 class="description-header">{{ministry}}</h5>
+                    </div>
+                    <!-- /.description-block -->
+                  </div>
+                  <!-- /.col -->
+
+                  <!-- /.col -->
+                </div>
+                <!-- /.row -->
+              </div>
+            </div>
+            <!-- /.widget-user -->
+          </div>
+
+          <div class="col-md-9 col-sm-12 col-12">
+            <div class="row my-3 mx-1">
+              <!-- /.col -->
+
+              <!-- /.col -->
+              {% for single  in  policy_area_count %}
+              <div class="col-lg-6 col-6">
+                <!-- small box -->
+                <div class="small-box bg-danger">
+                  <div class="inner">
+
+                
+                    <h6>{{single.policyAreaEng}}</h6>
+                  
+                 
+        
+                    <p>Policy Areas</p>
+                  </div>
+                  <div class="icon">
+                    {{ policy_area_count.icon.as_html  }}
+                    
+                  </div>
+                  <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+              </div>
+              {% endfor %}
+        
+        
+              <div class="col-lg-3 col-6">
+                  <!-- small box -->
+                  <div class="small-box bg-info">
+                      <div class="inner">
+                          <h3>{{ goal_count }}</h3>
+                          <p>Total Goals</p>
+                      </div>
+                      <div class="icon">
+                          <i class="fas fa-bullseye"></i> <!-- Icon for Goals -->
+                      </div>
+                      <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                  </div>
+              </div>
+              <!-- ./col -->
+              <div class="col-lg-3 col-6">
+                  <!-- small box -->
+                  <div class="small-box bg-success">
+                      <div class="inner">
+                          <h3>{{ kra_count }}</h3>
+                          <p>Total KRAs</p>
+                      </div>
+                      <div class="icon">
+                          <i class="fas fa-briefcase"></i> <!-- Icon for KRAs -->
+                      </div>
+                      <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                  </div>
+              </div>
+              
+              <!-- ./col -->
+              <div class="col-lg-3 col-6">
+                  <!-- small box -->
+                  <div class="small-box bg-warning">
+                      <div class="inner">
+                          <h3>{{ indicator_count }}</h3>
+                          <p>Total Indicators</p>
+                      </div>
+                      <div class="icon">
+                          <i class="fas fa-chart-line"></i> <!-- Icon for Indicators -->
+                      </div>
+                      <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                  </div>
+              </div>
+              <!-- /.col -->
+
+           
+
+              <!-- /.col -->
+
+              <!-- /.col -->
+
+              <!-- /.col -->
+
+              <!-- /.col -->
+            </div>
+          </div>
+
+          <div class="col-lg-12">
+            <div class="form-group">
+              <label>Select</label>
+              <select class="form-control" id="yearSelector">
+                {% for year in years %}
+                <option>{{year.year_eng}}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <div class="col-lg-6">
+            <!-- select -->
+
+            <figure class="highcharts-figure">
+              <div id="container"></div>
+            </figure>
+          </div>
+
+          <div class="col-lg-6">
+            <figure class="highcharts-figure">
+              <div id="container-bsc"></div>
+            </figure>
+          </div>
+
+          <!-- /.col -->
+
+          <div class="col-lg-6">
+            <figure class="highcharts-figure">
+              <div id="container2"></div>
+            </figure>
+          </div>
+          <div class="col-lg-6">
+            <div class="card">
+              <div class="card-header border-0">
+                <h3 class="card-title">Recent Performance</h3>
+                <div class="card-tools">
+                  <a href="#" class="btn btn-tool btn-sm">
+                    <i class="fas fa-download"></i>
+                  </a>
+                  <a href="#" class="btn btn-tool btn-sm">
+                    <i class="fas fa-bars"></i>
+                  </a>
+                </div>
+              </div>
+              <div class="card-body table-responsive p-0">
+                <table class="table table-striped table-valign-middle">
+                  <thead>
+                    <tr>
+                      <th>KPI</th>
+                      <th>Performance</th>
+                      <th>Progress</th>
+                      <th>Label</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for single in plans_with_performance %}
+                    <tr>
+                      <td>{{ single.indicator }}</td>
+                      <td>{{ single.annual_performance }}</td>
+                      <td>
+                        <div class="progress progress-xs">
+                          <div
+                            class="progress-bar"
+                            id="progressBar{{ forloop.counter }}"
+                            style="width:{{ single.score }}%;"
+                          ></div>
+                        </div>
+                      </td>
+                      <td>
+                        <span class="badge" id="badge{{ forloop.counter }}">
+                          {{ single.score }}%
+                        </span>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {% include "footer.html" %}
+
+        <script>
+          // Function to load Highcharts data via AJAX
+          const url = "/bubble_chart/";
+          function loadChartData() {
+            $.ajax({
+              url: url,
+              type: "GET",
+              dataType: "json",
+              success: function (chartData) {
+                // Render Highcharts chart using fetched data
+                Highcharts.chart("container2", {
+                  chart: {
+                    type: chartData.chart_type,
+                    height: "100%",
+                  },
+                  title: {
+                    text: chartData.title,
+                    align: "left",
+                  },
+                  tooltip: {
+                    useHTML: true,
+                    pointFormat: "<b>{point.name}:</b> {point.value} kpis",
+                  },
+                  plotOptions: {
+                    packedbubble: {
+                      minSize: "20%",
+                      maxSize: "80%",
+                      zMin: 0,
+                      zMax: 500,
+                      layoutAlgorithm: {
+                        gravitationalConstant: 0.05,
+                        splitSeries: true,
+                        seriesInteraction: false,
+                        dragBetweenSeries: true,
+                        parentNodeLimit: true,
+                      },
+                      dataLabels: {
+                        enabled: true,
+                        format: "{point.name}",
+                        filter: {
+                          property: "y",
+                          operator: ">",
+                          value: 20,
+                        },
+                        style: {
+                          color: "black",
+                          textOutline: "none",
+                          fontWeight: "normal",
+                        },
+                      },
+                    },
+                  },
+
+                  // ... (other Highcharts configurations)
+                  series: chartData.series,
+                });
+              },
+              error: function (error) {
+                console.error("Error fetching chart data:", error);
+              },
+            });
+          }
+
+          // Load chart data on page load
+          $(document).ready(function () {
+            loadChartData();
+          });
+        </script>
+
+        <script>
+          document.addEventListener("DOMContentLoaded", function () {
+            {% for single in plans_with_performance %}
+              var progressValue = {{ single.calculate_score_and_card.0 }};
+              var progressBar = document.getElementById("progressBar{{ forloop.counter }}");
+              var badge = document.getElementById("badge{{ forloop.counter }}");
+
+              if (progressValue <= 30) {
+                progressBar.classList.add("bg-danger");
+                badge.classList.add("bg-danger");
+              } else if (progressValue <= 70) {
+                progressBar.classList.add("bg-warning");
+                badge.classList.add("bg-warning");
+              } else {
+                progressBar.classList.add("bg-success");
+                badge.classList.add("bg-success");
+              }
+            {% endfor %}
+          });
+        </script>
+
+        <script>
+          function fanAnimate(
+            point,
+            startAngleRad,
+            duration = 2000,
+            easing = "easeOutQuad"
+          ) {
+            const graphic = point.graphic,
+              args = point.shapeArgs;
+
+            if (graphic && args) {
+              graphic
+                .attr({ start: startAngleRad, end: startAngleRad, opacity: 0 }) // Initially hidden
+                .animate(
+                  { start: args.start, end: args.end, opacity: 1 },
+                  {
+                    duration: duration,
+                    easing: easing,
+                  }
+                );
+            } else {
+              console.warn("Animation skipped for point:", point.name); // Log potential issues
+            }
+          }
+
+          function triggerAnimation() {
+            const chart = Highcharts.charts[0];
+            chart.series[0].points.forEach((point) => {
+              fanAnimate(point, point.startAngleRad);
+              point.graphic
+                .attr({ opacity: 0.3 }) // Set initial opacity
+                .animate(
+                  { opacity: 1 },
+                  {
+                    duration: 500,
+                    easing: "easeOutQuad",
+                  }
+                );
+            });
+          }
+
+          Highcharts.chart("container", {
+            chart: {
+              type: "pie",
+            },
+            title: {
+              text: "",
+              align: "left",
+            },
+            subtitle: {
+              text: "",
+              align: "left",
+            },
+            tooltip: {
+              pointFormat: "{series.name}: <b>{point.percentage:.1f}%</b>",
+            },
+            accessibility: {
+              point: {
+                valueSuffix: "%",
+              },
+            },
+            plotOptions: {
+              pie: {
+                allowPointSelect: true,
+                borderWidth: 2,
+                cursor: "pointer",
+                dataLabels: {
+                  enabled: true,
+                  format: "<b>{point.name}</b><br>{point.percentage}%",
+                  distance: 20,
+                },
+              },
+            },
+            series: [
+              {
+                // Disable mouse tracking on load, enable after custom animation
+                enableMouseTracking: false,
+                animation: {
+                  duration: 2000,
+                },
+                colorByPoint: true,
+                data: [],
+              },
+            ],
+          });
+
+          Highcharts.chart("container-bsc", {
+            chart: {
+              type: "gauge",
+              plotBackgroundColor: null,
+              plotBackgroundImage: null,
+              plotBorderWidth: 0,
+              plotShadow: false,
+              height: "64%",
+            },
+
+            title: {
+              text: "Avg KPI scoreCard",
+            },
+
+            pane: {
+              startAngle: -90,
+              endAngle: 89.9,
+              background: null,
+              center: ["50%", "75%"],
+              size: "110%",
+            },
+
+            // the value axis
+            yAxis: {
+              min: 0,
+              max: 100,
+              tickPixelInterval: 72,
+              tickPosition: "inside",
+              tickColor:
+                Highcharts.defaultOptions.chart.backgroundColor || "#FFFFFF",
+              tickLength: 20,
+              tickWidth: 2,
+              minorTickInterval: null,
+              labels: {
+                distance: 20,
+                style: {
+                  fontSize: "14px",
+                },
+              },
+              lineWidth: 0,
+              plotBands: [
+                {
+                  from: 70,
+                  to: 100,
+                  color: "#55BF3B", // green
+                  thickness: 20,
+                },
+                {
+                  from: 40,
+                  to: 70,
+                  color: "#DDDF0D", // yellow
+                  thickness: 20,
+                },
+                {
+                  from: 0,
+                  to: 40,
+                  color: "#DF5353", // red
+                  thickness: 20,
+                },
+              ],
+            },
+
+            series: [
+              {
+                name: "Avg",
+                data: [80],
+                tooltip: {
+                  valueSuffix: "%",
+                },
+                dataLabels: {
+                  format: "{y} %",
+                  borderWidth: 0,
+                  color:
+                    (Highcharts.defaultOptions.title &&
+                      Highcharts.defaultOptions.title.style &&
+                      Highcharts.defaultOptions.title.style.color) ||
+                    "#333333",
+                  style: {
+                    fontSize: "16px",
+                  },
+                },
+                dial: {
+                  radius: "80%",
+                  backgroundColor: "gray",
+                  baseWidth: 12,
+                  baseLength: "0%",
+                  rearLength: "0%",
+                },
+                pivot: {
+                  backgroundColor: "gray",
+                  radius: 6,
+                },
+              },
+            ],
+          });
+
+          triggerAnimation();
+
+          // Use AJAX to fetch data from the Django view
+
+          $("#yearSelector").change(function () {
+            const selectedYear = $(this).val();
+
+            const Update_url = "/count_performed_kpis/" + selectedYear + "/";
+
+            // Use AJAX to fetch data from the Django view
+            $.ajax({
+              url: Update_url,
+              type: "GET",
+              dataType: "json",
+              success: function (data1) {
+                data = data1.chart_data;
+                // Update the series data with the fetched data
+                const chart = Highcharts.charts[0]; // Assuming there is only one chart on the page
+                const series = chart.series[0];
+                chart.setTitle({
+                  text: data.title["text"],
+                });
+                series.update({
+                  enableMouseTracking: false,
+                  animation: {
+                    duration: 2000,
+                  },
+                  colorByPoint: true,
+                  data: data.series[0].data,
+                });
+
+                const gaugeChart = Highcharts.charts[1];
+                const gaugeSeries = gaugeChart.series[0];
+                const data2 = data1.total_performance_data;
+
+                gaugeSeries.update({
+                  data: [data2["total_performance"]],
+                });
+
+                triggerAnimation();
+              },
+              error: function (error) {
+                console.error("Error fetching data from Django view:", error);
+              },
+            });
+          });
+
+          const d = new Date();
+          let year = d.getFullYear() - 1;
+
+          const djangoViewUrl = "/count_performed_kpis/" + year + "/";
+          $.ajax({
+            url: djangoViewUrl,
+            type: "GET",
+            dataType: "json",
+            success: function (data1) {
+              data = data1.chart_data;
+              const chart = Highcharts.charts[0];
+              const series = chart.series[0];
+
+              const gaugeChart = Highcharts.charts[1];
+              const gaugeSeries = gaugeChart.series[0];
+              const data2 = data1.total_performance_data;
+
+              gaugeSeries.update({
+                data: [data2["total_performance"]],
+              });
+              console.log(data1.total_performance_data);
+
+              chart.setTitle({
+                text: data.title["text"],
+              });
+
+              const chartIndex = chart.index;
+
+              console.log(`Chart Index: ${chartIndex}`);
+              series.update({
+                enableMouseTracking: false,
+                animation: {
+                  duration: 2000,
+                },
+                colorByPoint: true,
+                data: data.series[0].data,
+              });
+
+              fanAnimate(series.points[0], series.startAngleRad);
+            },
+            error: function (error) {
+              console.error("Error fetching data from Django view:", error);
+            },
+          });
+        </script>
+      </div>
+    </div>
+  </body>
+</html>

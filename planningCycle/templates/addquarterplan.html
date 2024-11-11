@@ -1,0 +1,71 @@
+
+{% load static %}
+
+<!DOCTYPE html>
+<html
+    lang="en">
+    {% include 'head.html' %}
+           
+           <body class="hold-transition sidebar-mini">
+            <div class="wrapper">
+                {% include 'navbar.html' %}
+                {% include 'sidebar.html' %}
+                <div class="content-wrapper">
+                    <section class="content-header">
+                        <div class="container-fluid">
+                            <div class="row mb-2">
+                                <div class="col-sm-8">
+                                    <h4>{{request.user.username}} Quarter Plan</h4>
+                                </div>
+                               
+                            </div>
+                        </div>
+                    </section>
+                    <div class="container">
+                        <div class="title">Add/Update Quarter Plan</div>
+                        
+                        <p>{{quarterdkpi.kpi}}</p>
+                        <form action="#" method="post">
+                            {% csrf_token %}
+                            {{quarterform.media}}
+                            <div class="user_details">
+                                <div class="input_pox">
+                                    <span class="datails">KPI Name</span>
+                                    {{quarterform.kpi}}
+                                </div>
+                                
+                                <div class="input_pox">
+                                    <span class="datails">Quarter 1</span>
+                                    {{quarterform.quarter1_target}}
+                                </div>
+                                <div class="input_pox">
+                                    <span class="datails">Quarter 2</span>
+                                    {{quarterform.quarter2_target}}
+                                </div>
+                                <div class="input_pox">
+                                    <span class="datails">Quarter 3</span>
+                                    {{quarterform.quarter3_target}}
+                                </div>
+                                <div class="input_pox">
+                                    <span class="datails">Quarter 4</span>
+                                    {{quarterform.quarter4_target}}
+                                </div>
+                            </div>
+                            <div class="button">
+                                <input type="submit" value="Submit">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+               {% include 'footer.html' %}
+            </div>
+
+        </body>
+     </head>
+</html>
+
+
+
+
+

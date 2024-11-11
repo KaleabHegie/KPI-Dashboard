@@ -1,10 +1,10 @@
 from django.shortcuts import render
-from DashboardApp.models import DashboardSetting
+from resultsFramework.models import DashboardSetting
 from .forms import DashboardSettingForm
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, render, redirect
 from userManagement.models import ResponsibleMinistry 
-from DashboardApp.models import Year , Month , Quarter 
+from resultsFramework.models import Year , Month , Quarter 
 
 # Create your views here.
 def dashboard_setting(request):

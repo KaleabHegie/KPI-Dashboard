@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+  {% load tz %}
+  <head>
+    {% include "head.html" %}
+    
+    <style>
+      .child-kpi.level-1 td:first-child {
+          padding-left: 38px !important; /* First level */
+      }
+      .child-kpi.level-2 td:first-child {
+          padding-left: 50px !important; /* Second level */
+      }
+      .child-kpi.level-3 td:first-child {
+          padding-left: 62px !important; /* Third level */
+      }
+      .child-kpi.level-4 td:first-child {
+          padding-left: 74px !important; /* Fourth level */
+      }
+      /* Add more levels if necessary */
+      
+  </style>
+  
+</head>
+  
+  <body class="hold-transition sidebar-mini">
+    {% load mptt_tags %}
+    <div class="wrapper">
+      {% include "navbar.html" %} 
+      {% include "sidebar.html" %}
+
+      <div class="content-wrapper">
+        <div class="content-header">
+          <div class="container-fluid">
+          <div class="row mb-2">
+          <div class="col-lg-8 col-sm-4">
+          <h3 class="m-1"> </h3> 
+          <button type="button" class="btn btn-success">
+            DPMES Planning Page <span class="badge bg-secondary"></span>
+          </button>
+          </div>
+          <div class="col-lg-4 col-sm-4">
+            <button type="button" class="btn btn-info">
+              Policy Area <span class="badge bg-secondary">{{total_policy_area}}</span>
+            </button>
+          </div>
+          
+          </div>
+          </div>
+          </div>
+          <section class="content">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-lg-4 col-6">
+                <div class="small-box bg-info">
+                <div class="inner">
+                <h3>{{totaldraftgoals}}</h3>
+                <p>Strategic Goals</p>
+                </div>
+                <div class="icon">
+                <i class="ion ion-bag"></i>
+                </div>
+                {% if activegoalplan  %}
+                {% for eachgoalplan in activegoalplan %}
+                <a href="{% url 'addstrategicgoal' %}" class="small-box-footer">Add Goal <i class="fas fa-arrow-circle-right"></i></a>
+                {% endfor %}
+                {% else %}
+                <div class="small-box-footer"disabled>
+                  No More Goal Adding &nbsp;&nbsp;<i class="fa fa-times-circle" aria-hidden="true"></i>
+                </div>
+                {% endif %}
+              </div>
+                </div>
+                <div class="col-lg-4 col-6">
+                <div class="small-box bg-success">
+                <div class="inner">
+                <h3>{{totaldraftkra}}</h3>
+                <p>Key Result Areas</p>
+                </div>
+                <div class="icon">
+                <i class="ion ion-stats-bars"></i>
+                </div>
+                {% if activekraplan  %}
+                {% for eachkraplan in activekraplan %}
+                <a href="{% url 'key_result_area' %}" class="small-box-footer">Add Key Result Area <i class="fas fa-arrow-circle-right"></i></a>
+                {% endfor %}
+                {% else %}
+                <div class="small-box-footer"disabled>
+                  No More KRA Adding &nbsp;&nbsp;<i class="fa fa-times-circle" aria-hidden="true"></i>
+                </div>
+                {% endif %}
+                </div>
+                </div>
+                <div class="col-lg-4 col-6">
+                <div class="small-box bg-warning">
+                <div class="inner">
+                <h3>{{totaldraftkpi}}</h3>
+                <p>Key Performance Indicators</p>
+                </div>
+                <div class="icon">
+                <i class="ion ion-person-add"></i>
+                </div>
+                {% if activekpiplan  %}
+                {% for eachkpiplan in activekpiplan %}
+                <a href="{% url 'key_performance_indicator' %}" class="small-box-footer">Add KPI <i class="fas fa-arrow-circle-right"></i></a>
+                
+                {% endfor %}
+                {% else %}
+                <div class="small-box-footer"disabled>
+                  No More KPI Adding &nbsp;&nbsp;<i class="fa fa-times-circle" aria-hidden="true"></i>
+                </div>
+                {% endif %}
+
+                </div>
+                </div>
+            </div>
+
+            <div class="card card-body">
+              <div class="card-tools margin-right-10em;">
+                <form id="goalfilterForm" method="get" action="">
+                {{ Goalfilter.form }} 
+                <button type="submit" class="btn btn-default">
+                <i class="fas fa-search"></i>
+                </button>
+              </form>
+              </div>
+      </div>
+
+            <div class="row">
+              <section class="content">
+                <div class="card">
+                <div class="card-header">
+                <h3 class="card-title">Draft Strategic Goals </h3>
+                <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                <i class="fas fa-minus"></i>
+                </button>
+                </div>
+                </div>
+                <div class="card-body p-0" id="goal-table">
+                <table class="table table-striped projects">
+                <thead>
+                <tr>
+                <th style="width: 1%"><small>ID</small></th>
+                <th style="width: 25%"><small>English Goal Name</small></th>
+                <th style="width: 20%"><small>Amharic Goal Name</small></th>
+                <th style="width: 14%;"><small>Status</small></th>
+                <th style="width: 20%" class="text-center"><small>Policy Area</small>
+                </th>
+                <th class="text-center" style="width: 20%">
+                  <i class="fa fa-gear" style="font-size:28px;color:rgb(7, 74, 20)"></i>
+                </th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for eachgoal in goalPagination %}
+                <tr>
+                <td>
+                {{eachgoal.id}}
+                </td>
+                <td>
+                  <small>
+                {{eachgoal.goal_name_eng}}
+                </small>
+                </td>
+                <td>
+                  <small>
+                     {{eachgoal.goal_name_amh}}
+                  </small>
+                </td>
+                <td>
+                <small>
+                {{eachgoal.status}}
+                </small>
+                </td>
+                <td>
+                  <small>
+                  {{eachgoal.parent_policy_area}}
+                  </small>
+                  </td>
+                  <td class="project-actions text-right">
+                    {% if activegoalplan  %}
+                    <a href="{% url 'updatestrategicgoal' eachgoal.id %}"><i class="material-icons"style="color: #145A32;">&#xe745;</i></a>&nbsp;
+                    <a href="{% url 'deletestrategicgoal' eachgoal.id %}"><i class="material-icons"style="color: red;">&#xe872;</i></a>
+                   <a href="{% url 'comment_goal' eachgoal.id %}"> <i class="material-icons"style="color: cadetblue;">&#xe8cd;</i></a>
+                   
+                   {% else %}
+                   <a href="{% url 'updatestrategicgoal' eachgoal.id %}" onclick="return false;"><i class="material-icons"style="color: #145A32;">&#xe745;</i></a>&nbsp;
+                    <a href="{% url 'deletestrategicgoal' eachgoal.id %}" onclick="return false;"><i class="material-icons"style="color: red;">&#xe872;</i></a>
+                   <a href="#" onclick="return false;"> <i class="material-icons"style="color: cadetblue;">&#xe8cd;</i></a>
+                   
+                  {% endif %}
+                  </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+                </table>
+                <hr>
+                {% if goalPagination.has_previous %}
+                    <a href="?page=1" class="goalpagination-link"> &laquo; First</a>
+                    <a href="?page={{goalPagination.previous_page_number}}" class="goalpagination-link">
+                              Previous</a>
+                {% endif %}
+                {{goalPagination.number}} of {{goalPagination.paginator.num_pages}}
+                {% if goalPagination.has_next %}
+                    <a href="?page={{goalPagination.next_page_number}}" class="goalpagination-link">Next</a>
+                    <a href="?page={{goalPagination.paginator.num_pages}}" class="goalpagination-link">Last &raquo;</a>
+                {% endif %}
+                </div>
+                </div>
+              </section>
+            </div>
+
+<!-- end of draft strategic Goals -->
+<div class="card card-body">
+  <div class="card-tools">
+    <form id="KRAfilterForm" method="get" action="">
+      {{ KRAfilter.form }} 
+      <button type="submit" class="btn btn-default">
+        <i class="fas fa-search"></i>
+      </button>
+    </form>
+  </div>
+</div>
+      <div class="row">
+        <section class="content">
+          <div class="card">
+          <div class="card-header">
+          <h3 class="card-title">Draft Key Result Area </h3>
+          <div class="card-tools">
+          <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+          <i class="fas fa-minus"></i>
+          </button>
+          </div>
+          </div>
+          <div class="card-body p-0" id="kra-table">
+          <table class="table table-striped projects" >
+          <thead>
+          <tr>
+          <th style="width: 1%">
+            <small>ID</small>
+          </th>
+          <th style="width: 25%">
+            <small>English KRA Name</small>
+          </th>
+          <th style="width: 20%">
+            <small> Amharic KRA Name</small>
+          </th>
+          <th style="width: 14%;">
+            <small>KRA status</small>
+          </th>
+          <th style="width: 20%" class="text-center">
+            <small>Strategic Goal</small>
+          </th>
+          <th class="text-center" style="width: 20%">
+          <i class="fa fa-gear" style="font-size:28px;color:rgb(7, 74, 20)"></i>
+          </th>
+          </tr>
+          </thead>
+          <tbody>
+         {% for eachkra in kraPagination %}
+          <tr>
+          <td>
+            {{eachkra.id}}
+          </td>
+          <td>
+            <small>
+          {{eachkra.activity_name_eng}}
+          </small>
+          </td>
+          <td>
+            <small>
+              {{eachkra.activity_name_amh}}
+            </small>
+          </td>
+          <td>
+          <small>
+            {{eachkra.krastatus}}
+          </small>
+          </td>
+          <td class="project-state">
+            <small>
+            {{eachkra.goal}}
+          </small>
+          </td>
+            <td class="project-actions text-right">
+              {% if activekraplan %}
+              <a href="{% url 'updatekra' eachkra.id %}"><i class="material-icons"style="color: #145A32;">&#xe745;</i></a>&nbsp;
+              <a href="{% url 'deletekra' eachkra.id %}" ><i class="material-icons" style="font-size:24px;color:red">&#xe872;</i></a>&nbsp;
+              <a href="{% url 'commentkra' eachkra.id %}"> <i class="material-icons"style="color: cadetblue;">&#xe8cd;</i></a>
+              {% else %}
+              <a href="#" onclick="return false;"><i class="material-icons"style="color: #145A32;">&#xe745;</i></a>&nbsp;
+              <a href="#" onclick="return false;"><i class="material-icons"style="color: red;">&#xe872;</i></a>
+              <a href="#" onclick="return false;"> <i class="material-icons"style="color: cadetblue;">&#xe8cd;</i></a>
+              
+              {% endif %}
+            </td>
+          </tr>
+         {% endfor %}
+          </tbody>
+          </table>
+          <!-- pagination section -->
+          <hr>
+                {% if kraPagination.has_previous %}
+                    <a href="?page=1" class="krapagination-link">&laquo;First</a>
+                    <a href="?page={{kraPagination.previous_page_number}}" class="krapagination-link">
+                              Previous</a>
+                {% endif %}
+                {{kraPagination.number}} of {{kraPagination.paginator.num_pages}}
+                {% if kraPagination.has_next %}
+                    <a href="?page={{kraPagination.next_page_number}}" class="krapagination-link">Next</a>
+                    <a href="?page={{kraPagination.paginator.num_pages}}" class="krapagination-link">Last &raquo;</a>
+                {% endif %}
+          </div>
+          </div>
+        </section>
+      </div>
+<!-- end of Key Result Area -->
+<!-- start of MPTT template  -->
+ {% if request.user.is_mopd %}
+<div class="card card-body">
+        <div class="card-tools margin-right-10em;">
+          <form id="KPIfilterForm" method="get" action="">
+          
+          {{ KPIfilter.form }} 
+          <button type="submit" class="btn btn-default">
+          <i class="fas fa-search"></i>
+          </button>
+          
+        </form>
+        </div>
+</div>
+{% else %}
+ .
+{% endif %}
+
+<div class="row">
+  <div class="card">
+      <div class="card-header">
+          <h3 class="card-title">Draft Key Performance Indicators </h3>
+          <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+              <i class="fas fa-minus"></i>
+          </button>
+          </div>
+      </div>
+      
+      <!-- kpi section -->
+      <div class="card-body p-0" id="kpi-table">
+          <table class="table table-striped projects">
+              <thead>
+                  <tr>
+                      <th style="width: 30%"><small>English KPI Name</small></th>
+                      <th style="width: 12%"><small>Base-Value</small></th>
+                      <th style="width: 4%"><small>{{current_year}}</small></th>
+                      <th style="width: 9%" class="text-center"><small>Status</small></th>
+                      <th style="width: 23%" class="text-center"><small>KRA</small></th>
+                      <th class="text-center" style="width: 21%">
+                          <i class="fa fa-gear" style="font-size:28px;color:rgb(7, 74, 20)"></i>
+                      </th>
+                  </tr>
+              </thead>
+              <tbody>
+                  {% recursetree mpttkpi_pagination %}
+                  <tr class="{% if not node.is_root_node %}child-kpi level-{{ node.level }}{% endif %}">
+                      <td><small>{{ node.kpi_name_eng }}</small></td>
+                      <td><small>{{ node.base_value }}</small></td>
+                      <td><small>{{ node.target }}</small></td>
+                      <td class="project-state"><small>{{ node.kpistatus }}</small></td>
+                      <td class="project-state"><small>{{ node.draftkra }}</small></td>
+                      <td class="project-actions text-right">
+                          {% if activekpiplan %}
+                          <a href="{% url 'mptt_key_performance_indicator' node.id %}">
+                              <i class="material-icons" style="color: #145A32;">&#xe145;</i>
+                          </a>&nbsp;
+                          <a href="{% url 'updatekpi' node.id %}">
+                              <i class="material-icons" style="color: #145A32;">&#xe745;</i>
+                          </a>&nbsp;
+                          <a href="{% url 'deletekpi' node.id %}">
+                              <i class="material-icons" style="color: red;">&#xe872;</i>
+                          </a>
+                          <a href="{% url 'commentkpi' node.id %}">
+                              <i class="material-icons" style="color: cadetblue;">&#xe8cd;</i>
+                          </a>
+                          <a href="{% url 'addquarterplan' node.id %}">
+                            Q
+                        </a>
+                          {% else %}
+                          <a href="#" onclick="return false;">
+                              <i class="material-icons" style="color: #145A32;">&#xe745;</i>
+                          </a>&nbsp;
+                          <a href="#" onclick="return false;">
+                              <i class="material-icons" style="color: red;">&#xe872;</i>
+                          </a>
+                          <a href="#" onclick="return false;">
+                              <i class="material-icons" style="color: cadetblue;">&#xe8cd;</i>
+                          </a>
+                          <a href="#">
+                            Q
+                        </a>
+                          {% endif %}
+                      </td>
+                  </tr>
+                  {% if not node.is_leaf_node %}
+                  {{ children }}
+                  {% endif %}
+                  {% endrecursetree %}
+              </tbody>
+          </table>
+          <!-- pagination section -->
+          <hr>
+          {% if mpttkpi_pagination.has_previous %}
+          <a href="?page=1" class="kpipagination-link">&laquo; First</a>
+          <a href="?page={{ mpttkpi_pagination.previous_page_number }}" class="kpipagination-link">Previous</a>
+          {% endif %}
+          Page {{ mpttkpi_pagination.number }} of {{ mpttkpi_pagination.paginator.num_pages }}
+          {% if mpttkpi_pagination.has_next %}
+          <a href="?page={{ mpttkpi_pagination.next_page_number }}" class="kpipagination-link">Next</a>
+          <a href="?page={{ mpttkpi_pagination.paginator.num_pages }}" class="kpipagination-link">Last &raquo;</a>
+          {% endif %}
+      </div>
+  </div>
+
+</div>
+    <!-- end of Key Performance Indicators using MPTT -->
+    <!-- start quarter plan -->
+    <div class="row">
+      <section class="content">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Annual >> Quarter Plan </h3>
+            <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+            <i class="fas fa-minus"></i>
+            </button>
+            </div>
+            </div>
+        <div class="card-body p-0" id="goal-table">
+        <table class="table table-striped projects">
+        <thead>
+        <tr>
+        <th style="width: 1%"><small>ID</small></th>
+        <th style="width: 19%"><small>KPI Name</small></th>
+        <th style="width: 10%"><small>KPI Target</small></th>
+        <th style="width: 10%"><small>Quarter1 Target</small></th>
+        <th style="width: 10%;"><small>Quarter2 Target</small></th>
+        <th style="width: 10%" class="text-center"><small>Quarter3 Target</small>
+        </th>
+        <th style="width: 10%" class="text-center"><small>Quarter4 Target</small>
+        </th>
+        <th style="width: 20%" class="text-center"><small>Responsible Org</small>
+        </th>
+        <th class="text-center" style="width: 10%">
+          <i class="fa fa-gear" style="font-size:28px;color:rgb(7, 74, 20)"></i>
+        </th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for quarter in quarter_target %}
+        <tr>
+        <td>
+        {{quarter.id}}
+        </td>
+        <td >
+          <small>
+        {{quarter.kpi.kpi_name_eng}}
+        </small>
+        </td>
+        <td align="center">
+          <small>
+        {{quarter.kpi.target}}
+        </small>
+        </td>
+        <td align="center">
+          <small>
+             {{quarter.quarter1_target}}
+          </small>
+        </td>
+        <td align="center">
+        <small>
+        {{quarter.quarter2_target}}
+        </small>
+        </td>
+        <td align="center">
+          <small>
+          {{quarter.quarter3_target}}
+          </small>
+          </td>
+          <td align="center">
+          <small>
+            {{quarter.quarter4_target}}
+            </small>
+            </td>
+            <td align="center">
+              <small>
+                {{quarter.kpi.responsible_ministries.responsible_ministry_eng}}
+                </small>
+                </td>
+          <td class="project-actions text-right">
+           
+            <a href="{% url 'updatequarterplan' quarter.id %}"><i class="material-icons"style="color: #145A32;">&#xe745;</i></a>&nbsp;
+            <!-- <a href="#"><i class="material-icons"style="color: red;">&#xe872;</i></a>
+           <a href="#"> <i class="material-icons"style="color: cadetblue;">&#xe8cd;</i></a>
+           -->
+          </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+        </table>
+        <hr>
+        
+        </div>
+        </div>
+      </section>
+    </div>
+    <!-- end of quarter plan -->
+    </div>       
+    </section>
+ </div>
+      {% include "footer.html" %}
+<!-- for displaying messages -->
+  {% for message in messages %}
+    {% if message.tags == 'success' %}
+        <script>
+            $(function() {
+                var Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+
+                Toast.fire({
+                    icon: 'success',
+                    title: '{{ message }}'
+                });
+            });
+        </script>
+    {% elif message.tags == 'info' %}
+        <script>
+            $(function() {
+                var Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+
+                Toast.fire({
+                    icon: 'info',
+                    title: '{{ message }}'
+                });
+            });
+        </script>
+    {% elif message.tags == 'warning' %}
+        <script>
+            $(function() {
+                var Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+
+                Toast.fire({
+                    icon: 'warning',
+                    title: '{{ message }}'
+                });
+            });
+        </script>
+    {% elif message.tags == 'error' %}
+        <script>
+            $(function() {
+                var Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+
+                Toast.fire({
+                    icon: 'error',
+                    title: '{{ message }}'
+                });
+            });
+        </script>
+    {% endif %}
+{% endfor %}
+
+<!-- prevent entire reload in Goal filter -->
+<script>
+  $(document).ready(function() {
+    $('#goalfilterForm').on('submit', function(event) {
+      event.preventDefault(); 
+
+      var formData = $(this).serialize();
+
+      $.ajax({
+        url: $(this).attr('action'), 
+        type: $(this).attr('method'), 
+        data: formData, 
+        success: function(response) {
+        
+          $('#goal-table').html($(response).find('#goal-table').html());
+        },
+        error: function(xhr, status, error) {
+          
+          console.error("AJAX request failed: ", status, error);
+        }
+      });
+    });
+  });
+</script>
+
+<!-- prevent entire reload in KRA filter -->
+<script>
+  $(document).ready(function() {
+    $('#KRAfilterForm').on('submit', function(event) {
+      event.preventDefault(); 
+
+      
+      var formData = $(this).serialize();
+
+      $.ajax({
+        url: $(this).attr('action'), 
+        type: $(this).attr('method'), 
+        data: formData, 
+        success: function(response) {
+          
+          $('#kra-table').html($(response).find('#kra-table').html());
+        },
+        error: function(xhr, status, error) {
+          
+          console.error("AJAX request failed: ", status, error);
+        }
+      });
+    });
+  });
+</script>
+
+<!-- prevent entire reload in KPI filter -->
+<script>
+  $(document).ready(function() {
+    $('#KPIfilterForm').on('submit', function(event) {
+      event.preventDefault();
+
+      var formData = $(this).serialize();
+
+      $.ajax({
+        url: $(this).attr('action'), 
+        type: $(this).attr('method'), 
+        data: formData, 
+        success: function(response) {
+          
+          $('#kpi-table').html($(response).find('#kpi-table').html());
+        },
+        error: function(xhr, status, error) {
+          
+          console.error("AJAX request failed: ", status, error);
+        }
+      });
+    });
+  });
+</script>
+  </body>
+</html>
+
+

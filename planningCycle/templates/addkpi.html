@@ -1,0 +1,103 @@
+
+{% load static %}
+
+<!DOCTYPE html>
+<html
+    lang="en">
+    {% include 'head.html' %}
+           
+           <body class="hold-transition sidebar-mini">
+            <div class="wrapper">
+                {% include 'navbar.html' %}
+                {% include 'sidebar.html' %}
+                <div class="content-wrapper">
+                    <section class="content-header">
+                        <div class="container-fluid">
+                            <div class="row mb-2">
+                                <div class="col-sm-8">
+                                    <h4>{{request.user.username}} Key Performance Indicators</h4>
+                                </div>
+                               
+                            </div>
+                        </div>
+                    </section>
+                    <div class="container">
+                        <div class="title">Add/Update Key Performance Indicators</div>
+                        <form action="#" method="post">
+                            {% csrf_token %}
+                            {{form.media}}
+                            <div class="user_details">
+                                <div class="input_pox">
+                                    <span class="datails">KPI In English</span>
+                                    {{form.kpi_name_eng}}
+                                </div>
+                                <div class="input_pox">
+                                    <span class="datails">KPI In Amharic</span>
+                                    {{form.kpi_name_amh}}
+                                </div>
+                                
+                                <div class="input_pox">
+                                    <span class="datails">Measurement_unit</span>
+                                    {{form.kpi_measurement_units}}
+                                </div>
+                                <div class="input_pox">
+                                    <span class="datails">Characteristics</span>
+                                    {{form.kpi_characteristics}}
+                                </div>
+                                <div class="input_pox">
+                                    <span class="datails">Base value</span>
+                                    {{form.base_value}}
+                                </div>
+                                <div class="input_pox">
+                                    <span class="datails">Target</span>
+                                    {{form.target}}
+                                </div>
+
+                            {% if request.user.is_mopd %}
+                            
+                            <div class="input_pox">
+                                <span class="datails">Responsible Ministry</span>
+                                {{ form.responsible_ministries }}
+                                
+                            </div>
+
+                            <div class="input_pox">
+                                <span class="datails">KPI status</span>
+                                {{ form.kpistatus }}
+                            </div>
+                            <div class="input_pox">
+                                <span class="datails">KPI Weight</span>
+                                {{ form.kpi_weight }}
+                            </div>
+                            {% endif %}
+                                <div class="input_pox" >
+                                    <span class="datails">Parent KRA</span>
+                                    {{form.draftkra}}
+                                </div>
+                                <div class="input_pox">
+                                    <span class="datails">Year</span>
+                                    {{form.year}}
+                                </div>
+                                <div class="input_pox">
+                                    <span class="datails">Description</span>
+                                    {{form.kpi_description}}
+                                </div>
+                            </div>
+                            <div class="button">
+                                <input type="submit" value="Submit">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+               {% include 'footer.html' %}
+            </div>
+
+        </body>
+     </head>
+</html>
+
+
+
+
+

@@ -1,0 +1,217 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DPMEs</title>
+  {% include 'userAdmin/head.html' %}
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+<!-- plugin -->
+<script src="https://www.virtuosoft.eu/code/bootstrap-duallistbox/bootstrap-duallistbox/v3.0.2/jquery.bootstrap-duallistbox.js"></script>
+
+<link rel="stylesheet" type="text/css" href="https://www.virtuosoft.eu/code/bootstrap-duallistbox/bootstrap-duallistbox/v3.0.2/bootstrap-duallistbox.css">
+
+</head>
+
+<body class="hold-transition sidebar-mini layout-fixed">
+  {% include 'userAdmin/navbar.html'%}
+
+  {% include 'userAdmin/sidebar.html'%}
+
+  {% include 'userAdmin/messages.html' %}
+  <div class="content-wrapper ">
+    <div class="row justify-content-center" >
+      <div class="card p-5 col-8">
+        <form id="demoform" method="post">
+          {% csrf_token %}
+          
+          <div class="form-group">
+            <label for="name">Name:</label>
+            <input name="name" class="form-control" placeholder="KPI-setting Name" type="text">
+          </div>
+          
+          <div class="form-group">
+            <label for="year">Year:</label>
+            <select class="form-control" name="year" id="year">
+            {% for year  in years  %}
+               <option value="{{year.id}}">{{year}}</option>
+            {% endfor %}
+          </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="month">Month:</label>
+            <select class="form-control" name="month" id="month">
+            {% for month  in months  %}
+               <option value="{{month.id}}">{{month}}</option>
+            {% endfor %}
+          </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="quarter">Quarters:</label>
+            <select class="form-control"  name="quarter" id="quarter">
+            {% for quarter  in quarters  %}
+               <option value="{{quarter.id}}">{{quarter}}</option>
+            {% endfor %}
+          </select>
+          </div>
+
+        <div class="row">
+          <div class="col-4" >
+            <label for="ministry">Select Ministry:</label>
+           <select class="form-control" name="ministry" id="ministry">
+            {% for ministry  in ministrys  %}
+               <option value="{{ministry.id}}">{{ministry}}</option>
+            {% endfor %}
+           </select>
+        </div>
+
+        <div class="col-4" >
+          <label for="goal">Select Goal:</label>
+          <select class="form-control" name="goal" id="goal">
+             
+           </select>
+        </div>
+
+        <div class="col-4">
+          <label for="kra">Select KRA:</label>
+          <select class="form-control" name="kra" id="kra">
+           
+           </select>
+         </div>
+        </div>
+
+         <label for="indicator">Indicator:</label>
+          <div class="col-12">
+            <select  class="select2 form-control" multiple="multiple"  id="indicator" name="indicator" title="indicator">
+
+            </select> 
+          </div>
+          
+          <div class="form-group">
+            <label for="performance">Performance:</label>
+            <input name="performance" type="checkbox">
+          </div>
+          
+          <div class="form-group">
+            <label for="target">Target:</label>
+            <input name="target" type="checkbox">
+          </div>
+          
+          <button class="btn btn-primary mt-3" type="submit">Submit</button>
+        </form>
+        
+      </div>
+    </div>
+  </div>
+  
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"
+  integrity="sha512-k37wQcV4v2h6jgYf5IUz1MoSKPpDs630XGSmCaCCOXxy2awgAWKHGZWr9nMyGgk3IOxA1NxdkN8r1JHgkUtMoQ=="
+  crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+
+<script>
+  
+document.getElementById('ministry').addEventListener('change', function() {
+                var selectedMinistry = parseInt(this.value);
+                selectGoal(selectedMinistry);
+            });
+ document.getElementById('kra').addEventListener('change', function() {
+                var kra = parseInt(this.value);
+                indicator(kra);
+            });        
+  function selectGoal(selectedMinistry){
+      // AJAX request to fetch data
+    $.ajax({
+        url: `/ministry_goal_front/${selectedMinistry}/`, // Endpoint URL
+        type: "GET",
+        success: function (data) {
+          console.log(data.ministry_goal)
+          var select  = document.getElementById("goal")
+          select.innerHTML = ""
+          var filteredGoals = [];
+          data.ministry_goal.forEach(element => {
+            var option = document.createElement('option') 
+            option.value = element.goal_name_eng
+            option.textContent =  element.goal_name_eng
+            
+            select.appendChild(option)
+          });
+          document.getElementById('goal').addEventListener('change', function () {
+               var selectedGoal = this.value;
+               
+         
+               data.ministry_goal.forEach(element => {
+                 if (element.goal_name_eng === selectedGoal) {
+                   filteredGoals = element.kra_goals;
+                 }
+                 
+               });
+         
+               selectKra(filteredGoals)
+               
+      // Perform further actions with the filtered goals
+                });
+        } 
+    }) 
+   
+  
+  }
+  function selectKra(filteredGoals){
+    var select  = document.getElementById("kra")
+    select.innerHTML = ""
+    filteredGoals.forEach(element => {
+            var option = document.createElement('option') 
+            option.value = element.id
+            option.textContent =  element.activity_name_eng
+            select.appendChild(option)
+          });
+  }
+  var selectedValues = [];
+  function indicator(filteredkra) {
+  $.ajax({
+    url: `/kra/${filteredkra}/`,
+    type: "GET",
+    success: function (data) {
+      console.log(data);
+      var select = document.getElementById("indicator");
+      
+      console.log(selectedValues)
+
+      data.indicators.forEach((element) => {
+        // Check if the value already exists in selectedValues
+        if (!selectedValues.includes(element.id)) {
+          selectedValues.push(element.id);
+          var option = document.createElement('option');
+          option.value = element.id;
+          option.textContent = element.kpi_name_eng;
+          select.appendChild(option);
+        }
+      });
+      var demo1 = $('select[name="indicator"]').bootstrapDualListbox({
+       nonSelectedListLabel: 'Available Payees',
+       selectedListLabel: 'Selected Payees',
+       preserveSelectionOnMove: 'moved',
+       moveAllLabel: 'Move all',
+       removeAllLabel: 'Remove all'
+  });
+  $("#demoform").submit(function() {
+    alert($('[name="indicator"]').val());
+    return false;
+  });
+    }
+  });
+}
+
+
+
+</script>
+
+</html>

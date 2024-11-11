@@ -1,0 +1,254 @@
+:root {
+    --tif-blue: #01a9ac;
+}
+
+[data-kt-app-layout=dark-sidebar] .app-sidebar .app-sidebar-logo {
+    border-bottom: none !important;
+    /* box-shadow: black !important; */   
+    -webkit-box-shadow: 0 4px 6px -6px #222;
+    -moz-box-shadow: 0 4px 6px -6px #222;
+    box-shadow: 0 4px 6px -6px #222;
+}
+
+[data-kt-app-layout=dark-sidebar] .app-sidebar {
+    background-color: #ffff !important;
+}
+
+span.menu-title {
+    color: black !important;
+}
+
+[data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item.here>.menu-link .menu-icon, [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item.here>.menu-link .menu-icon .svg-icon, [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item.here>.menu-link .menu-icon i {
+    color: black !important;
+}
+
+[data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item .menu-link.active {
+    background-color: #ffff !important;
+    color: black;
+}
+
+[data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item .menu-link.active .menu-bullet .bullet {
+    background-color: black !important;
+}
+
+[data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item .menu-link .menu-icon, [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item .menu-link .menu-icon .svg-icon, [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item .menu-link .menu-icon i {
+    color: rgb(34, 107, 196) !important;
+}
+  
+[data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item.here>.menu-link .menu-icon, [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item.here>.menu-link .menu-icon .svg-icon, [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item.here>.menu-link .menu-icon i.fa.fa-suitcase{
+    color: rgb(34, 107, 196) !important;
+}
+
+[data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item.here>.menu-link .menu-icon, [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item.here>.menu-link .menu-icon .svg-icon, [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item.here>.menu-link .menu-icon i.fa.fa-layer-group{
+    color: rgb(64, 168, 205) !important;
+}
+
+[data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item.here>.menu-link .menu-icon, [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item.here>.menu-link .menu-icon .svg-icon, [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item.here>.menu-link .menu-icon i.fa.fa-grip-lines{
+    color: rgb(106, 55, 188) !important;
+}
+
+[data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item.here>.menu-link .menu-icon, [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item.here>.menu-link .menu-icon .svg-icon, [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item.here>.menu-link .menu-icon i.fa.fa-circle-check{
+    color: rgb(241, 147, 39) !important;
+}
+
+[data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item.here>.menu-link .menu-icon, [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item.here>.menu-link .menu-icon .svg-icon, [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item.here>.menu-link .menu-icon i.fa.fa-clock-rotate-left{
+    color: rgb(118, 85, 45) !important;
+}
+
+[data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item.here>.menu-link .menu-icon, [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item.here>.menu-link .menu-icon .svg-icon, [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item.here>.menu-link .menu-icon i.fa.fa-cloud-arrow-up{
+    color: rgb(118, 85, 45) !important;
+}
+
+[data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item.here>.menu-link .menu-icon, [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item.here>.menu-link .menu-icon .svg-icon, [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item.here>.menu-link .menu-icon i.fa.fa-cloud-arrow-down{
+    color: rgb(118, 85, 45) !important;
+}
+
+[data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item.here>.menu-link .menu-icon, [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item.here>.menu-link .menu-icon .svg-icon, [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item.here>.menu-link .menu-icon i.fa.fa-message{
+    color: rgb(118, 85, 45) !important;
+}
+
+[data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item.here>.menu-link .menu-icon, [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item.here>.menu-link .menu-icon .svg-icon, [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item.here>.menu-link .menu-icon i.fa.fa-circle-question{
+    color: rgb(118, 85, 45) !important;
+}
+
+div.app-sidebar-menu.overflow-hidden.flex-column-fluid {
+    /* border: 1px solid red ; */
+    /* border-right: 1px solid black; */
+    box-shadow: 0 4px 6px -6px #222 !important;
+}
+
+.main-content {
+    /* margin: 0.3%; */
+    padding: 20px;
+}
+
+.main-content-button-div {
+    overflow: hidden;
+}
+
+
+.main-content-button {
+    float: right;
+    margin-left: -50%;
+    background-color: var(--tif-blue);
+    color: #ffffff;
+    padding: 10px;
+    border: none; 
+}
+
+.report-table {
+    margin-top: 20px;
+}
+
+.report-table, .report-table th, .report-table td {
+  border: 1px solid lightgrey !important;
+  border-collapse: collapse !important;
+  padding: 10px;
+}
+
+.report-table thead {
+    font-weight: bolder;
+}
+
+.report-table th, .report-table td {
+    padding-left: 10px !important;
+    vertical-align: middle;
+}
+
+.quarter-report-table-button {
+    background-color: #0ac282;
+    border: none;
+    color: #ffffff;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.report-table-button i, .report-table-button-download i {
+    color: white !important;
+    font-size: smaller !important;
+}
+
+.report-table-button-download {
+    background-color: var(--tif-blue);
+    border: none;
+    color: #ffffff;
+    border-radius: 3px;
+    /* padding: 10px; */
+    min-width: 120px;
+    background-image: linear-gradient(to right, rgba(1, 215, 219, 0), rgba(0, 0, 0, 0.5));
+    padding: 0.3rem 0.1rem 0.3rem 0.1rem !important;
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+.report-table-button-no-doc {
+    background-color: #536584;
+    border: none;
+    color: #ffffff;
+    border-radius: 3px;
+    /* padding: 10px; */
+    min-width: 120px;
+    background-image: linear-gradient(to right, rgba(83, 101, 132, 0), rgba(0, 0, 0, 0.1));
+    padding: 0.3rem 0.1rem 0.3rem 0.1rem !important;
+    font-size: 0.9rem;
+    font-weight: bold;
+
+}
+
+.quarter-table-container {
+    margin-right: 10%;
+    margin-left: 10%;
+}
+
+.report-table-ministry {
+    min-width: 200px;
+}
+.app-footer {
+    margin-top: auto !important;
+}
+
+/* Years */
+
+.card-title {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start !important;
+    justify-content: center !important;
+    /* text-align: left !important; */
+}
+
+.card-title-info {
+    font-weight: 500;
+    color: #777;
+    font-size: 0.9rem;
+    margin-top: 0.2rem;
+}
+
+.card-footer span {
+    font-weight: 500;
+    color: #777;
+    font-size: 0.9rem;
+    margin-top: 0.2rem;
+}
+
+.info-badges-container {
+    display: inline-block;
+    margin: 0.5rem 0rem;
+    align-items: right;
+}
+
+.card-toolbar button {
+    background-color : var(--tif-blue);
+    color: white;
+}
+
+.toolbar-div {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    align-items: center;
+}
+
+.toolbar-btn-container {
+    margin-right: 1rem;
+}
+
+.toolbar-btn {
+    background-color: var(--tif-blue) !important;
+    color: white !important;
+    font-weight: bold !important;
+}
+
+.toolbar-btn i {
+    font-weight: bold !important;
+    color: white !important;
+}
+
+.btn:hover {
+    background-color: #01a9accc !important;
+    color: white !important;
+}
+
+.show-more {
+    background-color: var(--tif-blue);
+}
+
+.report-detail-btn-left {
+    margin-right: 1.3rem;
+}
+
+.card-toolbar i {
+    color: white !important;
+}
+
+.card.card-flush.bgi-no-repeat.bgi-size-contain.bgi-position-x-end.h-md-50.mb-5.mb-xl-10 {
+    background-color: var(--tif-blue) !important;
+}
+
+.search-form {
+    border: none;
+    margin: 0.5% 70% 0.5% 2.5%;
+    border-radius: 5px;
+}
+
+

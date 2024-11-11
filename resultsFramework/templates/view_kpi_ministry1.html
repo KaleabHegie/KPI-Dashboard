@@ -1,0 +1,344 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+  {% include "head.html" %}
+  {% csrf_token %}
+  <link rel="stylesheet" href="{% static  'plugins/select2/css/select2.min.css' %}" >
+  <link rel="stylesheet" href="{% static  'plugins/select2/css/select2-bootstrap4.min.css' %}" >
+  
+
+  <style>
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice {
+      background-color: #007bff;
+      border-color: #006fe6;
+      color: #fff;
+      padding: 0 10px;
+      margin-top: .31rem;
+  }
+
+
+    .indicator {
+      font-weight: bold;
+    }
+
+    .sub-indicator {
+      padding-left: 24px;
+    }
+
+    .expandable-table-caret {
+      cursor: pointer;
+    }
+
+
+    td {
+      text-align: left;
+    }
+  </style>
+
+
+
+  <body class="hold-transition sidebar-mini">
+    <div class="wrapper">
+    
+      {% include "navbar.html" %}
+      {% include "sidebar.html" %}
+      <div class="content-wrapper">
+        <section class="content">
+          <div class="container-fluid mt-5">
+
+            <div class="row">
+              <div class="col-12">
+                  <div class="card">
+                      <div class="card-header">
+                          <h3 class="card-title">Development Plan</h3>
+                      </div>
+                      <div class="card-body row p-0 mt-3">
+                          <div class="col-md-8">
+                              <form id="filterForm" method="post">
+                                  {% csrf_token %}
+                                  <div class="form-group m-3">
+                                      <label>Filter</label>
+                                      <select class="select2" id="multiSelect" name="selectedMinistries[]" multiple="multiple" data-placeholder="Select a Ministry">
+                                          {% for ministry in ministries %}
+                                              <option value="{{ ministry.0 }}">{{ ministry.1 }}</option>
+                                          {% endfor %}
+                                      </select>
+                                  </div>
+                              </form>
+                          </div>
+                          <div class="col-md-3 m-3">
+                              <button type="button" id="submitButton" class="btn btn-info btn-block"><i class="fa fa-database"></i> Filter</button>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          
+
+            <div class="row">
+            
+              <div class="col-12">
+                <div class="card">
+                  <div class="card-header">
+                    <h3 class="card-title">Development Plan</h3>
+                  </div>
+                  <div class="card-body p-0">
+                    <div class="table-responsive" id="table">
+                  
+                      {% load mptt_tags %}
+
+
+
+                      <table class="table table-hover table-sm" id="indicator-table">
+                        <thead>
+                            <tr>
+                                <th class="align-middle">Indicator</th>
+                                {% for year in years %}
+                                <th class="align-middle">{{ year }}</th>
+                                {% endfor %}
+                                <!-- Add more years as needed -->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for indicator in indicators %}
+                            <tr>
+                                <td class="border-0 indicator">{{ indicator.kpi_name_eng }}</td>
+                                {% for year in years %}
+                                <td>
+                                    {% for plan in annual_plans %}
+                                    {% if plan.indicator == indicator and plan.year == year %}
+                      
+                                   
+                      
+                                    
+                                    <button type="button"  title="Anuual target" class="btn btn-block bg-gradient-primary btn-xs"  > {{ plan.annual_target }} </button>
+                                  
+                                    {% if plan.annual_performance %}
+                                    <button type="button" title="Anuual Performance"  class="btn btn-block btn-outline-info btn-xs performance-button"      data-annual-plan-id="{{ plan.id }}" id="performanceButton_{{ plan.id }}"> {{ plan.annual_performance }} </button>
+                                
+                                  
+                                    {% endif %}
+                                    {% endif %}
+                                    {% endfor %}
+                                </td>
+                                {% endfor %}
+                            </tr>
+                            {% if indicator.sub_kpi.all %}
+                            {% recursetree indicator.sub_kpi.all %}
+                            <tr data-widget="expandable-table" aria-expanded="false">
+                                <td>
+                                    <i class="expandable-table-caret fas fa-caret-right fa-fw"></i>
+                                    {{ node.sub_kpi_name_eng }}
+                                </td>
+                                {% for year in years %}
+                                <td>
+                                    {% for plan in annual_plans %}
+                                    {% if plan.sub_indicator == node and plan.year == year %}
+                                    <button type="button" title="Anuual target" class="btn btn-block bg-gradient-primary btn-xs" data-toggle="modal" data-target="#performanceModal" data-kpi-name="{{ node.sub_kpi_name_eng }}"       > {{ plan.annual_target }} </button>
+                                    
+                                    {% if plan.annual_performance %}
+                                    <button type="button" title="Anuual Performance" class="btn btn-block btn-outline-info btn-xs performance-button" > {{ plan.annual_performance }} </button>
+                                
+                      
+                                    {% endif %}
+                                    {% endif %}
+                                    {% endfor %}
+                                </td>
+                                {% endfor %}
+                            </tr>
+                            {% if not node.is_leaf_node %}
+                            <tr class="expandable-body">
+                                <td colspan="12">
+                                    <div class="p-0">
+                                        <!-- Sub-Indicator 1.1.1 -->
+                                        <table class="table table-hover table-sm sub-indicator">
+                                            <tbody>
+                                                <tr>
+                                                    <td>{{ children }}</td>
+                                                    {% for year in years %}
+                                                    <td class="sub-indicator">
+                                                        {% for plan in annual_plans %}
+                                                        {% if plan.sub_indicator == children and plan.year == year %}
+                                                        <button type="button" title="Anuual target" class="btn btn-block bg-gradient-primary btn-xs"   > {{ plan.annual_target }} </button>
+                                                        
+                                                        {% if plan.annual_performance %}
+                                                        <button type="button" title="Anuual Performance" class="btn btn-block btn-outline-info btn-xs performance-button" > {{ plan.annual_performance }} </button>
+                                                      
+                                                        {% endif %}
+                                                        {% endif %}
+                                                        {% endfor %}
+                                                    </td>
+                                                    {% endfor %}
+                                                </tr>
+                                                <!-- Sub-Indicator 1.1.1.1 -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endif %}
+                            {% endrecursetree %}
+                            {% endif %}
+                            {% endfor %}
+                        </tbody>
+                      </table>
+                      
+
+                      <!-- Pagination -->
+
+
+
+                      {% include 'pagination.html' %}
+                                                
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+
+            </div>
+          </div>
+        </section>
+      </div>
+
+      {% include "footer.html" %}
+    
+    
+      <script src="{% static 'plugins/select2/js/select2.full.min.js' %}"></script>
+ 
+     
+      <script>
+        $(document).ready(function() {
+            $('#multiSelect').select2();
+    
+            function loadPaginatedData(pageNumber) {
+                $.ajax({
+                    type: 'GET',
+                    url: '{% url 'filter_kpi_ministry1' %}', // Use the URL pattern name for your Django view
+                    data: { 'page': pageNumber },
+                    success: function(data) {
+                        // Update the paginated data and pagination links
+                        updateTable(data);
+                        $('#pagination').html(data.pagination); // Load the pagination links
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(error);
+                    }
+                });
+            }
+    
+            // Initial load of page 1
+            loadPaginatedData(1);
+    
+            // Handle pagination clicks
+            $(document).on('click', '#pagination a', function(e) {
+                e.preventDefault();
+                var page = $(this).attr('href').split('=')[1];
+                loadPaginatedData(page);
+            });
+    
+            $('#submitButton').on('click', function() {
+                // Serialize the form data (selected ministries)
+                var formData = $('#filterForm').serialize();
+                console.log(formData);
+    
+                // Make an AJAX POST request to your Django view
+                $.ajax({
+                    url: '{% url 'filter_kpi_ministry1' %}', // Use the URL pattern name for your Django view
+                    type: 'POST',
+                    data: formData,
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+    
+                    success: function(response) {
+                        // Handle the AJAX response here
+                        updateTable(response);
+                    },
+                    error: function(error) {
+                        console.error('Error:', error);
+                    }
+                });
+            });
+    
+            // Function to update the table with filtered data
+            function updateTable(data) {
+                var indicatorTableBody = $("#indicator-table tbody");
+                var years = [2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021];
+    
+                // Clear the existing table data
+                indicatorTableBody.empty();
+    
+                // Loop through the indicators in the data
+                data.indicators.forEach(function(indicator) {
+                    // Create a new row for each indicator
+                    var row = $("<tr>").append("<td class='border-0 indicator'>" + indicator.name + "</td>");
+    
+                    // Loop through the years
+                    years.forEach(function(year) {
+                        var cell = $("<td>");
+                        var annualPlan = findAnnualPlan(data.annual_plans, indicator.id, year);
+    
+                        if (annualPlan) {
+                            cell.append("<button type='button' title='Annual target' class='btn btn-block bg-gradient-primary btn-xs'>" + annualPlan.target + "</button>");
+    
+                            if (annualPlan.performance) {
+                                cell.append("<button type='button' title='Annual Performance' class='btn btn-block btn-outline-info btn-xs performance-button'>" + annualPlan.performance + "</button>");
+                            }
+                        }
+    
+                        row.append(cell);
+                    });
+    
+                    // Append the row to the table
+                    indicatorTableBody.append(row);
+    
+                    // Check if the indicator has sub-KPIs
+                    if (indicator.sub_kpi.length > 0) {
+                        // Loop through the sub-KPIs and create rows for them
+                        indicator.sub_kpi.forEach(function(subKPI) {
+                            var subRow = $("<tr>").attr("data-widget", "expandable-table").attr("aria-expanded", "true");
+                            subRow.append("<td><i class='expandable-table-caret fas fa-caret-right fa-fw'></i>" + subKPI.name + "</td>");
+    
+                            years.forEach(function(year) {
+                                var subCell = $("<td>");
+                                var subAnnualPlan = subfindAnnualPlan(data.annual_plans, subKPI.id, year);
+    
+                                if (subAnnualPlan) {
+                                    subCell.append("<button type='button' title='Annual target' class='btn btn-block bg-gradient-primary btn-xs'>" + subAnnualPlan.target + "</button>");
+    
+                                    if (subAnnualPlan.performance) {
+                                        subCell.append("<button type='button' title='Annual Performance' class='btn btn-block btn-outline-info btn-xs performance-button'>" + subAnnualPlan.performance + "</button>");
+                                    }
+                                }
+    
+                                subRow.append(subCell);
+                            });
+    
+                            // Append the sub-row as a child of the indicator row
+                            indicatorTableBody.append(subRow);
+                        });
+                    }
+                });
+            }
+    
+            // Function to find annual plan data by indicator ID and year
+            function findAnnualPlan(annualPlans, indicatorId, year) {
+                return annualPlans.find(function(plan) {
+                    return plan.kpi_id === indicatorId && plan.year === year;
+                }) || null; // Return null if no matching plan is found
+            }
+    
+            function subfindAnnualPlan(annualPlans, indicatorId, year) {
+                return annualPlans.find(function(plan) {
+                    return plan.sub_kpi_id === indicatorId && plan.year === year;
+                }) || null; // Return null if no matching plan is found
+            }
+        });
+    </script>
+    
+
+    
+    </div>
+  </body>
+</html>

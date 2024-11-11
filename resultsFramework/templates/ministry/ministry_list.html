@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+  {% include "head.html" %}
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.css" />
+  
+
+  
+  <body class="hold-transition sidebar-mini">
+    <div class="wrapper">
+      {% include "navbar.html" %} {% include "sidebar.html" %}
+    <div class="content-wrapper">
+
+        <div class="container-fluid">
+            <div class="row ">
+                <div class="col-lg-12">
+                  <div class="card  mt-4">
+                    <div class="card-header">
+                      
+                      <span class="badge bg-info mb-1">percent of no target kpi/year </span>   
+                      <span class=" badge bg-danger mt-1">percent of no performance kpi/ year</span> 
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                      <table id="example2" class="table table-hover table-sm">
+                        <thead>
+                            <tr>
+                                <th>Ministry Name</th>
+                                <th>Indicator Count</th>
+                      
+                                {% for year in years %}
+                                <th>{{ year.year_amh }}</th>
+                       
+                            {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for ministry in ministry_data %}
+                            <tr>
+                                <td>{{ ministry.ministry_name }}</td>
+                                <td>{{ ministry.indicator_count }}</td>
+                          
+
+                                 {% comment %} <td>{{ministry.annual_plan_counts}}</td>  {% endcomment %}
+                                
+                                {% for  year_data, value in ministry.annual_plan_counts.items %}
+
+                                {% comment %} {{ value.percentage_no_performance}} {% endcomment %}
+                                
+                                <td>  <span class="badge bg-info mb-1">{{value.percentage_no_target|floatformat:2}}</span>   
+
+                                  <span class=" badge bg-danger mt-1">{{value.percentage_no_performance|floatformat:2}}</span> 
+                                
+                                </td>
+                            
+                                
+                                {% endfor %}
+                          
+                              
+                              
+
+
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                    <!-- /.card-body -->
+                    <div class="card-footer clearfix">
+                      <ul class="pagination pagination-sm m-0 float-right">
+                        <li class="page-item"><a class="page-link" href="#">&laquo;</a></li>
+                        <li class="page-item"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item"><a class="page-link" href="#">&raquo;</a></li>
+                      </ul>
+                    </div>
+                  </div>
+                  <!-- /.card -->
+      
+                  
+                  <!-- /.card -->
+                </div>
+                <!-- /.col -->
+             
+                <!-- /.col -->
+            </div>
+
+
+
+        </div>
+    </div>
+      
+
+
+      {% include "footer.html" %}
+
+      <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.js"></script>
+      <script>
+        $(function () {
+        
+          $('#example2').DataTable({
+            "paging": true,
+            "lengthChange": true,
+            "searching": true,
+            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+            "ordering": true,
+            "info": true,
+            "autoWidth": true,
+            "responsive": true,
+          });
+        });
+      </script>
+      
+  </body>
+</html>

@@ -1,0 +1,303 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+  {% include "head.html" %}
+  {% csrf_token %}
+  <link rel="stylesheet" href="{% static  'plugins/select2/css/select2.min.css' %}" >
+  <link rel="stylesheet" href="{% static  'plugins/select2/css/select2-bootstrap4.min.css' %}" >
+  
+
+  <style>
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice {
+      background-color: #007bff;
+      border-color: #006fe6;
+      color: #fff;
+      padding: 0 10px;
+      margin-top: .31rem;
+  }
+
+
+    .indicator {
+      font-weight: bold;
+    }
+
+    .sub-indicator {
+      padding-left: 24px;
+    }
+
+    .expandable-table-caret {
+      cursor: pointer;
+    }
+
+
+    td {
+      text-align: left;
+    }
+  </style>
+
+ 
+  <div id="loading-animation" style="display: none;">
+    <div class="d-flex justify-content-center align-items-center">
+      <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <span class="ms-2">Loading...</span>
+    </div>
+  </div>
+
+
+
+  <body class="hold-transition sidebar-mini">
+    <div class="wrapper">
+    
+      {% include "navbar.html" %}
+      {% include "sidebar.html" %}
+      <div class="content-wrapper">
+        <section class="content">
+          <div class="container-fluid mt-5">
+
+            <div class="row">
+              <div class="col-12">
+                  <div class="card">
+                      <div class="card-header">
+                          <h3 class="card-title">Development Plan</h3>
+                      </div>
+                      <div class="card-body row p-0 mt-3">
+                          <div class="col-md-8">
+                              <form id="filterForm" method="post">
+                                  {% csrf_token %}
+                                  <div class="form-group m-3">
+                                      <label>Filter</label>
+                                      <select class="select2" id="multiSelect" name="selectedMinistries[]" multiple="multiple" data-placeholder="Select a Ministry">
+                                          {% for ministry in ministries %}
+                                              <option value="{{ ministry.0 }}">{{ ministry.1 }}</option>
+                                          {% endfor %}
+                                      </select>
+                                  </div>
+                              </form>
+                          </div>
+                          <div class="col-md-3 m-3">
+                              <button type="button" id="submitButton" class="btn btn-info btn-block"><i class="fa fa-database"></i> Filter</button>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          
+
+            <div class="row">
+            
+              <div class="col-12">
+                <div class="card">
+                  <div class="card-header">
+                    <h3 class="card-title">Development Plan</h3>
+                  </div>
+                  <div class="card-body p-0">
+                    <div class="table-responsive" id="table">
+                  
+                     
+
+            
+
+                
+
+                      <!-- Pagination -->
+
+
+
+
+                     
+                                    
+                    </div>
+
+                
+                    <div id='pagination-container'></div>
+                    <div id='pagination-container2'></div>
+                  </div>
+                </div>
+              </div>
+
+    
+            </div>
+          </div>
+        </section>
+    
+      </div>
+
+      {% include "footer.html" %}
+    
+    
+      <script src="{% static 'plugins/select2/js/select2.full.min.js' %}"></script>
+ 
+    <script> 
+        $(document).ready(function () {
+            $('#multiSelect').select2();
+          
+              // Function to show the loading animation
+            function showLoadingAnimation() {
+                $('#loading-animation').show();
+            }
+
+            // Function to hide the loading animation
+            function hideLoadingAnimation() {
+                $('#loading-animation').hide();
+            }
+
+
+
+            // Function to generate pagination links
+            function generatePaginationLinks1(pageObj) {
+              var paginationHtml = '<ul class="pagination justify-content-center">';
+                console.log(pageObj)
+              for (var i = 1; i <= pageObj.paginator.num_pages; i++) {
+                if (i === pageObj.number) {
+                  paginationHtml += '<li class="page-item active"><span class="page-link">' + i + '</span></li>';
+                } else {
+                  paginationHtml += '<li class="page-item"><a class="page-link" href="#" data-page="' + i + '">' + i + '</a></li>';
+                }
+              }
+              paginationHtml += '</ul>';
+              return paginationHtml;
+            }
+          
+
+            function generatePaginationLinks(pageObj) {
+                var paginationHtml = '<ul class="pagination justify-content-center">';
+            
+                // Calculate the range of pagination numbers to display
+                var numPages = pageObj.paginator.num_pages;
+                var currentPage = pageObj.number;
+                var maxPagesToShow = 5; // Adjust as needed
+            
+                var startPage = Math.max(currentPage - Math.floor(maxPagesToShow / 2), 1);
+                var endPage = Math.min(startPage + maxPagesToShow - 1, numPages);
+            
+                for (var i = startPage; i <= endPage; i++) {
+                  if (i === currentPage) {
+                    paginationHtml += '<li class="page-item active"><span class="page-link">' + i + '</span></li>';
+                  } else {
+                    paginationHtml += '<li class="page-item"><a class="page-link" href="#" data-page="' + i + '">' + i + '</a></li>';
+                  }
+                }
+            
+                paginationHtml += '</ul>';
+                return paginationHtml;
+              }
+
+
+            // Function to update the table with data
+            function updateTable(page) {
+                showLoadingAnimation();
+              $.ajax({
+                url: '{% url 'table_ajax' %}'+'?page=' + page, // Replace with the correct URL
+                type: 'GET',
+                success: function (response) {
+                  $('#table').html(response.data);
+          
+                  // Create a new div for pagination links
+                  var paginationDiv = $('<div class="pagination-container"></div>');
+                  var paginationHtml = generatePaginationLinks(response.page_obj);
+                  paginationDiv.html(paginationHtml);
+          
+                  // Append the pagination div to the parent container
+                  $('#pagination-container').html(paginationDiv);
+                  $('#pagination-container2').empty();
+                },
+                error: function (error) {
+                  console.error('Error:', error);
+                }
+              });
+            }
+          
+
+
+            function updateTable2(page) {
+                showLoadingAnimation();
+              $.ajax({
+                url: '{% url 'table_ajax2' %}'+'?page=' + page, // Replace with the correct URL
+                type: 'GET',
+                success: function (response) {
+                  $('#table').html(response.data);
+          
+                  // Create a new div for pagination links
+                  var paginationDiv = $('<div class="pagination-container"></div>');
+                  var paginationHtml = generatePaginationLinks(response.page_obj);
+                  paginationDiv.html(paginationHtml);
+          
+                  // Append the pagination div to the parent container
+                  $('#pagination-container').html(paginationDiv);
+                  $('#pagination-container2').empty();
+                },
+                error: function (error) {
+                  console.error('Error:', error);
+                }
+              });
+            }
+          
+
+
+            // Bind click event to pagination container
+            $('#pagination-container').on('click', '.page-link', function (e) {
+              e.preventDefault();
+              var clickedPage = $(this).data('page');
+              if (clickedPage) {
+                updateTable(clickedPage);
+              }
+            });
+
+
+            $('#pagination-container2').on('click', '.page-link', function (e) {
+                e.preventDefault();
+                var clickedPage = $(this).data('page');
+                if (clickedPage) {
+                  updateTable2(clickedPage);
+                }
+              });
+            
+          
+            updateTable(1);
+          
+            $('#submitButton').on('click', function () {
+              var formData = $('#filterForm').serialize();
+              $.ajax({
+                url: '{% url 'table_ajax2' %}', // Replace with the URL of your filter view
+                type: 'POST',
+                data: formData,
+                
+                success: function (response) {
+                    $('#table').empty();
+                    $('#table').html(response.data);
+
+                    var paginationDiv = $('<div class="pagination-container2"></div>');
+                  var paginationHtml = generatePaginationLinks(response.page_obj);
+                  paginationDiv.html(paginationHtml);
+          
+                  // Append the pagination div to the parent container
+                  $('#pagination-container2').html(paginationDiv);
+                  $('#pagination-container').empty();
+
+                },
+                error: function (error) {
+                  console.error('Error:', error);
+                }
+              });
+            });
+
+
+
+            
+          });
+          
+          
+    </script>
+        
+
+
+
+
+    
+    </div>
+  </body>
+</html>

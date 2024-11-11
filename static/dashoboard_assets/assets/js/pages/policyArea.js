@@ -357,28 +357,36 @@ $(document).ready(()=>{
     }
 
     const modalIndicatorAnnualPlan = (data, year) => {
-      let previous = 0
-        let table = data.map((item) =>{
+
+      let type = $("#dataType").val() // identify whether it is year or quarter
+      let typeValue = $("#dataTypeLists").val()
+
+      let table = data.map((item) =>{
+        let changePercentage = item?.previous_year_performance_data ? Math.round(item?.previous_year_performance_data[0] * 100)/100 : null
+        let changeInAbsolute = item?.previous_year_performance_data ? Math.round(item?.previous_year_performance_data[1] * 100)/100 : null
         
-          let diff = Math.floor(item.annual_performance - previous) 
-          let direction = diff > 1 ? 'fa-arrow-up' : diff >= 0 &&  diff == 0 ? 'fa-arrow-right': 'fa-arrow-down'
-          let directionColor = diff > 1 ? 'text-success' : diff >= 0 &&  diff == 0 ? 'text-dark': 'text-danger'
+        
 
-          return `
-            <tr  class="${item.year == year ? 'table-success' : '' }">
-              <td>${item.year}</td>
-              <td>${item.annual_target || 'None'}</td>
-              <td>${item.annual_performance || 'None' }</td>
-              <td class="fw-bold" style="color: ${item.scorecard || 'red'}" >${item.score || 'None'}</td>
-              <td class="${item.annual_performance ? directionColor : 'text-danger'} fw-bold"> <i class="fas ${item.annual_performance ? direction : 'fa-arrow-down'} fa-sm "></i> ${item.annual_performance ? diff : 'None'}</td>
-              <td class="${item.annual_performance ? directionColor : 'text-danger'} fw-bold">${item.annual_performance && previous > 0 ? Math.floor((diff/previous)*100, 2) : "None"} %</td>
-            </tr>
-            ${previous =  item.annual_performance || 0}
-          `
-        })
 
-        $("#modalAnnualPlanTable").html(table)
-    }
+        let direction = changePercentage > 1 ? 'fa-arrow-up' : changePercentage >= 0 &&  changePercentage == 0 ? 'fa-arrow-right': 'fa-arrow-down'
+        let directionColor = changePercentage > 1 ? 'text-success' : changePercentage >= 0 &&  changePercentage == 0 ? 'text-dark': 'text-danger'
+    
+        return `
+          <tr  class="${item.year == year ? 'table-success' : '' }">
+            <td>${type == 'year' ? item?.year : item?.quarter}</td>
+            <td>${item?.annual_target || item?.quarter_target || 'None'}</td>
+            <td>${item.annual_performance || item.quarter_performance || 'None' }</td>
+            <td class="fw-bold" style="color: ${item.scorecard || 'red'}" >${item.score || 'None'}</td>
+            <td class="${item.annual_performance || item.quarter_performance   ? directionColor : 'text-danger'} fw-bold"> <i class="fas ${item.annual_performance || item.quarter_performance ? direction : 'fa-arrow-down'} fa-sm "></i>${changePercentage}</td>
+            <td class="${item.annual_performance ||  item.quarter_performance  ? directionColor : 'text-danger'} fw-bold">${changeInAbsolute}%</td>
+          </tr>
+        `
+      })
+      $("#table-title").html(type == 'year' ? 'Annual Plan' : 'Quarter Plan ' + typeValue.split('-')[0])
+      $("#table-year-type").html(type == 'year' ? 'Year' : 'Quarter' )
+      $("#modalAnnualPlanTable").html(table)
+  }
+
 
     const policyAreaCard = async() =>{
 
@@ -485,43 +493,43 @@ $(document).ready(()=>{
         $("#goalListCard").html(card)
     }
 
-    const indicatorList = (indicators) =>{
-        return indicators.map((indicator) =>{
-    
-          let previousIndicator = indicator?.annual_indicators?.find((item) => item.year == (indicator?.annual[0].year-1) )
-          let diff = Math.floor(indicator?.annual[0]?.annual_performance - previousIndicator?.annual_performance)
-          let direction = diff > 1 ? 'fa-arrow-up' : diff >= 0 &&  diff == 0 ? 'fa-arrow-right': 'fa-arrow-down'
-          let directionColor = diff > 1 ? 'text-success' : diff >= 0 &&  diff == 0 ? 'text-dark': 'text-danger'
-                
-          let hasTarget = indicator?.annual[0]?.annual_target ? 'primary' : 'secondary'
-          let score = indicator?.annual[0]?.score || 'None'
+  const indicatorList = (indicators) => {
+    return indicators.map((indicator) => {
 
-    
+      let previousIndicator = indicator?.annual_indicators?.find((item) => item?.year == (indicator?.annual[0]?.year - 1))
+      let diff = Math.floor(indicator?.annual[0]?.annual_performance - previousIndicator?.annual_performance)
+      let direction = diff > 1 ? 'fa-arrow-up' : diff >= 0 && diff == 0 ? 'fa-arrow-right' : 'fa-arrow-down'
+      let directionColor = diff > 1 ? 'text-success' : diff >= 0 && diff == 0 ? 'text-dark' : 'text-danger'
 
-          let performanceType = score >= 70 ? 'good' :( score >= 50 ? 'average' : (score < 50 ? 'poor' : 'nodata'))
+      let hasTarget = indicator?.annual[0]?.annual_target ? 'primary' : 'primary'
+      let score = indicator?.annual[0]?.score || 'None'
 
 
 
-          return `
-              <div name="indicator-lists" class="col-lg-4 d-none border">
-                  <div name="${performanceType}">
-                      <div class="d-flex align-items-center">
-                          <div class="flex-shrink-0">
-                            <span class="p-2 d-block rounded-circle"  style="height: 30px; width: 30px; font-size: 70px; background-color: ${indicator?.annual[0]?.annual_target ? indicator?.annual[0]?.scorecard || 'red' : 'gray'}"></span>
-                          </div>
-                          <div class="ml-3"> &nbsp <i class="fas ${direction}  ${directionColor}  " style=" font-size: 30px;"></i></div>
-                          <div class="flex-grow-1 mx-2">
-                              <button name="indicator-btn" data-indicator-name="${indicator.kpi_name_eng}"  data-indicator-id="${indicator.id}" class="btn btn btn-link-secondary mb-0 d-grid text-start" type="button" data-bs-toggle="modal" data-bs-target="#indicatorModal" aria-controls="offcanvasExample">
-                                  <span class="w-100" data-bs-toggle="tooltip" data-bs-placement="top" title="${indicator.kpi_name_eng}">${indicator.kpi_name_eng.length > 25 ? indicator.kpi_name_eng.slice(0,25) + '...' : indicator.kpi_name_eng}</span>
-                              </button>
-                          </div>
-                          <div class="badge bg-light-secondary f-12">${score}</div>
+      let performanceType = score >= 70 ? 'good' : (score >= 50 ? 'average' : (score < 50 ? 'poor' : 'nodata'))
+
+
+
+      return `
+          <div name="indicator-lists" class="col-lg-4 d-none border">
+              <div name="${performanceType}">
+                  <div class="d-flex align-items-center">
+                      <div class="flex-shrink-0">
+                        <span class="p-2 d-block rounded-circle"  style="height: 30px; width: 30px; font-size: 70px; background-color: ${indicator?.annual[0]?.annual_target || indicator?.annual[0]?.quarter_target ? indicator?.annual[0]?.scorecard || 'red' : 'gray'}"></span>
                       </div>
+                      <div class="ml-3"> &nbsp <i class="fas ${indicator?.annual[0]?.annual_target ? direction : 'fa-arrow-up'}  ${indicator?.annual[0]?.annual_target ? directionColor : 'text-muted'}  " style=" font-size: 30px;"></i></div>
+                      <div class="flex-grow-1 mx-2">
+                          <button name="indicator-btn" data-indicator-name="${indicator.kpi_name_eng}"  data-indicator-id="${indicator.id}" class="btn btn btn-link-secondary mb-0 d-grid text-start" type="button" data-bs-toggle="modal" data-bs-target="#indicatorModal" aria-controls="offcanvasExample">
+                              <span class="w-100" data-bs-toggle="tooltip" data-bs-placement="top" title="${indicator.kpi_name_eng}">${indicator.kpi_name_eng.length > 25 ? indicator.kpi_name_eng.slice(0, 25) + '...' : indicator.kpi_name_eng}</span>
+                          </button>
+                      </div>
+                      <div class="badge bg-light-secondary f-12">${score}</div>
                   </div>
               </div>
-            `
-        })
-    }
+          </div>
+        `
+    })
+  }
 
     const goalWithKraList = (goal,goalName, goalScore, goalColor) =>{        
         let kra_lists = goal.kra_goal.map((kra) =>{
@@ -639,38 +647,65 @@ $(document).ready(()=>{
       
         
     }
+  const indicatorModal = (title, data) => {
+    let type = $("#dataType").val()
+    let typeValue = $("#dataTypeLists").val()
 
-    const indicatorModal = (title, data) =>{
-      let type = $("#dataType").val()
-      let typeValue = $("#dataTypeLists").val()
+    $('#indicatorModalLabel').html(title)
+    $('#kpi-unit').html(data.kpi_measurement_units || 'None')
+    $('#kpi-char').html(data.kpi_characteristics)
+    $('#kpi-weight').html(data.kpi_weight || 'None')
+    $('#kpi-kra').html(data.keyResultArea > 5 ? data.keyResultArea.slice(0, 5) : data.keyResultArea)
+    $('#kpi-ministry').html(data?.responsible_ministries?.code || 'None')
+    let yearValueUtilCurrent = data.annual_indicators.filter((year) => year.year <= typeValue)
+
+    data.annual_indicators.sort((a, b) => {
+
+      function splitNumberAndText(input) {
+        const match = input.match(/^(\d+)(\D+)$/);
+        if (match) {
+          const [numberPart, textPart] = match.slice(1, 3);
+          return [numberPart, textPart];
+        } else {
+          return { error: "Input format is incorrect" };
+        }
+      }
 
 
+      if (a.quarter && b.quarter) {
+        const numberPartA = splitNumberAndText(a.quarter);
+        const numberPartB = splitNumberAndText(b.quarter);
 
-      $('#indicatorModalLabel').html(title)
-      $('#kpi-unit').html(data.kpi_measurement_units || 'None')
-      $('#kpi-char').html(data.kpi_characteristics)
-      $('#kpi-weight').html(data.kpi_weight || 'None')
-      $('#kpi-kra').html(data.keyResultArea > 5 ? data.keyResultArea.slice(0, 5) : data.keyResultArea)
-      $('#kpi-ministry').html(data?.responsible_ministries?.code || 'None')
-      let yearValueUtilCurrent = data.annual_indicators.filter((year) => year.year <= typeValue)
+        if (Number(numberPartA[0]) < Number(numberPartB[0])) {
 
-      data.annual_indicators.sort((a,b)=>{
-        if(a.year < b.year){
           return -1
         }
         return 1
-      })
-      let years = yearValueUtilCurrent.map((year) => year.year)
-      let performance = yearValueUtilCurrent.map((performance) => performance.annual_performance || 0)
-      let target = yearValueUtilCurrent.map((target) => target.annual_target || 0)
 
-      chartProgressVsPerformance(years, target, performance) //modal chart
-      modalIndicatorAnnualPlan(data.annual_indicators, typeValue)
+      } else {
+        if (a.year < b.year) {
+          return -1
+        }
+        return 1
+      }
+      return -1
+    })
 
-     
 
 
-    }
+    let years = yearValueUtilCurrent.map((year) => year.year)
+    let quarter = data.annual_indicators.map((item) => item.quarter)
+
+    let performance = yearValueUtilCurrent.map((performance) => performance.annual_performance || 0)
+    let performanceQuarter = data.annual_indicators.map((item) => item.quarter_performance || 0)
+
+    let target = yearValueUtilCurrent.map((target) => target.annual_target || 0)
+    let targetQuarter = data.annual_indicators.map((item) => item.quarter_target || 0)
+
+    chartProgressVsPerformance(type == 'year' ? years : quarter, type == 'year' ? target : targetQuarter, type == 'year' ? performance : performanceQuarter) //modal chart
+    modalIndicatorAnnualPlan(data.annual_indicators, typeValue)
+
+  }
 
     const dashboardCard = async() =>{
 
@@ -686,7 +721,7 @@ $(document).ready(()=>{
             <div  class="card social-widget-card bg-${color}-500">
                 <div class="card-body">
                     <h2 class="text-white m-0">${card.value}</h2>
-                    <span class="fw-bold">Number of ${card.title}</span>
+                    <span class="fw-bold">${card.title}</span>
                     <i style="font-size: 80px;" class="fas fa-${icon[index]}"></i>
                 </div>
             </div>
@@ -1009,15 +1044,15 @@ $(document).ready(()=>{
 
         let policyAreaDashboardData = [
           {
-          title : 'Number Of Goal',
+          title : 'Goals',
           value : data.count_goal
          },
          {
-          title : 'Number Of Key Result Area',
+          title : 'Key Result Areas',
           value : data.count_kra
          },
          {
-          title : 'Number Of Indicator',
+          title : 'Indicators',
           value : data.count_indicator
          },
         ]
@@ -1153,7 +1188,9 @@ $(document).ready(()=>{
       const indicatorName = $(this).data('indicatorName')
       const goal = $(this).data('goal')
 
-      let data = await fetchData(`/api/indicator/${indicatorId}/`)
+      let type = $("#dataType").val()
+      let typeValue = $("#dataTypeLists").val()
+      let data = await fetchData(`/api/indicator/${indicatorId}/${type == 'year' ? '?year='+typeValue : '?year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`)
 
       $('#kpi-goal').html(goal || 'None')
       indicatorModal(indicatorName, data)
@@ -1201,6 +1238,7 @@ $(document).ready(()=>{
 
 
     const AnnualIndicatorModalTable = (indicators, years) => {
+
       let tableDataIndicator =  indicators.map((indicator, index)=>{
         return `
         <tr>

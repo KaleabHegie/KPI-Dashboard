@@ -1,0 +1,64 @@
+<div class="row">
+    <div class="card">
+              <div class="card-header">
+                  <h3 class="card-title">Draft Key Performance Indicators</h3>
+                  <div class="card-tools">
+                      <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                          <i class="fas fa-minus"></i>
+                      </button>
+                  </div>
+              </div>
+              <!-- kpi section -->
+              <div class="card-body p-0" id="kpi-table">
+                <table class="table table-striped projects">
+                    <thead>
+                        <tr>
+                            <th style="width: 1%"><small>ID</small></th>
+                            <th style="width: 30%"><small>English KPI Name</small></th>
+                            <th style="width: 12%"><small>Base-Value</small></th>
+                            <th style="width: 4%"><small>{{current_year}}</small></th>
+                            
+                            <th style="width: 9%" class="text-center"><small>Status</small></th>
+                            <th style="width: 23%" class="text-center"><small>KRA</small></th>
+                            <th class="text-center" style="width: 21%"><i class="fa fa-gear" style="font-size:28px;color:rgb(7, 74, 20)"></i></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for eachdraftkpi in kpiPagination %}
+                        <tr>
+                            <td>{{ eachdraftkpi.id }}</td>
+                            <td><small>{{ eachdraftkpi.kpi_name_eng }}</small></td>
+                            <td><small>{{ eachdraftkpi.base_value }}</small></td>
+                            <td><small>{{ eachdraftkpi.target }}</small></td>
+                            <td class="project-state"><small>{{ eachdraftkpi.kpistatus }}</small></td>
+                            <td class="project-state"><small>{{ eachdraftkpi.draftkra }}</small></td>
+                            <td class="project-actions text-right">
+                              {% if activekpiplan  %}
+                              <a href="{% url 'updatekpi' eachdraftkpi.id %}"><i class="material-icons"style="color: #145A32;">&#xe745;</i></a>&nbsp;
+                              <a href="{% url 'deletekpi' eachdraftkpi.id %}" ><i class="material-icons" style="color: red;">&#xe872;</i></a>            
+                              <a href="{% url 'commentkpi' eachdraftkpi.id %}"> <i class="material-icons"style="color: cadetblue;">&#xe8cd;</i></a>
+                              {% else %}
+                              <a href="#" onclick="return false;"><i class="material-icons"style="color: #145A32;">&#xe745;</i></a>&nbsp;
+                              <a href="#" onclick="return false;"><i class="material-icons"style="color: red;">&#xe872;</i></a>
+                              <a href="#" onclick="return false;"> <i class="material-icons"style="color: cadetblue;">&#xe8cd;</i></a>
+                              
+                              {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <!-- pagination section -->
+                <hr>
+                {% if kpiPagination.has_previous %}
+                <a href="?page=1" class="kpipagination-link">&laquo; First</a>
+                <a href="?page={{ kpiPagination.previous_page_number }}" class="kpipagination-link">Previous</a>
+                {% endif %}
+                Page {{ kpiPagination.number }} of {{ kpiPagination.paginator.num_pages }}
+                {% if kpiPagination.has_next %}
+                <a href="?page={{ kpiPagination.next_page_number }}" class="kpipagination-link">Next</a>
+                <a href="?page={{ kpiPagination.paginator.num_pages }}" class="kpipagination-link">Last &raquo;</a>
+                {% endif %}
+            </div>
+    </div>
+  </div>

@@ -1,0 +1,421 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Responsible indicators</title>
+    {% include 'head.html'%}
+  </head>
+  <body class="hold-transition sidebar-mini layout-fixed">
+    {% include 'navbar.html'%} 
+    {% include 'userAdmin/sidebar.html'%}
+
+    {% include 'userAdmin/messages.html' %}
+
+    <!--Body Start-->
+
+  <!--Edit Indicator Modal-->
+  <!-- Modal -->
+  <div class="modal fade" id="EditIndicatorModal" tabindex="-1" aria-labelledby="EditIndicatorModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="EditIndicatorModalLabel">Edit Key Result Area</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form id="updateIndicatorForm">
+          <div class="modal-body">
+            <input type="hidden" class="form-control" value="" id="indicatorId">
+            {{form.as_p}}
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button id="saveIndicator" type="submit" class="btn btn-primary">Save changes</button>
+            <button style="display: none;" id="btnLoadding" class="btn btn-primary" type="button" disabled>
+              <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+              Loading...
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <!--End Modal -->
+
+
+
+      <!--Add Excel Data-->
+  <div class="modal fade" id="keyResultAreaExcel" tabindex="-1" aria-labelledby="keyResultAreaExcelLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="keyResultAreaExcelLabel">
+            New indicator
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form method='POST' name="fileTopic" enctype="multipart/form-data">
+          <div class="modal-body">
+
+            {% csrf_token %}
+            <p class="text-info">Click Download button to download sample Excel format.
+              <a href="{% static 'SampleExcel/indicators_Sample_Excel.xlsx' %}" download="CategorySample.xlsx"
+              class="btn btn-info">Download</a>
+            </p>
+
+            <div class="row justify-content-start mt-5">
+              <div class="col-12">
+                <label for="">Add Excel</label>
+                {{formFile.as_p}}
+
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+              Cancel
+            </button>
+            <button type="submit" name="fileIndicatorsValue" class="btn btn-primary">Add Indicator</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  </div>
+
+
+    <!--Add new Indicator Modal-->
+  <!-- Modal -->
+  <div class="modal fade" id="addIndicatorModal" tabindex="-1" aria-labelledby="addIndicatorModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addIndicatorModalLabel">Add Indicator</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form name="addIndicatorForm" method="post">
+          {%csrf_token%}
+          <div class="modal-body">
+            {{form.as_p}}
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" name="addIndicatorForm" class="btn btn-primary">Save changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <!--End Modal -->
+
+
+              <!--Delete Indicator Modal-->
+  <!-- Modal -->
+  <div class="modal fade" id="deleteIndicatorModal" tabindex="-1" aria-labelledby="deleteIndicatorModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteIndicatorModalLabel">Delete Indicator</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p class="h4 fw-normal" id="deleteMessageIndicator"></p>
+        </div> 
+          
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <a href="#" id="deleteIndicatorAnchor" type="submit" class="btn btn-danger">Delete</a>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+  <!--End Modal -->
+
+  
+    <div class="content-wrapper">
+      <div class="content-header">
+
+        <!--Multi Insert-->
+        <button type="button" class="btn btn-success mb-2" data-bs-toggle="modal" data-bs-target="#keyResultAreaExcel"
+        data-bs-whatever="@mdo">
+        <i class="fa fa-database"></i> Multi-Insert
+      </button>
+
+      <!-- Add Indicator -->
+      <button type="button" class="btn btn-success mb-2" data-bs-toggle="modal" data-bs-target="#addIndicatorModal"
+        data-bs-whatever="@mdo">
+        + Add Indicator
+      </button>
+
+      <a type="button"  href="{% url 'export_indicator' %}"   download  class="btn float-end btn-primary me-3 mb-2">
+        <i class="fa fa-download"></i> Download
+     </a>
+
+      {% include 'messages.html' %}
+      <div class="row justify-content-center">
+        <div class="col-6">
+          {% if form.errors %}
+          <ul class="text-danger">
+            {% for field, errors in form.errors.items %}
+            {% for error in errors %}
+            <li>{{ field }}: {{ error }}</li>
+            {% endfor %}
+            {% endfor %}
+          </ul>
+          {% endif %}
+        </div>
+
+        <div class="table-responsive">
+          <div class="table table-responsive-md border">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">KPI English</th>
+                  <th scope="col">KPI Amharic</th>
+                  <th scope="col">KPI Characterstics</th>
+                  <th scope="col">Responsible Ministries</th>
+                  <th scope="col">Key Result Area</th>
+                  <th scope="col">KPI Weight Wight</th>
+                  <th scope="col">KPI Measurement Unit</th>
+                  <th scope="col">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for indicator in indicators %}
+                <tr>
+                   <th scope="row">{{count | add:forloop.counter}}</th>
+                  <td id="kpi_name_eng_{{indicator.id}}">{{indicator.kpi_name_eng}}</td>
+                  <td  id="kpi_name_amh_{{indicator.id}}">{{indicator.kpi_name_amh}}</td>
+                  <td><div class="btn btn-primary btn-xs" id="kpi_characteristics_{{indicator.id}}" >{{indicator.get_kpi_characteristics_display}}</div></td>
+                  <td id="responsible_ministries_{{indicator.id}}">{{indicator.responsible_ministries}}</td>
+                  <td  id="keyResultArea_{{indicator.id}}">{{indicator.keyResultArea}}</td>
+                  <td><div class="btn btn-primary btn-xs"  id="kpi_weight_{{indicator.id}}">{{indicator.kpi_weight}}</div></td>
+                  <td><div class="btn btn-success btn-xs" id="kpi_measurement_units_{{indicator.id}}">{{indicator.kpi_measurement_units}}</div></td>
+                  <td>
+                    <button id="kpiButtonEdit_{{indicator.id}}" 
+                      type="button"
+                      class="btn btn-outline-warning btn-sm m-2 btn-edit "
+
+                      data-kpi-name-eng="{{indicator.kpi_name_eng}}" 
+                      data-kpi-name-amh="{{indicator.kpi_name_amh}}"
+                      data-kpi-characteristics="{{indicator.kpi_characteristics}}"
+                      data-responsible-ministries="{{indicator.responsible_ministries.id}}"
+                      data-key-result-area="{{indicator.keyResultArea.id}}"
+                      data-kpi-weight="{{indicator.kpi_weight}}"
+                      data-kpi-measurement-units="{{indicator.kpi_measurement_units}}"
+
+                      data-id="{{indicator.id}}" 
+                      data-bs-toggle="modal"
+                      data-bs-target="#EditIndicatorModal" data-bs-whatever="@mdo"><i class="fa fa-pen"></i>
+                    </button>
+                    <button class="btn btn-outline-danger btn-sm btn-delete m-2" data-bs-toggle="modal"
+                      data-bs-target="#deleteIndicatorModal" data-bs-whatever="@mdo" data-name-eng="{{indicator.kpi_name_eng}}"
+                      data-id="{{indicator.id}}"><i class="fa fa-trash"></i> </button>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+
+             <!-- Pagination -->
+             <nav aria-label="Page navigation example">
+                <ul class="pagination pagination-circle pagination-outline justify-content-center" >
+                {% if indicators.has_previous %}
+                  <li class="page-item">
+                  <a class="page-link" href="?page={{ indicators.previous_page_number }}">Previous</a>
+                  </li>
+                {% else %}
+                  <li class="page-item disabled">
+                  <a class="page-link" href="#" tabindex="-1" aria-disabled="True">Previous</a>
+                  </li>
+                {% endif %}
+            
+                {% if indicators.number|add:'-4' > 1 %}
+                  <li class="page-item"><a class="page-link" href="?page={{ indicators.number|add:'-5' }}">&hellip;</a></li>
+                {% endif %}
+            
+                {% for i in indicators.paginator.page_range %}
+                  {% if indicators.number == i %}
+                    <li class="page-item active" aria-current="page">
+                    <span class="page-link">
+                    {{ i }}
+                    <span class="sr-only">(current)</span>
+                    </span>
+                  </li>
+                  {% elif i > indicators.number|add:'-5' and i < indicators.number|add:'5' %}
+                     <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                  {% endif %}
+                {% endfor %}
+            
+                {% if indicators.paginator.num_pages > indicators.number|add:'4' %}
+                   <li class="page-item"><a class="page-link" href="?page={{ indicators.number|add:'5' }}">&hellip;</a></li>
+                {% endif %}
+            
+                {% if indicators.has_next %}
+                  <li class="page-item">
+                  <a class="page-link" href="?page={{ indicators.next_page_number }}">Next</a>
+                  </li>
+                {% else %}
+                  <li class="page-item disabled">
+                  <a class="page-link" href="#" tabindex="-1" aria-disabled="True">Next</a>
+                  </li>
+                {% endif %}
+                </ul>
+              </nav>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!--Body End-->
+    {% include 'footer.html' %}
+
+    <script>
+      $(document).ready(function(){
+
+        //Event handler that handle on Click to delete
+       $(".btn-delete").on('click', function(){
+          const buttonData = $(this).data()
+          $("#deleteIndicatorAnchor").attr("href", `/delete_indicator/${buttonData.id}`)
+          $("#deleteMessageIndicator").html(`Are you sure you want to delete <div> <code> ${buttonData.nameEng}</code>? </div> `)
+        })
+
+
+         //function update and set modal data
+      function handleUpdateModalIndicator(kpiNameAmh, kpiNameEng, kpiWeight, kpiMeasurementUnits, kpiCharacteristics,responsibleMinistries, keyResultArea ,id) {
+        //format date
+        $("#id_kpi_name_eng").val(kpiNameEng)
+        $("#id_kpi_name_amh").val(kpiNameAmh)
+        $("#id_kpi_weight").val(kpiWeight)
+        $("#id_kpi_measurement_units").val(kpiMeasurementUnits)
+        $("#id_kpi_characteristics").val(kpiCharacteristics).change();
+        $("#id_responsible_ministries").val(responsibleMinistries).change();
+        $("#id_keyResultArea").val(keyResultArea).change();
+        $("#indicatorId").val(id)
+      };
+
+       //Event handler that handle button on Click
+       $(".btn-edit").on('click', function () {
+        const buttonData = $(this).data()
+
+        //Open Modal
+        handleUpdateModalIndicator(buttonData.kpiNameAmh, buttonData.kpiNameEng, buttonData.kpiWeight, buttonData.kpiMeasurementUnits, buttonData.kpiCharacteristics, buttonData.responsibleMinistries, buttonData.keyResultArea, buttonData.id)
+      });
+
+      // Function to show toast messages
+      function showToast(title, body, cssClass) {
+        $(document).Toasts('create', {
+          class: cssClass,
+          title: title,
+          subtitle: 'MoPD',
+          autohide: true,
+          delay: 3000, // Autohide after 3 seconds
+          body: body
+        });
+      }
+
+      //Event handler that handle form on submit 
+      $("#updateIndicatorForm").on('submit', function (e) {
+        e.preventDefault()
+        let kpiNameEng = $("#id_kpi_name_eng").val()
+        let kpiNameAmh = $("#id_kpi_name_amh").val()
+        let kpiWeight = $("#id_kpi_weight").val()
+        let kpiMeasurementUnits = $("#id_kpi_measurement_units").val()
+        let kpiCharacteristics = $("#id_kpi_characteristics").val()
+        let responsibleMinistries = $("#id_responsible_ministries").val()
+        let keyResultArea = $("#id_keyResultArea").val()
+        let id = $("#indicatorId").val()
+
+
+
+
+        $.ajax({
+          type: 'POST',
+          url: '{% url "update_indicator" %}',
+          data: {
+            'kpi_name_eng': kpiNameEng,
+            'kpi_name_amh': kpiNameAmh,
+            'kpi_weight': kpiWeight,
+            'kpi_measurement_units': kpiMeasurementUnits,
+            'kpi_characteristics': kpiCharacteristics,
+            'responsible_ministries': responsibleMinistries,
+            'keyResultArea': keyResultArea,
+            'indicator_id': id,
+
+            csrfmiddlewaretoken: '{{csrf_token}}'
+          },
+          beforeSend: function () {
+            $('#saveIndicator').hide()
+            $("#btnLoadding").show();
+          },
+          // hides the loader after completion of request, whether successfull or failor.             
+          complete: function () {
+            //Show save button finished 
+            $('#saveIndicator').show()
+            $("#btnLoadding").hide();
+          },
+          success: function (response) {
+
+            if (response.success) {
+              //Show Success Message
+              showToast('&#128515 Hello, User', 'Successfully Updated', 'bg-success')
+
+               let kpiNameEngHtml = $('#kpi_name_eng_'+id)
+               let kpiNameAmhHtml = $('#kpi_name_amh_'+id)
+               let kpiWeightHtml = $('#kpi_weight_'+id)
+               let kpiMeasurementUnitsHtml = $('#kpi_measurement_units_'+id)
+               let kpiCharacteristicsHtml = $('#kpi_characteristics_'+id)
+               let responsibleMinistriesHtml = $("#responsible_ministries_"+id)
+               let keyResultAreaHtml = $("#keyResultArea_"+id)
+               let kpiButtonEditHtml = $("#kpiButtonEdit_"+id)
+
+
+
+              //   //update table value
+                kpiNameEngHtml.text(kpiNameEng)
+                kpiNameAmhHtml.text(kpiNameAmh)
+                kpiWeightHtml.text(kpiWeight)
+                kpiMeasurementUnitsHtml.text(kpiMeasurementUnits)
+                kpiCharacteristicsHtml.text($("#id_kpi_characteristics option[value="+kpiCharacteristics+"]").text().slice(0, $("#id_kpi_characteristics option[value="+kpiCharacteristics+"]").text().length/2 ))
+                responsibleMinistriesHtml.text($("#id_responsible_ministries option[value="+responsibleMinistries+"]").text())
+                keyResultAreaHtml.text($("#id_keyResultArea option[value="+keyResultArea+"]").text())
+             
+              //   //update button value
+                kpiButtonEditHtml.data("kpi-name-eng" ,kpiNameEng)
+                kpiButtonEditHtml.data("kpi-name-amh" ,kpiNameAmh)
+                kpiButtonEditHtml.data("kpi-characteristics" ,kpiCharacteristics)
+                kpiButtonEditHtml.data("responsible-ministries" ,responsibleMinistries )  
+                kpiButtonEditHtml.data("key-result-area" ,keyResultArea)
+                kpiButtonEditHtml.data("key-kpi-weight" ,kpiWeight)
+                kpiButtonEditHtml.data("key-kpi-measurement-units" ,kpiMeasurementUnits)
+
+            } else {
+              // Show an error toast message
+              showToast('&#128532 Hello User', 'Failed to update Indicator.', 'bg-danger');
+            }
+
+            $('#EditIndicatorModal').modal('hide');
+
+          },
+          error: function () {
+            // Show an error toast message
+            showToast('&#128532 Hello User', 'An error occurred while updating Indicator', 'bg-danger');
+          },
+        })
+
+      })
+
+
+
+      })
+    </script>
+  </body>
+</html>

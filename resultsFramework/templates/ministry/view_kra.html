@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  {% include "head.html" %}
+
+  <body class="hold-transition sidebar-mini">
+    <div class="wrapper">
+      {% include "navbar.html" %} {% include "sidebar.html" %}
+      <div class="content-wrapper">
+
+
+         <div class="container-fluid">
+
+            <div class="row mt-4" >
+               
+               <div class="col-md-12">
+                  {% for goal in goals %}
+                  <div class="card">
+                      <div class="card-header">
+                          <h3 class="card-title">Strategic Goal: "{{ goal.goal_name_eng }}"</h3>
+                      </div>
+                      <div class="card-body">
+                        
+            
+                          
+                          <h4>Key Result Areas:</h4>
+                          <table class="table table-bordered">
+                              <thead>
+                                  <tr>
+                                      <th style="width: 10%">#</th>
+                                      <th>Activity Name (English)</th>
+                                      <th>Activity Name (Amharic)</th>
+                                    
+                                 
+                                  </tr>
+                              </thead>
+                              <tbody>
+                                  {% for kra in goal.kra_goal.all %}
+                                  <tr>
+                                      <td>{{ forloop.counter }}</td>
+                                      <td>{{ kra.activity_name_eng }}</td>
+                                      <td>{{ kra.activity_name_amh }}</td>
+                             
+                                  </tr>
+                                  {% endfor %}
+                              </tbody>
+                          </table>
+                      </div>
+                  </div>
+                  {% endfor %}
+              </div>
+
+            </div>
+         </div>
+
+
+      </div>
+      
+
+
+      {% include "footer.html" %}
+
+      
+  </body>
+</html>

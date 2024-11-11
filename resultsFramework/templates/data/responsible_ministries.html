@@ -1,0 +1,409 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Responsible Ministries</title>
+  {% include 'head.html'%}
+</head>
+
+<body class="hold-transition sidebar-mini layout-fixed">
+
+
+  {% include 'navbar.html'%}
+  {% include 'userAdmin/sidebar.html'%}
+
+  {% include 'userAdmin/messages.html' %}
+
+  <!--Body Start-->
+  <!--Add Excel Data-->
+  <div class="modal fade" id="responsibleMinistriesExcel" tabindex="-1"
+    aria-labelledby="responsibleMinistriesExcelLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="responsibleMinistriesExcelLabel">
+            New Ministry
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        
+        <form method='POST' name="fileTopic" enctype="multipart/form-data">
+          <div class="modal-body">
+
+            {% csrf_token %}
+            <p class="text-info">Click Download button to download sample Excel format.
+              <a href="{% static 'SampleExcel/ministries_SampleExcel.xlsx' %}" download
+              class="btn btn-info">Download</a>
+            </p>
+
+            <div class="row justify-content-start mt-5">
+              <div class="col-12">
+                <label for="">Add Excel</label>
+                {{formFile.as_p}}
+
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+              Cancel
+            </button>
+            <button type="submit" name="fileResponsibleMinistriesValue" class="btn btn-primary">Add Ministries</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <!--Add new Ministry Modal-->
+  <!-- Modal -->
+  <div class="modal fade" id="addMinistry" tabindex="-1" aria-labelledby="addMinistryLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addMinistryLabel">Add new Ministry</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+    
+
+        <form name="addMinistryForm" method="post">
+          {%csrf_token%}
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="addMinistryAmh" class="form-label">Ministry Name English</label>
+              {{form.responsible_ministry_eng}}
+            </div>
+            <div class="mb-3">
+              <label for="addMinistryEng" class="form-label">Ministry Name Amharic</label>
+              {{form.responsible_ministry_amh}}
+            </div>
+            <div class="mb-3">
+              <label for="addMinistryCode" class="form-label">Ministry Code</label>
+              {{form.code}}
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" name="addMinistryForm" class="btn btn-primary">Save changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <!--End Modal -->
+
+
+  <!--Edit Ministry Modal-->
+  <!-- Modal -->
+  <div class="modal fade" id="EditMinistryModal" tabindex="-1" aria-labelledby="EditMinistryModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="EditMinistryModalLabel">Edit Responsible Ministry</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form id="updateMinistryForm">
+          <div class="modal-body">
+            <div class="mb-3">
+              <input type="hidden" class="form-control" value="" id="ministryId">
+              <label for="id_editMinistryEng" class="form-label">Ministry Name English</label>
+              <input type="text" name="responsible_ministry_amh" class="form-control" maxlength="350" required="" id="id_editMinistryEng">
+            </div>
+            <div class="mb-3">
+              <label for="id_editMinistryAmh" class="form-label">Ministry Name Amharic</label>
+              <input type="text" name="responsible_ministry_eng" class="form-control" maxlength="350" required="" id="id_editMinistryAmh">
+            </div>
+            <div class="mb-3">
+              <label for="id_editMinistryCode" class="form-label">Ministry Code</label>
+              <input type="text" name="responsible_ministry_eng" class="form-control" maxlength="350" required="" id="id_editMinistryCode">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button  id="saveMinistry" type="submit" class="btn btn-primary">Save changes</button>
+            <button  id="btnLoadding" class="btn btn-primary" type="button" disabled>
+              <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+              Loading...
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <!--End Modal -->
+
+
+    <!--Delete Ministry Modal-->
+  <!-- Modal -->
+  <div class="modal fade" id="deleteMinistryModal" tabindex="-1" aria-labelledby="deleteMinistryModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteMinistryModalLabel">Delete Responsible Ministry</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p class="h4 fw-normal" id="deleteMessageMinistry"></p>
+        </div> 
+          
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <a href="#" id="deleteMinistryAnchor" type="submit" class="btn btn-danger">Delete</a>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+  <!--End Modal -->
+
+
+
+  <div class="content-wrapper">
+    <div class="content-header">
+
+      <!-- Muli-Insert -->
+      <button type="button" class="btn btn-success mb-2" data-bs-toggle="modal"
+        data-bs-target="#responsibleMinistriesExcel" data-bs-whatever="@mdo">
+        <i class="fa fa-database"></i> Multi-Insert
+      </button>
+
+      <!-- Add Ministry -->
+      <button type="button" class="btn btn-success mb-2" data-bs-toggle="modal" data-bs-target="#addMinistry"
+        data-bs-whatever="@mdo">
+        + Add New Ministry
+      </button>
+
+      <a type="button"  href="{% url 'export_ministry' %}"   download  class="btn float-end btn-primary me-3 mb-2">
+        <i class="fa fa-download"></i> Download
+     </a>
+
+
+
+      <div>
+        {{dataset.csv}}
+      </div>
+
+
+
+      {% include 'messages.html' %}
+      <div class="row justify-content-center">
+        <div class="col-6">
+          {% if form.errors %}
+          <ul class="text-danger">
+            {% for field, errors in form.errors.items %}
+            {% for error in errors %}
+            <li>{{ field }}: {{ error }}</li>
+            {% endfor %}
+            {% endfor %}
+          </ul>
+          {% endif %}
+        </div>
+      </div>
+
+      
+      <div class="">
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Name English</th>
+                <th scope="col">Name Amharic</th>
+                <th scope="col">Code</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for ministry in ministries%}
+              <tr>
+                <th scope="row">{{count | add:forloop.counter}}</th>
+                <td id="ministryDataEng_{{ministry.id}}" >{{ministry.responsible_ministry_eng}}</td>
+                <td id="ministryDataAmh_{{ministry.id}}">{{ministry.responsible_ministry_amh}}</td>
+                <td>
+                  <div class="btn btn-xs btn-primary" id="ministryDataCode_{{ministry.id}}">{{ministry.code}}</div>
+                </td>
+                <td>
+                  <button id="ministryButton_{{ministry.id}}" type="button" class="btn btn-outline-warning btn-sm me-2 btn-edit "
+                    data-responsible_ministry_eng="{{ministry.responsible_ministry_eng}}"
+                    data-responsible_ministry_amh="{{ministry.responsible_ministry_amh}}" data-code="{{ministry.code}}"
+                    data-id="{{ministry.id}}" data-bs-toggle="modal" data-bs-target="#EditMinistryModal"
+                    data-bs-whatever="@mdo"><i class="fa fa-pen"></i> </button>
+                  <button  class="btn btn-outline-danger btn-sm btn-delete"  data-bs-toggle="modal" data-bs-target="#deleteMinistryModal"
+                  data-bs-whatever="@mdo"  data-responsible_ministry_eng="{{ministry.responsible_ministry_eng}}"  data-id="{{ministry.id}}"><i class="fa fa-trash"></i> </button>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+
+          <!-- Pagination -->
+          <nav aria-label="Page navigation example">
+            <ul class="pagination pagination-circle pagination-outline justify-content-center">
+              {% if ministries.has_previous %}
+              <li class="page-item">
+                <a class="page-link" href="?page={{ ministries.previous_page_number }}">Previous</a>
+              </li>
+              {% else %}
+              <li class="page-item disabled">
+                <a class="page-link" href="#" tabindex="-1" aria-disabled="True">Previous</a>
+              </li>
+              {% endif %}
+
+              {% if ministries.number|add:'-4' > 1 %}
+              <li class="page-item"><a class="page-link" href="?page={{ ministries.number|add:'-5' }}">&hellip;</a></li>
+              {% endif %}
+
+              {% for i in ministries.paginator.page_range %}
+              {% if ministries.number == i %}
+              <li class="page-item active" aria-current="page">
+                <span class="page-link">
+                  {{ i }}
+                  <span class="sr-only">(current)</span>
+                </span>
+              </li>
+              {% elif i > ministries.number|add:'-5' and i < ministries.number|add:'5' %} <li class="page-item"><a
+                  class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                {% endif %}
+                {% endfor %}
+
+                {% if ministries.paginator.num_pages > ministries.number|add:'4' %}
+                <li class="page-item"><a class="page-link" href="?page={{ ministries.number|add:'5' }}">&hellip;</a>
+                </li>
+                {% endif %}
+
+                {% if ministries.has_next %}
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ ministries.next_page_number }}">Next</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                  <a class="page-link" href="#" tabindex="-1" aria-disabled="True">Next</a>
+                </li>
+                {% endif %}
+            </ul>
+          </nav>
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--Body End-->
+  {% include 'footer.html' %}
+
+  <script>
+  $(document).ready(function(){
+
+    //Event handler that handle on Click to delete
+    $(".btn-delete").on('click', function(){
+      const buttonData = $(this).data()
+      $("#deleteMinistryAnchor").attr("href", `/delete_ministry/${buttonData.id}`)
+      $("#deleteMessageMinistry").html(`Are you sure you want to delete <div> <code> ${buttonData.responsible_ministry_eng} </code>? </div> `)
+    })
+
+    //function update and set modal data
+    function handleUpdateModalMinistry(nameEng, nameAmh, nameCode, id){
+     $("#btnLoadding").hide();
+     $("#id_editMinistryEng").val(nameEng != "None" ? nameEng : '')
+     $("#id_editMinistryAmh").val(nameAmh != "None" ? nameAmh : '')
+     $("#id_editMinistryCode").val(nameCode != "None" ? nameCode : '')
+     $("#ministryId").val(id)
+    };
+
+
+    //Event handler that handle button on Click
+    $(".btn-edit").on('click', function(){
+      const buttonData = $(this).data()
+      //Open Modal
+      handleUpdateModalMinistry(buttonData.responsible_ministry_eng, buttonData.responsible_ministry_amh, buttonData.code, buttonData.id)
+    });
+
+          // Function to show toast messages
+    function showToast(title, body, cssClass) {
+      $(document).Toasts('create', {
+          class: cssClass,
+          title: title,
+          subtitle: 'MoPD',
+          autohide: true,
+          delay: 3000, // Autohide after 3 seconds
+          body: body
+      });
+    }
+
+    //Event handler that handle button on submit
+    $("#updateMinistryForm").on('submit', function(e){
+      e.preventDefault()
+     let ministryNameEng = $("#id_editMinistryEng").val()
+     let ministryNameAmh = $("#id_editMinistryAmh").val()
+     let ministryCode = $("#id_editMinistryCode").val()
+     let ministryId = $("#ministryId").val()
+
+     $.ajax({
+        type: 'POST',
+        url : '{% url "update_ministry" %}',
+        data: {
+          'ministry_name_eng' : ministryNameEng,
+          'ministry_name_amh' : ministryNameAmh,
+          'ministry_code' : ministryCode,
+          'ministry_id' : ministryId,
+          csrfmiddlewaretoken: '{{csrf_token}}'
+        },
+        beforeSend: function() {
+          $('#saveMinistry').hide()
+           $("#btnLoadding").show();
+         },
+         // hides the loader after completion of request, whether successfull or failor.             
+         complete: function() {
+          //Show save button finished 
+           $('#saveMinistry').show()
+           $("#btnLoadding").hide();
+         },
+        success: function(response){
+              
+          if(response.success){
+            //Show Success Message
+            showToast('&#128515 Hello, User', 'Successfully Updated', 'bg-success' )
+            
+           let ministryNameEngHtml = $('#ministryDataEng_'+ministryId)
+           let ministryNameAmhHtml = $('#ministryDataAmh_'+ministryId)
+           let ministryCodeHtml = $('#ministryDataCode_'+ministryId)
+           let ministryButtonHtml = $("#ministryButton_"+ministryId)
+
+            //update table value
+            ministryNameEngHtml.text(ministryNameEng)
+            ministryNameAmhHtml.text(ministryNameAmh)
+            ministryCodeHtml.text(ministryCode)
+
+            //update button value
+            ministryButtonHtml.data("responsible_ministry_eng" ,ministryNameEng)
+            ministryButtonHtml.data("responsible_ministry_amh" ,ministryNameAmh)
+            ministryButtonHtml.data("code" ,ministryCode)
+
+          }else{
+            // Show an error toast message
+            showToast('&#128532 Hello User', 'Failed to update Responsible Ministry.', 'bg-danger');
+          }
+
+         $('#EditMinistryModal').modal('hide');
+          
+        },
+        error: function() {
+          // Show an error toast message
+          showToast('&#128532 Hello User', 'An error occurred while updating Responsible Ministry', 'bg-danger');
+        },
+     })
+
+    })
+
+  });
+  </script>
+</body>
+
+</html>

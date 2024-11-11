@@ -1,0 +1,168 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  {% include "head.html" %}
+
+  <body class="hold-transition sidebar-mini">
+    <div class="wrapper">
+      {% include "navbar.html" %} {% include "sidebar.html" %}
+      <div class="content-wrapper">
+
+
+        <link href="{% static 'assets/custom/base_form.css' %}" rel="stylesheet" type="text/css" />
+<link href="{% static 'assets/custom/report_content_form.css' %}" rel="stylesheet" type="text/css" />
+
+
+{% comment %} <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script> {% endcomment %}
+{% comment %} <script src="http://cdnjs.cloudflare.com/ajax/libs/tinymce/4.5.6/jquery.tinymce.min.js"></script> {% endcomment %}
+
+
+<script src="{% static 'plugins/js/tinymce/tinymce.min.js' %}"></script>
+<div class="content-header mb-2">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-6">
+            <h3 class="card-title">
+                <a class ="text-decoration-none" href="{{request.META.HTTP_REFERER|escape}}">
+                    <i class="fa fa-arrow-left text-info" aria-hidden="true"></i>
+                </a>
+            </h3>
+        </div><!-- /.col -->
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="#" class="text-info">Report</a></li>
+            <li class="breadcrumb-item active">Report Form</li>
+          </ol>
+        </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+
+  <section class="content">
+		<div class="container-fluid">
+
+					<div class="card card-info d-flex flex-column justify-content-between bgi-no-repeat bgi-size-cover bgi-position-x-center pb-4">
+						<h5 class="card-header">
+							<strong>
+								{{ form_title }}
+							</strong>
+						</h5>
+						<div class ="card-body">
+						<form method={{form_method}} {% if filefield %} enctype="multipart/form-data" {% endif %} novalidate>
+							{% csrf_token %}
+                            {% for field in form %}
+								<div class="mb-10">
+									<label for="{{ field.auto_id }}" class="required form-label">{{ field.label }}</label>
+									{% if field.errors %}
+										<div class="invalid-form-field">
+											{{ field }}
+										</div>
+										{% for error in field.errors %}
+											<p class="error-text">{{ error }}</p>
+										{% endfor %}
+									{% else %}
+										{{ field }}
+									{% endif %}
+										
+									<p class="help-text">{{ field.help_text }}</p>
+								</div>
+                            {% endfor %}
+							{% if current_table %}
+							<p class="file-info">Current document: <a href="{{ current_table.url }}" download>{{ current_table_name }}<a></p>
+							{% else %}
+							<p class="required form-label">No document uploaded</p>
+						{% endif %}
+
+							<div id="content-0-container">
+							</div>
+							<div id="report_type_content_container">
+								<p class="form-title" id="report-form-dynamic-title">Edit the content of the report</p>
+							<hr  style="margin:1rem"/>	
+
+								<div id="main-container">
+									{% comment %} {% for report_content in report_contents %} {% endcomment %}
+                                    <div class="mb-10 report-content-section-div" id="content-container-main">
+                                        <div id="content-container">
+                                                {% for report_content in report_contents %}
+											    	{% comment %} {% for inp in rep_type.report_guideline.all %} {% endcomment %}
+													<div class="mb-10">
+														<div class="headers">
+															<label for="report_content_{{report_content.id}}" class="m-10">{{ report_content.title }}</label>
+														</div>
+                                                        <input type="hidden" name="report_content_{{report_content.id}}_title" value={{report_content.title}} />
+														<textarea name="report_content_{{report_content.id}}_content" id="report_content_{{report_content.id}}" class="section-content mb-10">
+                                                            {{ report_content.section_content }}
+														</textarea>
+													</div>
+                                                    {% comment %} {% endfor %}  {% endcomment %}
+                                                {% endfor %}
+											</div>
+										</div>
+									{% comment %} {% endfor %} {% endcomment %}
+								</div>
+							</div>
+							
+							<input type="submit" value="{{ form_button }}" class="btn btn-md btn-info" style="margin:20px 0 10px 0;">
+
+						</form>
+					</div>
+					</div>
+			
+			</div>
+
+		</div>
+	</div>
+</section>
+
+<script>
+	function getWordLimit() {
+		return tinymce.activeEditor.targetElm.getAttribute('data-word-limit');
+	}
+
+	tinymce.init({
+		smart_paste: false, // Disable automatic style cleanup
+		plugins: 'advlist print autolink lists link image charmap preview anchor pagebreak code visualchars wordcount table paste fullscreen insertdatetime media',
+		toolbar: 'undo redo bold italic underline paste strikethrough fontselect fontsizeselect formatselect alignleft alignright alignjustify outdent indent numlist bullist checklist forecolor backcolor casechange permanentpen formatpainter removeformat pagebreak charmap emoticons fullscreen preview save print insertfile image media pageembed template link anchor codesample a11ycheck',
+		selector: ".section-content",
+		table_default_attributes: {
+			border: '3'
+		},
+		table_class_list: [
+			{title: 'None', value: ''},
+			{title: 'No Borders', value: 'table_no_borders'},
+			{title: 'Red borders', value: 'table_red_borders'},
+			{title: 'Blue borders', value: 'table_blue_borders'},
+			{title: 'Green borders', value: 'table_green_borders'}
+		],
+		setup: function(ed) {
+			ed.on('KeyUp', function(e) {
+				let wordLimit = parseInt(getWordLimit(), 10); // Get the word limit
+				let wordCount = tinymce.activeEditor.plugins.wordcount.getCount();
+
+				if (wordCount >= wordLimit) {
+					let allowedKeys = [8, 9, 16, 17];
+					if (allowedKeys.indexOf(e.keyCode) === -1) {
+						ed.setContent(ed.getContent().substr(0, wordLimit)); // Limit content length
+					}
+				}
+			});
+
+			ed.on('change', function(e) {
+				ed.targetElm.textContent = ed.getContent();
+			});
+		}
+	});
+</script>
+
+
+
+
+      </div>
+      
+
+
+      {% include "footer.html" %}
+
+      
+  </body>
+</html>

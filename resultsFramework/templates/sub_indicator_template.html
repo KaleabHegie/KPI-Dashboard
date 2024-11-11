@@ -1,0 +1,43 @@
+{% load mptt_tags %}
+<table class="table table-hover sub-indicator">
+   <tbody>
+     {% recursetree sub_indicator %}
+       <tr>
+         <td class="sub-indicator">{{ children.kpi_name_eng }}</td>
+         {% for year in years %}
+           <td>
+             {% for plan in annual_plans %}
+               {% if plan.indicator == node and plan.year == year %}
+                 {{ plan.annual_target }}
+               {% endif %}
+             {% endfor %}
+           </td>
+         {% endfor %}
+       </tr>
+       <tr data-widget="expandable-table" aria-expanded="true">
+         <td>
+           <i class="expandable-table-caret fas fa-caret-right fa-fw"></i>
+           {{ node.kpi_name_eng }}
+         </td>
+         {% for year in years %}
+           <td>
+             {% for plan in annual_plans %}
+               {% if plan.indicator == node and plan.year == year %}
+                 {{ plan.annual_target }}
+               {% endif %}
+             {% endfor %}
+           </td>
+         {% endfor %}
+       </tr>
+       <tr class="expandable-body">
+         <td colspan="11">
+           <div class="p-0">
+             <!-- Recursive sub-indicator template -->
+             {% include "sub_indicator_template.html" with sub_indicator=node.sub_kpi.all %}
+           </div>
+         </td>
+       </tr>
+     {% endrecursetree %}
+   </tbody>
+ </table>
+ 

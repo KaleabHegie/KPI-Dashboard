@@ -1,0 +1,90 @@
+
+{% load static %}
+
+<!DOCTYPE html>
+<html
+    lang="en">
+    {% include 'head.html' %}
+           
+           <body class="hold-transition sidebar-mini">
+            <div class="wrapper">
+
+                {% include 'navbar.html' %}
+
+                {% include 'sidebar.html' %}
+
+                <div class="content-wrapper">
+                    <section class="content-header">
+                        <div class="container-fluid">
+                            <div class="row mb-2">
+                                <div class="col-sm-8">
+                                    <h1>{{request.user.username}} Key Result Area form</h1>
+                                </div>
+                                <div class="col-sm-4">
+                                    <ol class="breadcrumb float-sm-right">
+                                        <li class="breadcrumb-item">
+                                            <a href="#">Home</a>
+                                        </li>
+                                        <li class="breadcrumb-item active">Table</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    <!-- registration form -->
+                    <div class="container">
+                        <div class="title">Add Key Result Area</div>
+                       
+                        <form action="#" method="post">
+                            {% csrf_token %}
+                            {{form.media}}
+                            <div class="user_details">
+                                <div class="input_pox">
+                                    <span class="datails">KRA In English</span>
+                                    {{form.activity_name_eng}}
+                                </div>
+                                <div class="input_pox">
+                                    <span class="datails">KRA In Amharic</span>
+                                    {{form.activity_name_amh}}
+                                </div>
+                               
+
+                                <div class="input_pox" >
+                                    <span class="datails">Parent Goal</span>
+                                    {{form.goal}}
+                                </div>
+                                {% if request.user.is_mopd %}
+                                <div class="input_pox" >
+                                    <span class="datails">KRA status</span>
+                                    {{form.krastatus}}
+                                </div>
+                                <div class="input_pox">
+                                    <span class="details">Responsible Ministry</span>
+                                    {{ form.responsible_ministries }}
+                                </div>
+                                {% endif %}
+                                <div class="input_pox">
+                                    <span class="datails">Description</span>
+                                    {{form.description|safe}}
+                                </div>
+                                
+                            </div>
+                            <div class="button">
+                                <input type="submit" value="Submit">
+                            </div>
+                        </form>
+                    </div>
+<!-- end of registration form -->
+                </div>
+
+               {% include 'footer.html' %}
+            </div>
+
+        </body>
+     </head>
+</html>
+
+
+
+
+

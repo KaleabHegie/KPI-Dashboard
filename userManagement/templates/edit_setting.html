@@ -1,0 +1,55 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DPMEs</title>
+  {% include 'userAdmin/head.html' %}
+</head>
+<!-- using https://github.com/istvan-ujjmeszaros/bootstrap-duallistbox -->
+
+<!-- common libraries -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+<!-- plugin -->
+<script src="https://www.virtuosoft.eu/code/bootstrap-duallistbox/bootstrap-duallistbox/v3.0.2/jquery.bootstrap-duallistbox.js"></script>
+
+<link rel="stylesheet" type="text/css" href="https://www.virtuosoft.eu/code/bootstrap-duallistbox/bootstrap-duallistbox/v3.0.2/bootstrap-duallistbox.css">
+
+<body class="hold-transition sidebar-mini layout-fixed">
+  {% include 'userAdmin/navbar.html'%}
+
+  {% include 'userAdmin/sidebar.html'%}
+
+  {% include 'userAdmin/messages.html' %}
+  <div class="content-wrapper ">
+    <div class="row justify-content-center" >
+      <div class="card p-5 col-8">
+        <form id="demoform" method="post">
+          {% csrf_token %}
+          {{ form.as_p}}
+          <button class="btn btn-primary" type="submit"> Submit </button>
+        </form>
+        
+      </div>
+    </div>
+  </div>
+  
+</body>
+
+
+<script>
+  var demo1 = $('select[name="indicator"]').bootstrapDualListbox({
+    nonSelectedListLabel: 'Available Indicators',
+    selectedListLabel: 'Selected Indicators',
+    preserveSelectionOnMove: 'moved',
+    moveAllLabel: 'Move all',
+    removeAllLabel: 'Remove all'
+  });
+  
+</script>
+
+</html>

@@ -1,0 +1,419 @@
+{% load static %}
+{% load mptt_tags %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DPMEs</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script src="https://cdn.datatables.net/2.0.2/js/dataTables.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.datatables.net/2.0.2/css/dataTables.dataTables.css"
+    />
+    {% include 'head.html'%}
+  </head>
+
+  <body class="hold-transition sidebar-mini layout-fixed">
+    {% include 'navbar.html'%}   {% include 'userAdmin/sidebar.html'%}
+
+    {% include 'userAdmin/messages.html' %}
+
+          <!--Add Excel Data-->
+  <div class="modal fade" id="annualPlanExcel" tabindex="-1" aria-labelledby="annualPlanExcelLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="annualPlanExcelLabel">
+            New Year
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form method='POST' name="fileTopic" enctype="multipart/form-data">
+          <div class="modal-body">
+
+            {% csrf_token %}
+            <p class="text-info">Click Download button to download Excel format.
+              <a href="{% url 'export_annual_plan' %}"   download
+              class="btn btn-info">Download</a>
+            </p>
+
+            <div class="row justify-content-start mt-5">
+              <div class="col-12">
+                <label for="">Add Excel</label>
+                {{formFile.as_p}}
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+              Cancel
+            </button>
+            <button type="submit" name="fileAnnualValue" class="btn btn-primary">Add Performance</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  </div>
+
+    <!-- Update Performance Modal -->
+<!-- Modal -->
+<div class="modal fade" id="performanceModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="performanceModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="performanceModalLabel">Update Performance  - <span class="fw-bold" id="year">2023</span></h5>
+        
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+            <label for="kpiName">KPI Name:</label>
+            <input type="text" class="form-control" id="kpiName" readonly>
+        </div>
+        <div class="form-group">
+            <label for="annualTarget">Annual Target:</label>
+            <input type="number"  class="form-control" id="annualTarget" readonly>
+        </div>
+        <div class="form-group">
+            <label for="newPerformance">New Performance:</label>
+            <input type="number" class="form-control" id="newPerformance">
+            <input type="hidden" class="form-control" value="" id="annualPlanIdNew">
+        </div>
+    </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" id="savePerformance" class="btn btn-primary">Save Performance</button>
+        
+        <button  id="btnLoadding" class="btn btn-primary" type="button" disabled>
+          <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+          Loading...
+        </button>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!--Body Start-->
+    <div class="content-wrapper">
+      <div class="content-header">
+        <div class="container-fluid border border-3 shodow">
+          <input type="hidden" id="dataEntry"  title="entry-date" class="btn btn-block bg-gradient-primary btn-xs"  data-entry-year ="{{entry.yearOfEntry}}" data-entry-date ="{{entry.check_entryDate}}" />
+               <!-- Add Ministry -->
+      <button type="button" class="btn btn-success mb-2" data-bs-toggle="modal" data-bs-target="#annualPlanExcel"
+      data-bs-whatever="@mdo">
+      + Multi Insert
+    </button>
+
+    <a type="button"  href="{% url 'export_annual_plan' %}"   download  class="btn float-end btn-primary me-3 mb-2">
+      <i class="fa fa-download"></i> Download
+   </a>
+          <div class="table-responsive">
+            <table class="table table-responsive-sm table-hover">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Indicator</th>
+                  <th scope="col">Ministry</th>
+                  <th scope="col">KRA</th>
+                  {% for year in years %}
+                  <th scope="col">{{year.year_amh}}</th>
+                  {% endfor %}
+                </tr>
+              </thead>
+              <tbody>
+
+                {% for indicator in indicators %}
+                <tr>
+                  <th scope="row">{{count | add:forloop.counter}}</th>
+                  <td>{{ indicator.kpi_name_eng }} <a class="p-2" href="#"> <i class="fas fa-eye"></i> </a> </td>
+                  <td>
+                    <button class="btn btn-xs btn-primary">
+                      {{ indicator.responsible_ministries.code }}
+                    </button>
+                  </td>
+                  <td>{{ indicator.keyResultArea.activity_name_eng }}</td>
+                  {% for year in years %}
+                  <td>
+                 
+                  <script>
+                    check = false
+
+                     "{% for ann_pln in annual_plans %}"
+                      ann_yr_pk = `{{ann_pln.year.pk}}`
+                      year_pk = `{{year.pk}}`
+                      ini_pk = `{{indicator.pk}}`
+                      ann_in_pk = `{{ann_pln.indicator.pk}}`
+                      sub_kpi = `{{ann_pln.sub_indicator}}`
+                      
+                    if( ann_yr_pk == year_pk && ann_in_pk == ini_pk  && sub_kpi == 'None'){
+                        check = true
+                        document.write(`
+                            <button  class="btn btn-block btn-xs btn-success" type="button" data-annual-targert={{ ann_pln.annual_target }} kpiName={{indicator.kpi_name_eng}}  data-bs-placement="top" title="Anuual target"   data-bs-toggle="modal" data-bs-target="#performanceModal" disabled>
+                              {{ ann_pln.annual_target }}
+                            </button>
+
+                            {% if ann_pln.annual_performance %}
+                                <button class="btn btn-block btn-xs btn-primary" type="button" id="performanceButton_{{ann_pln.id}}" data-annual-target={{ ann_pln.annual_target }} data-annual-performance={{ ann_pln.annual_performance }} data-kpiname="{{indicator.kpi_name_eng}}"  data-year="{{year}}" data-anuual-plan-id="{{ann_pln.id}}""  data-bs-placement="top" title="Anuual Performance"   data-bs-toggle="modal" data-bs-target="#performanceModal">
+                                  {{ ann_pln.annual_performance }}
+                                </button>
+                            {% else %}
+                            <button class="btn btn-block btn-xs btn-primary" type="button" id="performanceButton_{{ann_pln.id}}" data-annual-target={{ ann_pln.annual_target }} data-annual-performance={{ ann_pln.annual_performance }} data-kpiname="{{indicator.kpi_name_eng}}"  data-year="{{year}}" data-anuual-plan-id="{{ann_pln.id}}""  data-bs-placement="top" title="Anuual Performance"   data-bs-toggle="modal" data-bs-target="#performanceModal">
+                                  Add Performance
+                                </button>
+\
+                            {% endif %}
+
+                      `)
+                    }
+                    "{% endfor %}"
+
+                    if(check == false){
+                        document.write(`
+                        <button class="btn btn-block btn-xs btn-success" disabled type="button"  data-bs-placement="top" title="Anuual target"   data-bs-toggle="modal" data-bs-target="#performanceModal" disabled >
+                              None
+                        </button>
+                        <button class="btn btn-block btn-xs btn-primary" disabled type="button" id="performanceButton_{{ann_pln.id}}" data-annual-target={{ ann_pln.annual_target }} data-annual-performance={{ ann_pln.annual_performance }} data-kpiname="{{indicator.kpi_name_eng}}"  data-year="{{year}}" data-anuual-plan-id="{{ann_pln.id}}""  data-bs-placement="top" title="Anuual Performance"   data-bs-toggle="modal" data-bs-target="#performanceModal">
+                              None
+                        </button>
+
+                      `)
+                    }
+                  </script>
+                </td>
+                {% endfor %}
+                </tr>
+                {% if indicator.sub_kpi.all %}
+                {% recursetree indicator.sub_kpi.all %}
+                <tr data-widget="expandable-table" aria-expanded="false">
+                  <td ></td>  
+                  <td colspan="2">
+                        <i class="expandable-table-caret fas fa-caret-right fa-fw"></i>
+                        {{ node.sub_kpi_name_eng }}
+                    </td>
+                    <td ></td>  
+
+
+                    {% for year in years %}
+                    <td>
+                   
+                    <script>
+                      check = false
+                       "{% for plan in annual_plans %}"
+                        year_pk = `{{year.pk}}`
+                        sub_kpi_year = `{{plan.year.id}}`
+                        sub_kpi = `{{plan.sub_indicator.id}}`
+                        node = `{{node.id}}`
+                        
+                      if( sub_kpi == node && sub_kpi_year == year_pk){
+                          check = true
+                          document.write(`
+                              <button  class="btn btn-block btn-xs btn-success" type="button" data-annual-targert={{ plan.annual_target }} kpiName={{indicator.kpi_name_eng}}  data-bs-placement="top" title="Anuual target"   data-bs-toggle="modal" data-bs-target="#performanceModal" disabled>
+                                {{ plan.annual_target }}
+                              </button>
+  
+                              {% if plan.annual_performance %}
+                                  <button class="btn btn-block btn-xs btn-primary"  type="button" id="performanceButton_{{plan.id}}" data-annual-target={{ plan.annual_target }} data-annual-performance={{ plan.annual_performance }} data-kpiname="{{indicator.kpi_name_eng}}"  data-year="{{year}}" data-anuual-plan-id="{{plan.id}}""  data-bs-placement="top" title="Anuual Performance"   data-bs-toggle="modal" data-bs-target="#performanceModal">
+                                    {{ plan.annual_performance }}
+                                  </button>
+                              {% else %}
+                              <button class="btn btn-block btn-xs btn-primary" type="button" id="performanceButton_{{plan.id}}" data-annual-target={{ plan.annual_target }} data-annual-performance={{ plan.annual_performance }} data-kpiname="{{indicator.kpi_name_eng}}"  data-year="{{year}}" data-anuual-plan-id="{{plan.id}}""  data-bs-placement="top" title="Anuual Performance"   data-bs-toggle="modal" data-bs-target="#performanceModal">
+                                  Add Performance
+                                </button>
+                              {% endif %}
+  
+                        `)
+                      }
+                      "{% endfor %}"
+                      if(check == false){
+                          document.write(`
+                          <button class="btn btn-block btn-xs btn-success" disabled type="button"  data-bs-placement="top" title="Anuual target"   data-bs-toggle="modal" data-bs-target="#performanceModal" disabled >
+                                None
+                          </button>
+                          <button class="btn btn-block btn-xs btn-primary"  disabled type="button"  data-bs-placement="top" title="Anuual Performance"   data-bs-toggle="modal" data-bs-target="#performanceModal">
+                                None
+                          </button>
+  
+                        `)
+                      }
+                    </script>
+                  </td>
+                  {% endfor %}
+
+                </tr>
+                {% if not node.is_leaf_node %}
+                <tr class="expandable-body">
+                    <td colspan="12">
+                        <div class="p-0">
+                            <!-- Sub-Indicator 1.1.1 -->
+                            <table class="table table-hover table-sm sub-indicator">
+                                <tbody>
+                                    <tr>
+                                        <td >{{ children }}</td>
+                                    </tr>
+                                    <!-- Sub-Indicator 1.1.1.1 -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+                {% endif %}
+                {% endrecursetree %}
+                {% endif %}
+                {% endfor %}
+              </tbody>
+            </table>
+
+
+                <!-- Pagination -->
+                <nav aria-label="Page navigation example">
+                  <ul class="pagination pagination-circle pagination-outline justify-content-center" >
+                  {% if indicators.has_previous %}
+                    <li class="page-item">
+                    <a class="page-link" href="?page={{ indicators.previous_page_number }}">Previous</a>
+                    </li>
+                  {% else %}
+                    <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1" aria-disabled="True">Previous</a>
+                    </li>
+                  {% endif %}
+              
+                  {% if indicators.number|add:'-4' > 1 %}
+                    <li class="page-item"><a class="page-link" href="?page={{ indicators.number|add:'-5' }}">&hellip;</a></li>
+                  {% endif %}
+              
+                  {% for i in indicators.paginator.page_range %}
+                    {% if indicators.number == i %}
+                      <li class="page-item active" aria-current="page">
+                      <span class="page-link">
+                      {{ i }}
+                      <span class="sr-only">(current)</span>
+                      </span>
+                    </li>
+                    {% elif i > indicators.number|add:'-5' and i < indicators.number|add:'5' %}
+                       <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                    {% endif %}
+                  {% endfor %}
+              
+                  {% if indicators.paginator.num_pages > indicators.number|add:'4' %}
+                     <li class="page-item"><a class="page-link" href="?page={{ indicators.number|add:'5' }}">&hellip;</a></li>
+                  {% endif %}
+              
+                  {% if indicators.has_next %}
+                    <li class="page-item">
+                    <a class="page-link" href="?page={{ indicators.next_page_number }}">Next</a>
+                    </li>
+                  {% else %}
+                    <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1" aria-disabled="True">Next</a>
+                    </li>
+                  {% endif %}
+                  </ul>
+                </nav>
+       </div>
+
+        </div>
+      </div>
+    </div>
+
+    <script>
+      $(document).ready(function(){
+
+
+                // Function to show toast messages
+                function showToast(title, body, cssClass) {
+            $(document).Toasts('create', {
+                class: cssClass,
+                title: title,
+                subtitle: 'MoPD',
+                autohide: true,
+                delay: 3000, // Autohide after 3 seconds
+                body: body
+            });
+        }
+
+        //Function update and set modal data
+        function handleUpdateModalPerformance(kpiName, annualPerformance, annualTarget, year, anuualPlanId ){
+          $("#btnLoadding").hide();
+          $('#kpiName').val(kpiName);
+          $('#annualTarget').val(annualTarget);
+          $('#year').val(year);
+          $('#annualPlanIdNew').val(anuualPlanId);
+          $('#newPerformance').val(annualPerformance);
+        }
+
+
+
+        //Event handler that handle button on Click
+        $(".btn[data-annual-performance]").on('click', function(){
+          //get button data
+          const buttunData = $(this).data()
+
+          //open modal
+          handleUpdateModalPerformance(buttunData.kpiname, buttunData.annualPerformance, buttunData.annualTarget, buttunData.year,buttunData.anuualPlanId)
+        })
+
+
+        //Event handler to update performance data
+        $("#savePerformance").on('click', function(){
+          let newPerformance = $("#newPerformance").val()
+          let kpiName = $("#kpiName").val()
+          let annualPlanId = $("#annualPlanIdNew").val()
+
+          $.ajax({
+            type: 'POST',
+            url : '{% url "update-performance" %}',
+            data: {
+              'performance' : newPerformance,
+              'kpi_name' : kpiName,
+              'annual_plan_id' : annualPlanId,
+              csrfmiddlewaretoken: '{{csrf_token}}'
+            },
+             beforeSend: function() {
+              $('#savePerformance').hide()
+               $("#btnLoadding").show();
+             },
+             // hides the loader after completion of request, whether successfull or failor.             
+             complete: function() {
+              //Show save button finished 
+               $('#savePerformance').show()
+               $("#btnLoadding").hide();
+             },
+            success: function(response){
+              
+              if(response.success){
+                //Show Success Message
+                showToast('&#128515 Hello, User', 'The Annual performance successfully Inserted', 'bg-success' )
+                
+                let performanceButton = $('#performanceButton_'+annualPlanId)
+
+                //update button value
+                performanceButton.text(newPerformance)
+                performanceButton.data("annualPerformance" ,newPerformance)
+              }else{
+                // Show an error toast message
+                showToast('&#128532 Hello User', 'Failed to update performance.', 'bg-danger');
+              }
+
+              $('#performanceModal').modal('hide');
+              
+            },
+            error: function() {
+              // Show an error toast message
+              showToast('&#128532 Hello User', 'An error occurred while updating performance', 'bg-danger');
+            },
+          })
+        })
+      })
+
+
+
+    </script>
+    
+    <!--Body End-->
+    {% include 'footer.html' %}
+  </body>
+</html>

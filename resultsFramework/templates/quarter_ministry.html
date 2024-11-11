@@ -1,0 +1,363 @@
+{% load static %}
+{% load mptt_tags %}
+<!DOCTYPE html>
+<html lang="en">
+  {% include "head.html" %}
+
+    <link rel="stylesheet" href="//cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+
+  <style>
+    .indicator {
+      font-weight: bold;
+    }
+
+    .sub-indicator {
+      padding-left: 24px;
+    }
+
+    .expandable-table-caret {
+      cursor: pointer;
+    }
+
+
+    td {
+      text-align: left;
+    }
+  </style>
+
+
+
+  <body class="hold-transition sidebar-mini">
+    <div class="wrapper">
+      {% include "navbar.html" %}
+      {% include "sidebar.html" %}
+      <div class="content-wrapper">
+        <section class="content">
+          <div class="container-fluid mt-5">
+            <div class="row">
+              <div class="col-12">
+                <div class="card">
+                  <div class="card-header">
+                    <h3 class="card-title">Development Plan</h3>
+                  </div>
+                  <div class="card-body p-0">
+                    <div class="table-responsive">
+                      
+                
+
+                    <!-- Performance Modal -->
+<!-- Performance Modal -->
+<div class="modal fade" id="performanceModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Update Performance</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+          <div class="modal-body">
+              <div class="form-group">
+                  <label for="kpiName">KPI Name:</label>
+                  <input type="text" class="form-control" id="kpiName" readonly>
+              </div>
+              <div class="form-group">
+                  <label for="quarterTarget">Annual Target:</label>
+                  <input type="number"  class="form-control" id="quarterTarget" readonly>
+              </div>
+              <div class="form-group">
+                  <label for="newPerformance">New Performance:</label>
+                  <input type="number" class="form-control" id="newPerformance">
+                  <input type="hidden" class="form-control" value="" id="annualPlanIdNew">
+              </div>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary" id="savePerformance">Save Performance</button>
+          </div>
+      </div>
+  </div>
+</div>
+
+<!-- Your Table -->
+
+<!-- Your Table -->
+<div class="card-body row">
+  <div class="col-md-3">
+    <a type="button" href="{% url 'quarter_batch_insert_ministry'  %}"  class="btn btn-primary btn-block"><i class="fa fa-database"></i> Multi-Insert</a>
+   
+  </div>
+</div>
+<input type="hidden" id="dataEntry"  title="entry-date" class="btn btn-block bg-gradient-primary btn-xs"  data-entry-year ="{{entry.yearOfEntry}}" data-entry-quarter ="{{entry.quarter}}"  data-entry-date ="{{entry.check_entryDate}}" />
+<table class="table table-hover table-sm" id="indicator-table">
+  <thead>
+      <tr>
+          <th class="align-middle">Indicator</th>
+          {% for quarter in quarters %}
+          <th class="align-middle">{{ quarter }}</th>
+          {% endfor %}
+          <!-- Add more quarters as needed -->
+      </tr>
+  </thead>
+  <tbody>
+      {% for indicator in indicators %}
+      <tr>
+          <td class="border-0 indicator">{{ indicator.kpi_name_eng }}</td>
+          {% for quarter in quarters %}
+
+         
+          <td>
+              {% for plan in annual_plans %}
+              {% if plan.indicator == indicator and plan.quarter == quarter %}
+              <button type="button"  title="Quarter target" class="btn btn-block bg-gradient-primary btn-xs" data-toggle="modal" data-target="#performanceModal" data-kpi-name="{{ indicator.kpi_name_eng }}" data-quarter-target="{{ plan.quarter_target }}" data-quarter-performance="{{ plan.quarter_performance }}"  data-quarter-plan-id="{{ plan.id }}"  data-annual-year="{{ plan.year }}"  data-annual-quarter="{{ plan.quarter }}" id="targetButton_{{ plan.id }}"> {{ plan.quarter_target }} </button>
+
+              {% if plan.quarter_performance %}
+              <button type="button" title="Quarter Performance"  class="btn btn-block btn-outline-info btn-xs performance-button" data-toggle="modal" data-target="#performanceModal" data-kpi-name="{{ indicator.kpi_name_eng }}" data-quarter-target="{{ plan.quarter_target }}" data-quarter-performance="{{ plan.quarter_performance }}" data-quarter-plan-id="{{ plan.id }}"  data-annual-year="{{ plan.year }}"  data-annual-quarter="{{ plan.quarter }}" id="performanceButton_{{ plan.id }}"> {{ plan.quarter_performance }} </button>
+              {% else %}
+              <button type="button" class="btn btn-block btn-outline-info btn-xs performance-button" data-toggle="modal" data-target="#performanceModal" data-kpi-name="{{ indicator.kpi_name_eng }}" data-quarter-target="{{ plan.quarter_target }}" data-quarter-performance="" data-quarter-plan-id="{{ plan.id }}"  data-annual-year="{{ plan.year }}"  data-annual-quarter="{{ plan.quarter }}" id="performanceButton_{{ plan.id }}"> Add Performance </button>
+              {% endif %}
+              {% endif %}
+              {% endfor %}
+          </td>
+          {% endfor %}
+      </tr>
+      {% if indicator.sub_kpi.all %}
+      {% recursetree indicator.sub_kpi.all %}
+      <tr data-widget="expandable-table" aria-expanded="false">
+          <td>
+              <i class="expandable-table-caret fas fa-caret-right fa-fw"></i>
+              {{ node.sub_kpi_name_eng }}
+          </td>
+          {% for quarter in quarters %}
+          <td>
+              {% for plan in annual_plans %}
+              {% if plan.sub_indicator == node and plan.quarter == quarter %}
+              <button type="button" title="Quarter target" class="btn btn-block bg-gradient-primary btn-xs" data-toggle="modal" data-target="#performanceModal" data-kpi-name="{{ node.sub_kpi_name_eng }}" data-quarter-target="{{ plan.quarter_target }}" data-quarter-performance="{{ plan.annual_performance }}" data-quarter-plan-id="{{ plan.id }}"  data-annual-year="{{ plan.year }}"  data-annual-quarter="{{ plan.quarter }}" id="targetButton_{{ plan.id }}"> {{ plan.quarter_target }} </button>
+
+              {% if plan.annual_performance %}
+              <button type="button" title="Quarter Performance" class="btn btn-block btn-outline-info btn-xs performance-button" data-toggle="modal" data-target="#performanceModal" data-kpi-name="{{ node.sub_kpi_name_eng }}" data-quarter-target="{{ plan.quarter_target }}" data-quarter-performance="{{ plan.annual_performance }}" data-quarter-plan-id="{{ plan.id }}"  data-annual-year="{{ plan.year }}"  data-annual-quarter="{{ plan.quarter }}" id="performanceButton_{{ plan.id }}"> {{ plan.annual_performance }} </button>
+              {% else %}
+              <button type="button" class="btn btn-block btn-outline-info btn-xs performance-button" data-toggle="modal" data-target="#performanceModal" data-kpi-name="{{ node.sub_kpi_name_eng }}" data-quarter-target="{{ plan.quarter_target }}" data-quarter-performance="" data-quarter-plan-id="{{ plan.id }}"  data-annual-year="{{ plan.year }}"  data-annual-quarter="{{ plan.quarter }}" id="performanceButton_{{ plan.id }}"> Add Performance </button>
+              {% endif %}
+              {% endif %}
+              {% endfor %}
+          </td>
+          {% endfor %}
+      </tr>
+      {% if not node.is_leaf_node %}
+      <tr class="expandable-body">
+          <td colspan="12">
+              <div class="p-0">
+                  <!-- Sub-Indicator 1.1.1 -->
+                  <table class="table table-hover table-sm sub-indicator">
+                      <tbody>
+                          <tr>
+                              <td>{{ children }}</td>
+                              {% for quarter in quarters %}
+                              <td class="sub-indicato">
+                                  {% for plan in annual_plans %}
+                                  {% if plan.sub_indicator == children and plan.quarter == quarter %}
+                                  <button type="button" title="Quarter target" class="btn btn-block bg-gradient-primary btn-xs" data-toggle="modal" data-target="#performanceModal" data-kpi-name="{{ children.sub_kpi_name_eng }}" data-quarter-target="{{ plan.quarter_target }}" data-quarter-performance="{{ plan.annual_performance }}" data-quarter-plan-id="{{ plan.id }}"  data-annual-year="{{ plan.year }}"  data-annual-quarter="{{ plan.quarter }}" id="targetButton_{{ plan.id }}"> {{ plan.quarter_target }} </button>
+                                  
+                                  {% if plan.annual_performance %}
+                                  <button type="button" title="Quarter Performance" class="btn btn-block btn-outline-info btn-xs performance-button" data-toggle="modal" data-target="#performanceModal" data-kpi-name="{{ children.sub_kpi_name_eng }}" data-quarter-target="{{ plan.quarter_target }}" data-quarter-performance="{{ plan.annual_performance }}" data-quarter-plan-id="{{ plan.id }}"  data-annual-year="{{ plan.year }}"  data-annual-quarter="{{ plan.quarter }}" id="performanceButton_{{ plan.id }}"> {{ plan.annual_performance }} </button>
+                                  {% else %}
+                                  <button type="button" class="btn btn-block btn-outline-info btn-xs performance-button" data-toggle="modal" data-target="#performanceModal" data-kpi-name="{{ children.sub_kpi_name_eng }}" data-quarter-target="{{ plan.quarter_target }}" data-quarter-performance="" data-quarter-plan-id="{{ plan.id }}"  data-annual-year="{{ plan.year }}"  data-annual-quarter="{{ plan.quarter }}" id="performanceButton_{{ plan.id }}"> Add Performance </button>
+                                  {% endif %}
+                                  {% endif %}
+                                  {% endfor %}
+                              </td>
+                              {% endfor %}
+                          </tr>
+                          <!-- Sub-Indicator 1.1.1.1 -->
+                      </tbody>
+                  </table>
+              </div>
+          </td>
+      </tr>
+      {% endif %}
+      {% endrecursetree %}
+      {% endif %}
+      {% endfor %}
+  </tbody>
+</table>
+
+
+
+                  
+
+                      <!-- Pagination -->
+
+
+
+
+                      <nav aria-label="Page navigation example">
+                        <ul class="pagination pagination-circle pagination-outline justify-content-center" >
+                        {% if indicators.has_previous %}
+                          <li class="page-item">
+                          <a class="page-link" href="?page={{ indicators.previous_page_number }}">Previous</a>
+                          </li>
+                        {% else %}
+                          <li class="page-item disabled">
+                          <a class="page-link" href="#" tabindex="-1" aria-disabled="True">Previous</a>
+                          </li>
+                        {% endif %}
+                    
+                        {% if indicators.number|add:'-4' > 1 %}
+                          <li class="page-item"><a class="page-link" href="?page={{ indicators.number|add:'-5' }}">&hellip;</a></li>
+                        {% endif %}
+                    
+                        {% for i in indicators.paginator.page_range %}
+                          {% if indicators.number == i %}
+                            <li class="page-item active" aria-current="page">
+                            <span class="page-link">
+                            {{ i }}
+                            <span class="sr-only">(current)</span>
+                            </span>
+                          </li>
+                          {% elif i > indicators.number|add:'-5' and i < indicators.number|add:'5' %}
+                             <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                          {% endif %}
+                        {% endfor %}
+                    
+                        {% if indicators.paginator.num_pages > indicators.number|add:'4' %}
+                           <li class="page-item"><a class="page-link" href="?page={{ indicators.number|add:'5' }}">&hellip;</a></li>
+                        {% endif %}
+                    
+                        {% if indicators.has_next %}
+                          <li class="page-item">
+                          <a class="page-link" href="?page={{ indicators.next_page_number }}">Next</a>
+                          </li>
+                        {% else %}
+                          <li class="page-item disabled">
+                          <a class="page-link" href="#" tabindex="-1" aria-disabled="True">Next</a>
+                          </li>
+                        {% endif %}
+                        </ul>
+                      </nav>
+                                                
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      {% include "footer.html" %}
+    
+    
+
+ 
+
+
+      {% comment %} <script src="{% static 'performance.js' %}"></script> {% endcomment %}
+  
+    
+
+      <script>
+        $(document).ready(function() {
+          // Function to open the performance modal and set its content
+          function openPerformanceModal(kpiName, quarterTarget, quarterPerformance, quarterPlanId) {
+              $('#kpiName').val(kpiName);
+              $('#quarterTarget').val(quarterTarget);
+              $('#newPerformance').val(quarterPerformance);
+              $('#annualPlanIdNew').val(quarterPlanId);
+              $('#performanceModal').modal('show');
+          }
+      
+          // Event handler for performance buttons
+          $('.btn[data-quarter-performance]').on('click', function() {
+              const buttonData = $(this).data();
+              const entry = $('#dataEntry').data();
+              
+              // Disable the performance input and save button if the year is different from the entry year
+              if (buttonData.annualYear !== entry.entryYear || entry.entryQuarter !== buttonData.annualQuarter) {
+                  $('#newPerformance').prop('disabled', true);
+                  $('#savePerformance').prop('disabled', true);
+              } else {
+                  $('#newPerformance').prop('disabled', false);
+                  $('#savePerformance').prop('disabled', false);
+              }
+      
+              openPerformanceModal(buttonData.kpiName, buttonData.quarterTarget, buttonData.quarterPerformance, buttonData.quarterPlanId);
+          });
+      
+          // Event handler to save performance data
+          $('#savePerformance').on('click', function() {
+              var newPerformance = $('#newPerformance').val();
+              var kpiName = $('#kpiName').val();
+              var quarterPlanId = $('#annualPlanIdNew').val();
+      
+              // Perform AJAX request to update performance data
+              $.ajax({
+                  type: 'POST',
+                  url: '{% url "quarter_plan_performance" %}',
+                  data: {
+                      'performance': newPerformance,
+                      'kpi_name': kpiName,
+                      'quarter_plan_id': quarterPlanId,
+                      csrfmiddlewaretoken: '{{ csrf_token }}',
+                  },
+                  success: function(response) {
+                      if (response.success) {
+                          var performanceButton =  $('#performanceButton_' + quarterPlanId);
+                          if (performanceButton.length > 0) {
+                              performanceButton.text(newPerformance);
+                          } else {
+                              // Create a new performance button
+                              var newPerformanceButton = $('<button>', {
+                                  'type': 'button',
+                                  'class': 'btn btn-block btn-outline-info btn-xs',
+                                  'data-toggle': 'modal',
+                                  'data-target': '#performanceModal',
+                                  'data-kpi-name': kpiName,
+                                  'data-quarter-target': buttonData.quarterTarget,
+                                  'data-quarter-performance': newPerformance,
+                                  'data-quarter-plan-id': quarterPlanId,
+                              }).text(newPerformance);
+      
+                              // Append the new performance button after the target button
+                              $('.btn[data-quarter-plan-id="' + quarterPlanId + '"][data-quarter-performance=""]').after(newPerformanceButton);
+                          }
+      
+                          // Show a success message
+                          showToast('&#128515 Hello, User', 'The Quarter performance successfully Inserted', 'bg-success');
+                      } else {
+                          // Show an error message
+                          showToast('&#128532 Hello User', 'An error occurred while updating performance', 'bg-danger');
+                      }
+      
+                      // Close the modal
+                      $('#performanceModal').modal('hide');
+                  },
+                  error: function() {
+                      // Show an error message
+                      showToast('&#128532 Hello User', 'An error occurred while updating performance', 'bg-danger');
+                  },
+              });
+          });
+      
+          // Function to show Toast messages
+          function showToast(title, body, cssClass) {
+              $(document).Toasts('create', {
+                  class: cssClass,
+                  title: title,
+                  autohide: true,
+                  delay: 3000,
+                  subtitle: 'MoPD',
+                  body: body
+              });
+          }
+      });
+      
+    </script>
+
+    
+
+    
+    
+    </div>
+  </body>
+</html>

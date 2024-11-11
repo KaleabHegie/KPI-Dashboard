@@ -1,0 +1,85 @@
+
+{% load static %}
+
+<!DOCTYPE html>
+<html
+    lang="en">
+    {% include 'head.html' %}
+           <body class="hold-transition sidebar-mini">
+            <div class="wrapper">
+                {% include 'navbar.html' %}
+                {% include 'sidebar.html' %}
+                <div class="content-wrapper">
+                    <section class="content-header">
+                        <div class="container-fluid">
+                            <div class="row mb-2">
+                                <div class="col-sm-3">
+                                    <h1>Goal Status</h1>
+                                </div>
+                                <div class="col-sm-2">
+                                    <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modal-info" disabled>
+                                        {{eachgoal.status}}
+                                        </button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    <!-- comment section -->
+                    <hr>
+                    <div class="container">
+                       <div class="title">Comment Section &nbsp;&nbsp;({{num_comments}})
+                       </div>
+                       <strong>Goal: &nbsp;&nbsp;</strong> {{eachgoal.goal_name_eng}}<br>
+                       <hr>
+                            {% for comment in comments %}
+                                
+                                <small> User: &nbsp; &nbsp; {{comment.commenter_name}}</small><br>
+                                <small> Date:&nbsp; &nbsp;{{comment.date_added}} </small><br>
+                                <strong>Comment: &nbsp; &nbsp;</strong> {{comment.body}}
+                                <hr><!--                                 
+                                {% if request.user.username == comment.commenter_name %}
+                                    <p style="font-size: 20px; margin-left:30px;" class="p-2">
+                                        <a class="btn btn-danger" href="{% url 'delete_goal_comment' eachgoal.id %}">Delete Comment</a>
+                                    </p>
+                                {% endif %} -->
+                            {% empty %}
+                            <p>No comments added yet</p>
+                        {% endfor%}
+                       
+                        <h1 style="font-size: 20px; margin-left:30px;" class="p-2">
+                           <i> <h2>Add Comment</h2></i>
+                        </h1>
+                        <div class="container m-2">
+                            <form action="" method="post">
+                                {% csrf_token %}
+                                {{ form.media }}
+                                {% if form.body.errors %}
+                                    <div class="alert alert-danger" role="alert">
+                                        {{ form.body.errors.0 }}
+                                    </div>
+                                {% endif %}
+                                <div>
+                                    <label for="{{ form.body.id_for_label }}">Comment:</label>
+                                    {{ form.body }}
+                                </div>
+                                
+                                <hr>
+                                <div class="button">
+                                    <input type="submit" value="Submit">
+                                </div>
+                            </form>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        {% include 'footer.html' %}
+
+        </body>
+    
+</html>
+
+
+
+
+

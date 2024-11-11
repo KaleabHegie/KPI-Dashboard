@@ -75,6 +75,106 @@ let showLoadingSkeletonCategory = () => {
 let hideLoadingSkeletonCategory = () => {
   $("#kra-card-list").html("");
 };
+function hexToRgba(hex, alpha = 1) {
+  let r = 0, g = 0, b = 0;
+
+  // Handle 3-digit hex codes (e.g., #abc)
+  if (hex.length === 4) {
+      r = parseInt(hex[1] + hex[1], 16);
+      g = parseInt(hex[2] + hex[2], 16);
+      b = parseInt(hex[3] + hex[3], 16);
+  } 
+  // Handle 6-digit hex codes (e.g., #aabbcc)
+  else if (hex.length === 7) {
+      r = parseInt(hex[1] + hex[2], 16);
+      g = parseInt(hex[3] + hex[4], 16);
+      b = parseInt(hex[5] + hex[6], 16);
+  }
+
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+function renderInvitesGoalChart(data, color, id) {
+  const roundedData = Math.round(data);
+
+  // Check if the received color is valid
+  const isValidColor = /^#[0-9A-F]{6}$/i.test(color);
+
+  // If color is valid, use it; otherwise, fallback to default color
+  const chartColor = isValidColor ? color : "#4680ff";
+  console.log(isValidColor)
+  console.log(color)
+  const options = {
+    series: [roundedData],
+    chart: { type: "radialBar", offsetY: -20, sparkline: { enabled: !0 } },
+    colors: [chartColor], // Use the validated color
+    plotOptions: {
+      radialBar: {
+        startAngle: -95,
+        endAngle: 95,
+        hollow: { margin: 15, size: "50%" },
+        track: { background: "#eaeaea", strokeWidth: "97%", margin: 20 },
+        dataLabels: {
+          name: { show: !1 },
+          value: { offsetY: 0, fontSize: "20px" },
+        },
+      },
+    },
+    grid: { padding: { top: 10 } },
+    stroke: { lineCap: "round" },
+    labels: ["Average Results"],
+  };
+
+  const chart = new ApexCharts(document.querySelector(`#invites_goal_chart-${id}`), options);
+  chart.render();
+}
+
+
+function renderRadialChart(data, color, id) {
+    // Construct the chart options\
+    const lessBrightColor =  hexToRgba(color, 0.2);
+    const roundedData = Math.round(data);
+    var optionsw = {
+        
+       series: [roundedData],
+      chart: { height: 150, type: "radialBar" },
+      plotOptions: {
+        radialBar: {
+          hollow: {
+            margin: 0,
+            size: "60%",
+            background: "transparent",
+            imageOffsetX: 0,
+            imageOffsetY: 0,
+            position: "front",
+          },
+          track: { background: lessBrightColor, strokeWidth: "50%" },
+          dataLabels: {
+            show: !0,
+            name: { show: !1 },
+            value: {
+              formatter: function (e) {
+                return parseInt(e);
+              },
+              offsetY: 7,
+              color: color,
+              fontSize: "20px",
+              fontWeight: "700",
+              show: !0,
+            },
+          },
+        },
+      },
+      colors: [color],
+      fill: { type: "solid" },
+      stroke: { lineCap: "round" },
+    };
+
+
+  var chartz = new ApexCharts(document.querySelector(`#policy_score_card-${id}`), optionsw);
+  chartz.render();
+
+}
+
 
 let renderCategoryGraph = (id, dataArray, color1) => {
   const ColorsCode = {
@@ -85,11 +185,6 @@ let renderCategoryGraph = (id, dataArray, color1) => {
     "warning" : "#ffc107",
     "info" : "#20c997",
 };
-
-
-
-
-
 
 let target = dataArray.map((tgt) => {
   return{
@@ -106,8 +201,6 @@ let performance = dataArray.map((perf) => {
     y: perf[1]
   }
 })
-
-console.log(performance)
 
 
 $(`#all-earnings-graph${id}`).html("")
@@ -196,6 +289,21 @@ $(`#all-earnings-graph${id}`).html("")
   
 };
 
+const bootstrapColors = [
+  "primary",
+  "secondary",
+  "success",
+  "warning",
+  "info",
+  "dark",
+];
+
+function getRandomColor() {
+  const randomIndex = Math.floor(Math.random() * bootstrapColors.length);
+  return bootstrapColors[randomIndex];
+};
+
+
 function indicatorCards (item, score, score_card) {
   
   let performance = null
@@ -236,7 +344,7 @@ function indicatorCards (item, score, score_card) {
     null
    }
    return `<div class="col-md-6 col-xxl-4 col-12">
-   <div class="card border-{randomBgColor} ">
+   <div class="card border-${getRandomColor()} ">
        <div class="card-body">
            <div class="d-flex align-items-center">
                <div class="flex-shrink-0">
@@ -273,15 +381,15 @@ function indicatorCards (item, score, score_card) {
            </div>
            <div class="bg-body p-3 mt-3 rounded" style="height: 190px;">
                <div class="mt-3 row ">
-                   <div class="col-9">
+                   <div class="col-10">
                        <div id="all-earnings-graph${item.id}"></div>
                    </div>
 
-                  ${
-                    scoreResult ? ` <div class="col-3 ">
-                    <span class="badge rounded-pil p-3 text-dark" style="background-color:${colorCode.color};">${parseFloat(scoreResult).toFixed(2)}</span>
-                   </div>` : '' 
-                  }
+
+
+                   ${scoreResult ? `<div class="col-2">
+    <span class="badge rounded-pill p-1 text-dark" style="background-color:${colorCode.color};">${parseFloat(scoreResult).toFixed(2)}</span>
+</div>` : ''}
 
 
                </div>
@@ -291,133 +399,123 @@ function indicatorCards (item, score, score_card) {
  </div>`;  
 }
 
-let keyResultArea = () =>{
-  $("#goalDropDownOption").change(function(){
-    let goalId = this.value
+let keyResultArea = () => {
+  $("#goalDropDownOption").change(function() {
+    let goalId = this.value;
     $.ajax({
       type: "GET",
       url: `/indicator_lists/${goalId}/`,
       beforeSend: function () {
         showLoadingSkeletonCategory();
-     },
-     complete: function () {
-    
-     },
-     success: function(data){
-      if(data.kra.length > 0){
-        $("#kra-card-list").html("")
-        data.kra.forEach((kra) =>{
-          $("#kra-card-list").append(`
-            <h4 class="fw-bold  text-center pt-3" ></h4>
-            <hr class="shadow-lg p-1 rounded ">`) // Append Single KRA
+      },
+      complete: function () {
+        // Complete handler
+      },
+      success: function(data) {
+        
+       
+        if(data.kraz.length > 0) {
+          $("#kra-card-list").html("");
 
 
-            let filterKraIndicators = data.indicators.filter((indicator) => indicator.keyResultArea_id == kra.id)  //filter Indicator 
+          data.kraz.forEach((kra) => {
+      
+            let ministryImages = kra.responsible_ministries.map(ministry => `<img src="${ministry.image}" class="img-fluid rounded-circle me-1" style="width: 70px; height: 54px;" alt="ministry image">`).join(' '); // Create img elements for each ministry image
+            $("#kra-card-list").append(`
+              <div class="card mb-3 col-lg-12 d-flex align-items-center justify-content-between">
+                <div class="card-body" id="invites_goal_chart-${kra.id}"  overflow-y: auto;">
+                  <!-- Chart content will be rendered here -->
+                </div>
+                ${ministryImages}
+                <h4 class="fw-bold text-center pt-3">${kra.activity_name_eng}</h4>
+                <hr class="shadow-lg p-1 rounded">
+              </div>
+            `); // Append Single KRA
+            console.log('this')
+            console.log(kra)
+            renderInvitesGoalChart(kra.avg_score, kra.color, kra.id);
+            let filterKraIndicators = data.indicators.filter((indicator) => indicator.keyResultArea_id == kra.id);  //filter Indicator 
 
-            let color = randomColor()
+            let color = randomColor();
             filterKraIndicators.forEach((item) => {
-              let chartData = []
-              let dashboardSetting = data.dashboardSetting.filter((dashboard) => dashboard.indicator_id.includes(item.id))
-              let score = ''
-              for (setting of dashboardSetting){
+              let chartData = [];
+              let dashboardSetting = data.dashboardSetting.filter((dashboard) => dashboard.indicator_id.includes(item.id));
+              let score = '';
 
-                if(setting.quarter_id == null && setting.month_id == null ){
-                  let filterindicatorValue = data.value_annual.filter((value) => value.indicator__id == item.id && value.year__year_eng == setting.year__year_eng)
-                  if(filterindicatorValue){
-                    for(value of filterindicatorValue){
-                     if(value.annual_target != null ||  value.annual_performance != null ){
-                      chartData.push(
-                        [
+              for (let setting of dashboardSetting) {
+                if(setting.quarter_id == null && setting.month_id == null) {
+                  let filterindicatorValue = data.value_annual.filter((value) => value.indicator__id == item.id && value.year__year_eng == setting.year__year_eng);
+                  if(filterindicatorValue) {
+                    for(let value of filterindicatorValue) {
+                      if(value.annual_target != null || value.annual_performance != null) {
+                        chartData.push([
                           setting.target ? value.annual_target : null, 
                           setting.performance ? value.annual_performance : null, 
                           value.year__year_amh,
                           value.year__year_eng
-                       ]
-                      )
+                        ]);
 
-                      //Calculate Score Card
-                     if(setting.is_score_card){
-                      score = value
+                        // Calculate Score Card
+                        if(setting.is_score_card) {
+                          score = value;
+                        }
                       }
-
-
-                     }
-                  }
+                    }
                   }
                 }
 
+                if(setting.quarter_id && setting.month_id == null) {
+                  let filterindicatorValue = data.value_quarter.filter((value) => value.indicator__id == item.id && value.year__year_eng == setting.year__year_eng);
+                  if(filterindicatorValue) {
+                    for(let value of filterindicatorValue) {
+                      chartData.push([
+                        setting.target ? value.quarter_target : null, 
+                        setting.performance ? value.quarter_performance : null, 
+                        value.year__year_amh + " " + value.quarter__quarter_eng,
+                        value.year__year_eng + " " + value.quarter__quarter_eng
+                      ]);
 
-
-                if (setting.quarter_id && setting.month_id == null ){
-                  let filterindicatorValue = data.value_quarter.filter((value) => value.indicator__id == item.id && value.year__year_eng == setting.year__year_eng)
-                  if(filterindicatorValue){
-                    for(value of filterindicatorValue){
-                        chartData.push(
-                          [
-                            setting.target ? value.quarter_target : null, 
-                            setting.performance ? value.quarter_performance : null, 
-                            value.year__year_amh + " " + value.quarter__quarter_eng,
-                            value.year__year_eng + " " + value.quarter__quarter_eng,
-                        ]
-                        )
-
-
-                        //Calculate Score Card
-                     if(setting.is_score_card){
-                      score = value
+                      // Calculate Score Card
+                      if(setting.is_score_card) {
+                        score = value;
                       }
-
-
-                  }
+                    }
                   }
                 }
 
-                
-                if (setting.month_id && setting.quarter_id == null ){
-                  let filterindicatorValue = data.value_month.filter((value) => value.indicator__id == item.id && value.year__year_eng == setting.year__year_eng)
-                  if(filterindicatorValue){
-                    for(value of filterindicatorValue){
-                        chartData.push(
-                          [
-                            setting.target ? value.month_target : null, 
-                            setting.performance ? value.month_performance : null, 
-                            value.year__year_amh + " " + value.month__month_english,
-                            value.year__year_eng + " " + value.month__month_english
-                        ]
-                        )
+                if(setting.month_id && setting.quarter_id == null) {
+                  let filterindicatorValue = data.value_month.filter((value) => value.indicator__id == item.id && value.year__year_eng == setting.year__year_eng);
+                  if(filterindicatorValue) {
+                    for(let value of filterindicatorValue) {
+                      chartData.push([
+                        setting.target ? value.month_target : null, 
+                        setting.performance ? value.month_performance : null, 
+                        value.year__year_amh + " " + value.month__month_english,
+                        value.year__year_eng + " " + value.month__month_english
+                      ]);
 
-                        //Calculate Score Card
-                     if(setting.is_score_card){
-                      score = value
+                      // Calculate Score Card
+                      if(setting.is_score_card) {
+                        score = value;
                       }
-                  }
+                    }
                   }
                 }                
               }  
 
-
-            
-
               $("#kra-card-list").append(indicatorCards(item, score, data.score_card)); // append Card
-              renderCategoryGraph(item.id, chartData,color, randomColor()); //render graph
-
-              
-
-
-            })
- 
-        })
-
-      
-      }else{
-        $("#kra-title").html('<p class="text-center text-danger h3">No Data Found</p>')
+              renderCategoryGraph(item.id, chartData, color, randomColor()); //render graph
+            });
+          });
+        } else {
+          $("#kra-title").html('<p class="text-center text-danger h3">No Data Found</p>');
+        }
       }
-    }
-    }) 
-    
-  })
-
+    }); 
+  });
 }
+
+
 
 let indicatorSearchResult = (search) =>{
   $.ajax({
@@ -432,16 +530,26 @@ let indicatorSearchResult = (search) =>{
     $("#goalDropDownOptionLabel").hide()
    },
    success: function(data){
+    console.log('clicked when ???')
     if(data.kra.length > 0){
       $("#kra-card-list").html("")
       data.kra.forEach((kra) =>{
+        let ministryImages = kra.responsible_ministries.map(ministry => `<img src="${ministry.image}" class="img-fluid rounded-circle me-1" style="width: 70px; height: 54px;" alt="ministry image">`).join(' '); // Create img elements for each ministry image
         $("#kra-card-list").append(`
-          <h4 class="fw-bold  text-center pt-3" ></h4>
-          <hr class="shadow-lg p-1 rounded ">`) // Append Single KRA
+          <div class="card mb-3 col-lg-12 d-flex align-items-center justify-content-between">
+            <div class="card-body" id="invites_goal_chart-${kra.id}"  overflow-y: auto;">
+              <!-- Chart content will be rendered here -->
+            </div>
+            ${ministryImages}
+            <h4 class="fw-bold text-center pt-3">${kra.activity_name_eng}</h4>
+            <hr class="shadow-lg p-1 rounded">
+          </div>
+        `); // Append Single KRA
 
 
           let filterKraIndicators = data.indicators.filter((indicator) => indicator.keyResultArea_id == kra.id)  //filter Indicator 
 
+          renderInvitesGoalChart(kra.avg_score, kra.color, kra.id);
           let color = randomColor()
           filterKraIndicators.forEach((item) => {
             let chartData = []
@@ -544,7 +652,9 @@ let indicatorSearchResult = (search) =>{
   }) 
 }
 
-
+function scrollToSearchArea() {
+  document.getElementById('loading-skeleton-topic').scrollIntoView({ behavior: 'smooth' });
+}
 
 let handleDropDown = (ministryId) => {
   $.ajax({
@@ -570,14 +680,26 @@ let handleDropDown = (ministryId) => {
             //hideLoadingSkeletonCategory();
           },     
           success: function(data){
-            if(data.kra.length > 0){
+            console.log('hello3')
+            console.log(data.kraz)
+            if(data.kraz.length > 0){
               $("#kra-card-list").html("")
-              data.kra.forEach((kra) =>{
+              data.kraz.forEach((kra) =>{
+                let ministryImages = kra.responsible_ministries.map(ministry => `<img src="${ministry.image}" class="img-fluid rounded-circle me-1" style="width: 70px; height: 54px;" alt="ministry image">`).join(' '); // Create img elements for each ministry image
                 $("#kra-card-list").append(`
-                  <h4 class="fw-bold  text-center pt-3" ></h4>
-                  <hr class="shadow-lg p-1 rounded ">`) // Append Single KRA
+                  <div class="card mb-3 col-lg-12 d-flex align-items-center justify-content-between">
+                    <div class="card-body" id="invites_goal_chart-${kra.id}"  overflow-y: auto;">
+                      <!-- Chart content will be rendered here -->
+                    </div>
+                    ${ministryImages}
+                    <h4 class="fw-bold text-center pt-3">${kra.activity_name_eng}</h4>
+                    <hr class="shadow-lg p-1 rounded">
+                  </div>
+                `); // Append Single KRA
+    
       
-      
+     
+                  renderInvitesGoalChart(kra.avg_score, kra.color, kra.id);
                   let filterKraIndicators = data.indicators.filter((indicator) => indicator.keyResultArea_id == kra.id)  //filter Indicator 
       
                   let color = randomColor()
@@ -693,6 +815,7 @@ let handleDropDown = (ministryId) => {
 
 let handleOnMinistryClicked = () =>{
   $('.ministry-card').click(function(){
+    scrollToSearchArea()
     const buttonData = $(this).data();
 
     $("#kra-title").html(buttonData.name)
@@ -741,7 +864,7 @@ let handleOnSearch = () =>{
 $(document).ready(function () {
   $.ajax({
     type: "GET",
-    url: "/ministries_lists/",
+    url: "/policy_area_lists/",
     beforeSend: function () {
        showLoadingSkeletonTopic();
     },
@@ -757,32 +880,48 @@ $(document).ready(function () {
         "info",
         "dark",
       ];
+
+      function getRandomColor() {
+        const randomIndex = Math.floor(Math.random() * bootstrapColors.length);
+        return bootstrapColors[randomIndex];
+    }
+      
       let cardMinistry = ``
       let sideNav = ``;
       let selectedCard = ''
-      data.ministries.forEach((item) => {
+      data.policy.forEach((item) => {
+
         cardMinistry += `
-        <!-- custom cards -->
-          <div class="col-2 col-xl-1  ministry-card"
-             data-id = ${item.id}
-             data-name = "${item.code}"
-             >
-                <div  class="card ${ item.id == 3 ? selectedCard : '' } selected-card social-widget-card text-dark">
-                    <div class="card-body d-flex justify-content-start align-items-center p-2">
-                    <img src="${item.image}" class="img-fluid rounded-circle me-1"  style="width: 37px; height: 37px;" alt="ministry image">
-                    <span class=" ">${item.code}</span>
+        <div class="col-md-5 col-xxl-3 ministry-card" 
+        data-id = ${item.id}
+        data-name = "${item.code}">
+
+    <div class="card border-${getRandomColor()}">
+        <div class="card-body">
+            <div class="d-flex align-items-center">
+                <div class="flex-shrink-0">
+                    <div class="my-n4" style="width: 130px">
+                        <div id="policy_score_card-${item.id}" ></div>
                     </div>
                 </div>
-            </div>`;
-
-        sideNav += `<li class="pc-item ministry-card" data-id = ${item.id} data-category-name = "${item.responsible_ministry_eng}">
-            <a href="#" class="pc-link">
-  
-                <span class="pc-mtext">${item.responsible_ministry_eng}</span>   
-                </a>
-        </li>
+                <div class="flex-grow-1 mx-2">
+                <p class="mb-1 small mb-1 truncate-text">${item.policyAreaEng}</p>
+              
+              </div>
+            </div>
+        </div>
+    </div>
+</div>
         `
-
+sideNav += `<li class="pc-item topic-card" data-id = ${item.id} data-category-name = "${item.policyAreaEng}">
+       <a href="#" class="pc-link">
+           <span class="pc-micon">
+               <i class="fa fa-${item.icon.split(",")[1]}"></i>
+           </span>
+           <span class="pc-mtext">${item.policyAreaEng}</span>   
+           </a>
+   </li>
+        `
         
       });
 
@@ -797,6 +936,30 @@ $(document).ready(function () {
       $("#ministry-card-lists").html(cardMinistry);
       //$("#topic-card-lists").append(goals_list);
       //$("#sidebar-topic-list").html(sideNav);
+      data.policy.forEach((item) => {
+        let color = item.score_card.scorecard_color;
+    
+        // Check if the color is null or undefined
+        if (!color) {
+            console.error('Invalid color:', color);
+            color = '#000000'; // Default to black or any other default color
+        }
+    
+        // Optionally, validate if the color is a valid hex color or a known color name
+        const isValidColor = (color) => {
+            const s = new Option().style;
+            s.color = color;
+            return s.color !== '';
+        };
+    
+        if (!isValidColor(color)) {
+            console.error('Invalid color:', color);
+            color = '#000000'; // Default to black or any other default color
+        }
+    
+        console.log(color);
+        renderRadialChart(item.score_card.avg_score, color, item.id);
+    });
 
       handleOnMinistryClicked() 
 
@@ -809,8 +972,8 @@ $(document).ready(function () {
 
   //Default 
   handleOnSearch() //Search
-  handleDropDown(3)
-  $("#kra-title").html("MoT")
+  handleDropDown(5)
+
   keyResultArea()
   
 });

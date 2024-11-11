@@ -1,0 +1,75 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html
+    lang="en">
+    {% include 'head.html' %}
+    <body class="hold-transition sidebar-mini">
+            <div class="wrapper">
+                {% include 'navbar.html' %}
+                {% include 'sidebar.html' %}
+                <div class="content-wrapper">
+                    <section class="content-header">
+                        <div class="container-fluid">
+                            <div class="row mb-2">
+                                <div class="col-sm-8">
+                                    <h4> Ministry of {{request.user.username}} Strategic Goals</h4>
+                                    
+                                </div>
+                                <div class="col-sm-4">
+                                    <ol class="breadcrumb float-sm-right">
+                                        <li class="breadcrumb-item">
+                                            <a href="#">Home</a>
+                                        </li>
+                                        <li class="breadcrumb-item active">Planning</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <div class="container">
+                        <div class="title">Add/Update Strategic Goals</div>
+                        <form action="" method="post">
+                            {% csrf_token %}
+                            {{ form.media }}
+                            <div class="user_details">
+                                <div class="input_pox">
+                                    <span class="details">Goal In English</span>
+                                    {{ form.goal_name_eng }}
+                                </div>
+                                <div class="input_pox">
+                                    <span class="details">Goal In Amharic</span>
+                                    {{ form.goal_name_amh }}
+                                </div>
+                                {% if request.user.is_mopd %}
+                                <div class="input_pox">
+                                    <span class="details">Goal Status</span>
+                                    {{ form.status }}
+                                </div>
+                                <div class="input_pox">
+                                    <span class="details">Responsible Ministry</span>
+                                    {{ form.responsible_ministries }}
+                                </div>
+                                {% endif %}
+                                <div class="input_pox">
+                                    <span class="details">Goal description</span>
+                                    {{ form.description }}
+                                </div>
+                            </div>
+                            <div class="button">
+                                <input type="submit" value="Submit">
+                            </div>
+                        </form>
+                    </div>
+                    
+                </div>
+               {% include 'footer.html' %}
+            </div>
+    </body>
+</html>
+
+
+
+
+

@@ -1,0 +1,69 @@
+{% extends "lte_base.html" %}
+{% load static %}
+{% block title %}
+    Chat
+{% endblock %}
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'interactions/chat.css' %}">
+{% endblock %}
+{% block content %}
+    <div id="chat-container">
+        <div id="people-list" style="background-color: green;">
+            {% for user in users_list%}
+                <div id="userList{{user.id}}" class="person" onclick="selectPerson(this, {{ user.id }})">{{ user }}
+                    <span id="unreadMessageCount" class="badge badge-circle" style="background-color: rgb(170, 9, 9); color: black;"></span>
+                    <!-- <div id="activeUserIcon" class="symbol-badge bg-success start-100 top-100 border-4 h-8px w-8px ms-n2 mt-n2" style="display: block;"></div> -->
+                </div>
+            {% endfor %}
+        </div>
+
+        <div id="message-box">
+            <div id="messages" class="message-container">
+                <!-- Messages will be displayed here -->
+            </div>
+
+            <div id="input-container">
+                <input type="text" id="message-input" placeholder="Type your message..." onkeypress="">
+                <button id="send-button" onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'interactions/chatx.js' %}"></script>
+    <script>
+        function selectPerson(element, user_id) {
+            // Remove 'active' class from all person elements
+            var people = document.querySelectorAll('.person');
+            people.forEach(function(person) {
+                person.classList.remove('active');
+            });
+
+            // Add 'active' class to the clicked person element
+            element.classList.add('active');
+            activateChatUser(user_id)
+        }
+
+        function sendMessage() {
+            const messageInput = document.getElementById('message-input').value;
+            var message = messageInput.trim()
+            if ( message !== '') {
+                document.getElementById('messages').innerHTML += `<div class="message sent">${messageInput}</div>`;
+                document.getElementById('message-input').value = '';
+                sendMessageSocket(message);
+            }
+            scrollChatBox();
+        }
+
+        var input_box = document.getElementById('message-input');
+        input_box.addEventListener('keydown', function(event){
+            if (event.keyCode===13){
+                sendMessage();
+            }
+        });
+        {% for user in users_list %}
+            countNewMessages({{user.id}});
+        {% endfor %}
+    </script>
+{% endblock %}

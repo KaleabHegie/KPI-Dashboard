@@ -1,0 +1,411 @@
+{% load static %}
+<link
+  href="  https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+  rel="stylesheet"
+/>
+<aside class="main-sidebar sidebar-dark-primary elevation-4">
+  <a href="#" class="brand-link">
+    <span class="brand-text font-weight-light">DPMEs</span>
+  </a>
+  <div class="sidebar">
+    <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+      <div class="image">
+        <img
+          src="{% static 'dist/img/user2-160x160.jpg' %}"
+          class="img-circle elevation-2"
+          alt="User Image"
+        />
+      </div>
+
+      {% if request.user.is_mopd %}
+      <div class="info">
+        <a href="{% url 'dashboard_mopd_url' %}" class="d-block">MoPD</a>
+      </div>
+      {% elif request.user.is_sector %}
+      <div class="info">
+        <a href="{% url 'ministry' %}" class="d-block">MoPD</a>
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="form-inline">
+      <div class="input-group" data-widget="sidebar-search">
+        <input
+          class="form-control form-control-sidebar"
+          type="search"
+          placeholder="Search"
+          aria-label="Search"
+        />
+        <div class="input-group-append">
+          <button class="btn btn-sidebar">
+            <i class="fas fa-search fa-fw"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    <nav class="mt-2">
+      <ul
+        class="nav nav-pills nav-sidebar flex-column"
+        data-widget="treeview"
+        role="menu"
+        data-accordion="false"
+      >
+        <!-- dashboard end -->
+        <li class="nav-header">Result Framework</li>
+
+        {% if request.user.is_sector %}
+
+        <li class="nav-item">
+          <a href="{% url 'policy_area_ministry_url' %}" class="nav-link">
+            <i class="nav-icon fas fa-flag"></i>
+            <!-- Icon for Goals -->
+            <p>
+              Policy Area
+            </p>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="{% url 'mdip_ministry_url' %}" class="nav-link">
+            <i class="nav-icon fas fa-tasks"></i>
+
+            <p>MDIP</p>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="#" class="nav-link">
+            <i class="nav-icon fas fa-chart-bar"></i>
+            <p>
+              Annual/Quarter
+              <i class="fas fa-angle-left right"></i>
+            </p>
+          </a>
+          <ul class="nav nav-treeview">
+            <li class="nav-item">
+              <a href="{% url 'kpi_ministry_plan'  %}" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>planning</p>
+              </a>
+            </li>
+
+
+            <li class="nav-item">
+              <a href="{% url 'kpi_ministry_new_url'  %}" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Performace</p>
+              </a>
+            </li>
+
+            <!-- <li class="nav-item">
+              <a href="{% url 'ministry_kpi_kra_quarter' %}" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Quarter Progress</p>
+              </a>
+            </li> -->
+          </ul>
+        </li>
+
+
+        {% elif request.user.is_mopd %}
+
+        <li class="nav-item">
+          <a href="{% url 'mopd_policy_area_url' %}" class="nav-link">
+            <i class="nav-icon fas fa-flag"></i>
+            <!-- Icon for Goals -->
+            <p>
+              Policy Area
+            </p>
+          </a>
+        </li>
+
+
+        <li class="nav-item">
+          <a href="{% url 'mopd_mdip_url' %}" class="nav-link">
+            <i class="nav-icon fas fa-tasks"></i>
+            <!-- Icon for Goals -->
+            <p>
+              MDIP 
+            </p>
+          </a>
+        </li>
+
+
+
+        <li class="nav-item">
+          <a href="{% url 'mopd_result_matrix' %}" class="nav-link">
+            <i class="nav-icon fas fa-tachometer-alt"></i>
+            <!-- Icon for Goals -->
+            <p>
+              Quarter/Annual 
+            </p>
+          </a>
+        </li>
+
+
+        {% endif %} {% if request.user.is_mopd %}
+        <li class="nav-header">Data Management</li>
+
+        
+
+
+        <li class="nav-item">
+          <a href="" class="nav-link">
+            <i class="nav-icon fas fa-database"></i>
+            <p>
+              KPI Data State
+              <i class="fas fa-angle-left right"></i>
+            </p>
+          </a>
+
+          <ul class="nav nav-treeview">
+            <li class="nav-item">
+              <a href="{% url 'ministry_list' %}" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Annual State</p>
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a href="{% url 'ministry_list_quarter' %}" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Quarter State</p>
+              </a>
+            </li>
+          </ul>
+        </li>
+
+
+
+
+        <li class="nav-item">
+          <a href="" class="nav-link">
+            <i class="nav-icon fas fa-tachometer-alt"></i>
+            <p>
+              Performace Alerts
+              <i class="fas fa-angle-left right"></i>
+            </p>
+          </a>
+
+          <ul class="nav nav-treeview">
+            <li class="nav-item">
+              <a href="#" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Above Thresholds</p>
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a href="#" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Under Thresholds</p>
+              </a>
+            </li>
+          </ul>
+        </li>
+
+        <li class="nav-item">
+          <a href="#" class="nav-link">
+            <i class="nav-icon fas fa-tasks"></i>
+            <!-- Icon for KRA -->
+            <p>Data Analysis</p>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="#" class="nav-link">
+            <i class="nav-icon fas fa-tasks"></i>
+            <!-- Icon for KRA -->
+            <p>Data Aggregation</p>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="#" class="nav-link">
+            <i class="nav-icon fas fa-tasks"></i>
+
+            <p>Export and Reporting</p>
+          </a>
+        </li>
+        <li class="nav-header">Master Report</li>
+        <li class="nav-item">
+          <a href="{% url 'view_mopd_report' %}" class="nav-link">
+            <i class="nav-icon fas fa-file"></i>
+            <!-- Icon for KRA -->
+            <p>Performace Report</p>
+          </a>
+        </li>
+
+        <!-- <li class="nav-item">
+          <a href="{% url 'view_quarter_reports' %}" class="nav-link">
+            <i class="nav-icon fas fa-file"></i>
+            
+            <p>Expermintal Feature</p>
+          </a>
+        </li> -->
+
+        <li class="nav-header">Communications</li>
+        <li class="nav-item">
+          <a href="{% url 'interactions:index' %}" class="nav-link">
+            <i class="nav-icon fas fa-file"></i>
+            <!-- Icon for KRA -->
+            <p>Chat</p>
+          </a>
+        </li>
+
+        {% endif %}
+        {% if request.user.is_mopd_admin %}
+        <li class="nav-header">Data Management</li>
+
+        <li class="nav-item">
+          <a href="{% url 'strategic_goal' %}" class="nav-link">
+            <i class="nav-icon fas fa-tachometer-alt"></i>
+            <p>Goal</p>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="{% url 'key_result_area' %}" class="nav-link">
+            <i class="nav-icon fas fa-tachometer-alt"></i>
+            <p>
+              KeyResult Area
+              <i class="fas fa-angle-left right"></i>
+            </p>
+          </a>
+
+          <ul class="nav nav-treeview">
+            <li class="nav-item">
+              <a href="{% url 'indicator'  %}" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Indicator</p>
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a href="{% url 'kpi-aggregation'  %}" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Kpi Aggregation</p>
+              </a>
+            </li>
+          </ul>
+        </li>
+
+        <li class="nav-item">
+          <a href="{% url 'sample_data' %}" class="nav-link">
+            <i class="nav-icon fas fa-tasks"></i>
+            <!-- Icon for KRA -->
+            <p>Annual Target/Performance</p>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="{% url 'responsible-ministries' %}" class="nav-link">
+            <i class="nav-icon fas fa-tasks"></i>
+            <!-- Icon for KRA -->
+            <p>Ministries</p>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="{% url 'year' %}" class="nav-link">
+            <i class="nav-icon fas fa-tasks"></i>
+
+            <p>Year</p>
+          </a>
+        </li>
+       
+
+        {% endif %}
+        
+        
+        
+        
+        {% if request.user.is_sector %}
+        <li class="nav-header">Data Management</li>
+
+        
+
+        <li class="nav-item">
+          <a href="#" class="nav-link">
+            <i class="nav-icon fas fa-tachometer-alt"></i>
+            <p>
+              Performance Alerts
+              <i class="fas fa-angle-left right"> </i>
+            </p>
+          </a>
+
+          <ul class="nav nav-treeview">
+            <li class="nav-item">
+              <a href="" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Above Thresholds</p>
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a href="" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Under Thresholds</p>
+              </a>
+            </li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a href="{% url 'export_ministry_url' %}" class="nav-link">
+            <i class="nav-icon fas fa-tasks
+            "></i>
+            <!-- Icon for KRA -->
+            <p>
+              Export and Reporting {% comment %}
+              <span class="badge badge-info right">6</span> {% endcomment %}
+            </p>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="#" class="nav-link">
+            <i class="nav-icon fas fa-tasks"></i>
+            <!-- Icon for KRA -->
+            <p>Data Analysis</p>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="#" class="nav-link">
+            <i class="nav-icon fas fa-tasks"></i>
+            <!-- Icon for KRA -->
+            <p>Data Aggregation</p>
+          </a>
+        </li>
+
+        <li class="nav-header">Master Report</li>
+        <li class="nav-item">
+          <a href="{% url 'viewMasterReport' %}" class="nav-link">
+            <i class="nav-icon fas fa-file"></i>
+            <!-- Icon for KRA -->
+            <p>Performace Report</p>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="{% url 'view_quarter_reports' %}" class="nav-link">
+            <i class="nav-icon fas fa-file"></i>
+            <!-- Icon for KRA -->
+            <p>Expermintal Feature</p>
+          </a>
+        </li>
+
+        <!-- <li class="nav-header">Communications</li>
+        <li class="nav-item">
+          <a href="{% url 'interactions:index' %}" class="nav-link">
+            <i class="nav-icon fas fa-file"></i>
+           
+            <p>Chat</p>
+          </a>
+        </li> -->
+
+        {% endif %}
+      </ul>
+    </nav>
+  </div>
+</aside>

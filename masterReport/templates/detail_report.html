@@ -1,0 +1,208 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  {% include "head.html" %}
+
+  <body class="hold-transition sidebar-mini">
+    <div class="wrapper">
+      {% include "navbar.html" %} {% include "sidebar.html" %}
+      <div class="content-wrapper">
+
+
+        <div class="content-header">
+            <div class="container-fluid">
+              <div class="row">
+                <div class="col-sm-6">
+                    <h3 class="card-title">
+                        <a class ="text-decoration-none" href="{{request.META.HTTP_REFERER|escape}}">
+                            <i class="fa fa-arrow-left text-info" aria-hidden="true"></i>
+                        </a>
+                    </h3>
+                </div><!-- /.col -->
+                <div class="col-sm-6">
+                  <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#" class="text-info">Report</a></li>
+                    <li class="breadcrumb-item active">Master Report</li>
+                  </ol>
+                </div><!-- /.col -->
+              </div><!-- /.row -->
+            </div><!-- /.container-fluid -->
+          </div>
+        <!--end::Toolbar-->
+        
+        <!-- Start Content -->
+        <!-- <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_add_customer">Insert Quarter Master Report</a> -->
+                <!--begin::Engage widget 10-->
+                <section class="content">
+                    <div class="container-fluid">
+
+                    <div class="card shadow-sm">
+                        <div class="card-header row justify-content-between">
+                            <div class="col-8">
+                                <h3 class="card-title">
+                                    <span>{{ report.name }}</span>
+                                    <span class="card-title-info">{{ report.recorded_by }}</span>
+                                    <div class="info-badges-container mt-3">
+                                        <span class="badge badge-info">{{ report.responsible_ministry.responsible_ministry_name }}</span>
+                                        <span class="badge badge-info">{{ report.report_type.year }}</span>
+                                        <span class="badge badge-info">{{ report.report_type.report_type}}</span>
+                                    </div>
+                                </h3>
+                            </div>
+                            <div class="mt-4">
+                                <a href="{% url 'update_report' report.pk %}" class="report-detail-btn-left">
+                                    <button type="button" class="btn btn-sm btn-outline-info px-6">
+                                        Edit
+                                    </button>
+                                </a>
+
+                                
+                                <a href="{% url 'report_pdf' report.id %}">
+                                    <button type="button" class="btn btn-sm btn-outline-info">Download  <i class="fa fa-download" aria-hidden="true"></i></button>
+                                </a>
+                            </div>
+                        </div>
+                        {% for report_content in report_contents %}
+                        <div class="card-body py 4">
+                            <p class="report_content_title">{{ report_content.title }}</p>
+                            {{ report_content.section_content|safe }}
+                        </div>
+                        {% endfor %}
+                        
+                        {% if report.report_table %}
+                            <div class="card-body py 4">
+                                <p>Report Table</p>
+                                <canvas id="the-canvas">
+                              
+                                </canvas>
+                                <div>
+                                    <button class="btn btn-md btn-outline-info" id="prev">Previous</button>
+                                    <button class="btn btn-md btn-outline-info" id="next">Next</button>
+                                    &nbsp; &nbsp;
+                                    <span>Page: <span id="page_num"></span> / <span id="page_count"></span></span>
+                                </div>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="card-footer py-3">
+                            <span>created at: {{ report.created_at|date:"M d, Y" }} | last updated: {{ report.updated_at|date:"M d, Y" }}</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        <!--end::Content-->
+
+    <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2.6.347/build/pdf.min.js"></script>
+    <script>
+        // If absolute URL from the remote server is provided, configure the CORS
+        // header on that server.
+        var url = '{% get_media_prefix %}{{ report.report_table }}';
+        console.log(url);
+
+        if (url!=="/media/") {
+
+            // Loaded via <script> tag, create shortcut to access PDF.js exports.
+            var pdfjsLib = window['pdfjs-dist/build/pdf'];
+
+            // The workerSrc property shall be specified.
+            pdfjsLib.GlobalWorkerOptions.workerSrc = '//cdn.jsdelivr.net/npm/pdfjs-dist@2.6.347/build/pdf.worker.js';
+
+            var pdfDoc = null,
+                pageNum = 1,
+                pageRendering = false,
+                pageNumPending = null,
+                scale = 0.8,
+                canvas = document.getElementById('the-canvas'),
+                ctx = canvas.getContext('2d');
+
+            /**
+            * Get page info from document, resize canvas accordingly, and render page.
+            * @param num Page number.
+            */
+            function renderPage(num) {
+            pageRendering = true;
+            // Using promise to fetch the page
+            pdfDoc.getPage(num).then(function(page) {
+                var viewport = page.getViewport({scale: scale});
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+
+                // Render PDF page into canvas context
+                var renderContext = {
+                canvasContext: ctx,
+                viewport: viewport
+                };
+                var renderTask = page.render(renderContext);
+
+                // Wait for rendering to finish
+                renderTask.promise.then(function() {
+                pageRendering = false;
+                if (pageNumPending !== null) {
+                    // New page rendering is pending
+                    renderPage(pageNumPending);
+                    pageNumPending = null;
+                }
+                });
+            });
+
+            // Update page counters
+            document.getElementById('page_num').textContent = num;
+            }
+
+            /**
+            * If another page rendering in progress, waits until the rendering is
+            * finised. Otherwise, executes rendering immediately.
+            */
+            function queueRenderPage(num) {
+            if (pageRendering) {
+                pageNumPending = num;
+            } else {
+                renderPage(num);
+            }
+            }
+
+            /**
+            * Displays previous page.
+            */
+            function onPrevPage() {
+            if (pageNum <= 1) {
+                return;
+            }
+            pageNum--;
+            queueRenderPage(pageNum);
+            }
+            document.getElementById('prev').addEventListener('click', onPrevPage);
+
+            /**
+            * Displays next page.
+            */
+            function onNextPage() {
+            if (pdfDoc && pageNum >= pdfDoc.numPages) {
+                return;
+            }
+            pageNum++;
+            queueRenderPage(pageNum);
+            }
+            document.getElementById('next').addEventListener('click', onNextPage);
+
+            /**
+            * Asynchronously downloads PDF.
+            */
+            pdfjsLib.getDocument(url).promise.then(function(pdfDoc_) {
+            pdfDoc = pdfDoc_;
+            document.getElementById('page_count').textContent = pdfDoc.numPages;
+
+            // Initial/first page rendering
+            renderPage(pageNum);
+            });
+        }
+
+    </script>
+
+
+
+      </div>
+      {% include "footer.html" %}
+
+  </body>
+</html>

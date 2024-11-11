@@ -1,0 +1,314 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+  {% include "head.html" %}
+  {% csrf_token %}
+  <link rel="stylesheet" href="{% static  'plugins/select2/css/select2.min.css' %}" >
+  <link rel="stylesheet" href="{% static  'plugins/select2/css/select2-bootstrap4.min.css' %}" >
+  
+
+  <style>
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice {
+      background-color: #007bff;
+      border-color: #006fe6;
+      color: #fff;
+      padding: 0 10px;
+      margin-top: .31rem;
+  }
+
+
+    .indicator {
+      font-weight: bold;
+    }
+
+    .sub-indicator {
+      padding-left: 24px;
+    }
+
+    .expandable-table-caret {
+      cursor: pointer;
+    }
+
+
+    td {
+      text-align: left;
+    }
+  </style>
+
+
+
+  <body class="hold-transition sidebar-mini">
+    <div class="wrapper">
+    
+      {% include "navbar.html" %}
+      {% include "sidebar.html" %}
+      <div class="content-wrapper">
+        <section class="content">
+          <div class="container-fluid my-4">
+
+            {% include "mopd/search.html" %}
+
+
+            <div class="row">
+              <div class="col-12">
+                  <div class="card card-success">
+
+                    
+                      <div class="card-header">
+                          <h3 class="card-title">Filter</h3>
+                          <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                              <i class="fas fa-minus"></i>
+                            </button>
+                          </div>
+                      </div>
+
+                     
+                      <div class="card-body row p-0 mt-3">
+                          <div class="col-md-8">
+
+                              <form id="filterForm" method="get">
+                              
+                                <div class="form-group m-3">
+                                    <label>Filter Ministry</label>
+                                    <select class="select2 form-control" id="multiSelect" name="selectedMinistries[]" multiple="multiple" data-placeholder="Select a Ministry">
+                                        {% for ministry in ministries %}
+                                            <option value="{{ ministry.0 }}" {% if ministry.0 in selected_ministries %}selected{% endif %}>{{ ministry.1 }}</option>
+                                        {% endfor %}
+                                    </select>
+                                  
+                                </div>
+                        
+                          </div>
+                         
+                      </div>
+                      <div class="col-md-3 my-2">
+                        <button type="submit" id="submitButton" class="btn btn-info btn-block"><i class="fa fa-database"></i> Filter</button>
+                    </div>
+                    </form>
+                  </div>
+              </div>
+          </div>
+          
+
+            <div class="row">
+            
+              <div class="col-12">
+                <div class="card">
+                  <div class="card-header">
+                    <h3 class="card-title">Development Plan</h3>
+                  
+                  </div>
+                  <div class="card-body p-0">
+                    <div class="table-responsive" id="table">
+                  
+                      {% load mptt_tags %}
+
+
+
+                      <table class="table table-hover table-sm" id="indicator-table">
+                        <thead>
+                            <tr>
+                                <th class="align-middle">Indicator</th>
+                                <th class="align-middle">Ministry</th>
+                                <th class="align-middle">KRA</th>
+                                {% for year in years %}
+                                <th class="align-middle">{{ year }}</th>
+                                {% endfor %}
+                                <!-- Add more years as needed -->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for indicator in indicators %}
+                            <tr>
+                                <td class="border-0 indicator">{{ indicator.kpi_name_eng }}    <a href="{% url 'indicator_detail' indicator.id %}"> <i class="fas fa-eye"></i> </a> </td>
+                                <td class="border-0 indicator">{{ indicator.responsible_ministries.code }}</td>
+                                <td class="border-0 indicator">{{ indicator.keyResultArea }}</td>
+                                {% for year in years %}
+                                <td>
+                                    {% for plan in annual_plans %}
+                                    {% if plan.indicator == indicator and plan.year == year %}
+                      
+                                   
+                      
+                                    
+                                    <button type="button"  title="Anuual target" class="btn btn-block bg-gradient-success btn-xs"  > {{ plan.annual_target }} </button>
+                                  
+                                    {% if plan.annual_performance %}
+                                    <button type="button" title="Anuual Performance"  class="btn btn-block bg-gradient-info btn-xs performance-button"      data-annual-plan-id="{{ plan.id }}" id="performanceButton_{{ plan.id }}"> {{ plan.annual_performance }} </button>
+                                
+                                  
+                                    {% endif %}
+                                    {% endif %}
+                                    {% endfor %}
+                                </td>
+                                {% endfor %}
+                            </tr>
+                            {% if indicator.sub_kpi.all %}
+                            {% recursetree indicator.sub_kpi.all %}
+                            <tr data-widget="expandable-table" aria-expanded="false">
+                                <td>
+                                    <i class="expandable-table-caret fas fa-caret-right fa-fw"></i>
+                                    {{ node.sub_kpi_name_eng }}
+                                </td>
+                                {% for year in years %}
+                                <td>
+                                    {% for plan in annual_plans %}
+                                    {% if plan.sub_indicator == node and plan.year == year %}
+                                    <button type="button" title="Anuual target" class="btn btn-block bg-gradient-success btn-xs" data-toggle="modal" data-target="#performanceModal" data-kpi-name="{{ node.sub_kpi_name_eng }}"       > {{ plan.annual_target }} </button>
+                                    
+                                    {% if plan.annual_performance %}
+                                    <button type="button" title="Anuual Performance" class="btn btn-block bg-gradient-info btn-xs performance-button" > {{ plan.annual_performance }} </button>
+                                
+                      
+                                    {% endif %}
+                                    {% endif %}
+                                    {% endfor %}
+                                </td>
+                                {% endfor %}
+                            </tr>
+                            {% if not node.is_leaf_node %}
+                            <tr class="expandable-body">
+                                <td colspan="12">
+                                    <div class="p-0">
+                                        <!-- Sub-Indicator 1.1.1 -->
+                                        <table class="table table-hover table-sm sub-indicator">
+                                            <tbody>
+                                                <tr>
+                                                    <td>{{ children }}</td>
+                                                    {% for year in years %}
+                                                    <td class="sub-indicator">
+                                                        {% for plan in annual_plans %}
+                                                        {% if plan.sub_indicator == children and plan.year == year %}
+                                                        <button type="button" title="Anuual target" class="btn btn-block bg-gradient-success btn-xs"   > {{ plan.annual_target }} </button>
+                                                        
+                                                        {% if plan.annual_performance %}
+                                                        <button type="button" title="Anuual Performance" class="btn btn-block bg-gradient-info btn-xs performance-button" > {{ plan.annual_performance }} </button>
+                                                      
+                                                        {% endif %}
+                                                        {% endif %}
+                                                        {% endfor %}
+                                                    </td>
+                                                    {% endfor %}
+                                                </tr>
+                                                <!-- Sub-Indicator 1.1.1.1 -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endif %}
+                            {% endrecursetree %}
+                            {% endif %}
+                            {% endfor %}
+                        </tbody>
+                      </table>
+                      
+
+                      <!-- Pagination -->
+
+
+
+                
+                      
+                      <nav aria-label="Page navigation example">
+                        <ul class="pagination pagination-circle pagination-outline justify-content-center">
+                            {% if indicators.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ indicators.previous_page_number }}&query={{ request.GET.query|default:'' }}{% for ministry in selected_ministries %}&selectedMinistries[]={{ ministry }}{% endfor %}">Previous</a>
+                                </li>
+                            {% else %}
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#" tabindex="-1" aria-disabled="True">Previous</a>
+                                </li>
+                            {% endif %}
+                    
+                            {% if indicators.number|add:'-4' > 1 %}
+                                <li class="page-item"><a class="page-link" href="?page={{ indicators.number|add:'-5' }}&query={{ request.GET.query|default:'' }}{% for ministry in selected_ministries %}&selectedMinistries[]={{ ministry }}{% endfor %}">&hellip;</a></li>
+                            {% endif %}
+                    
+                            {% for i in indicators.paginator.page_range %}
+                                {% if indicators.number == i %}
+                                    <li class="page-item active" aria-current="page">
+                                        <span class="page-link">
+                                            {{ i }}
+                                            <span class="sr-only">(current)</span>
+                                        </span>
+                                    </li>
+                                {% elif i > indicators.number|add:'-5' and i < indicators.number|add:'5' %}
+                                    <li class="page-item"><a class="page-link" href="?page={{ i }}&query={{ request.GET.query|default:'' }}{% for ministry in selected_ministries %}&selectedMinistries[]={{ ministry }}{% endfor %}">{{ i }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+                    
+                            {% if indicators.paginator.num_pages > indicators.number|add:'4' %}
+                                <li class="page-item"><a class="page-link" href="?page={{ indicators.number|add:'5' }}&query={{ request.GET.query|default:'' }}{% for ministry in selected_ministries %}&selectedMinistries[]={{ ministry }}{% endfor %}">&hellip;</a></li>
+                            {% endif %}
+                    
+                            {% if indicators.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ indicators.next_page_number }}&query={{ request.GET.query|default:'' }}{% for ministry in selected_ministries %}&selectedMinistries[]={{ ministry }}{% endfor %}">Next</a>
+                                </li>
+                            {% else %}
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#" tabindex="-1" aria-disabled="True">Next</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    
+                                     
+                    </div>
+                    
+                  </div>
+                </div>
+              </div>
+
+
+            </div>
+          </div>
+        </section>
+      </div>
+
+      {% include "footer.html" %}
+    
+    
+      <script src="{% static 'plugins/select2/js/select2.full.min.js' %}"></script>
+ 
+    <script> 
+
+        $(document).ready(function () {
+            $('#multiSelect').select2();
+          
+              // Function to show the loading animation
+            function showLoadingAnimation() {
+                $('#loading-animation').show();
+            }
+
+            // Function to hide the loading animation
+            function hideLoadingAnimation() {
+                $('#loading-animation').hide();
+            }
+
+
+
+            
+          });
+
+
+          // JavaScript for AJAX-based pagination
+
+
+
+
+          
+          
+    </script>
+        
+
+
+    
+    </div>
+  </body>
+</html>

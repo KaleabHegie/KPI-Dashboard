@@ -1,0 +1,800 @@
+{% load custom_filters %}
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+  {% include "head.html" %}
+  {% csrf_token %}
+  <link rel="stylesheet" href="{% static  'plugins/select2/css/select2.min.css' %}" >
+  <link rel="stylesheet" href="{% static  'plugins/select2/css/select2-bootstrap4.min.css' %}" >
+
+  <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.dataTables.css" >
+  <link rel="stylesheet" href="  https://cdn.datatables.net/rowgroup/1.5.0/css/rowGroup.dataTables.css">
+
+
+  <style>
+    .group-header {
+        background-color: #094504; /* Light gray background */
+        font-weight: bold;
+    }
+
+    .group-header-1 {
+        background-color: #5f915a; 
+        color: #ffffff;/* Light blue background for first group */
+    }
+
+    .group-header-2 {
+        background-color: #b4e3a6; /* Light yellow background for second group #DFDFDF */
+    }
+
+    table.fixedHeader-floating,
+table.fixedHeader-locked {
+  position: relative !important;
+  background-color: var(--dt-html-background);
+  background-color: var(--dt-html-background);
+}
+
+@media print {
+  table.fixedHeader-floating {
+    display: none;
+  }
+}
+
+
+
+
+
+/* .styled-table thead tr {
+    background-color: #009879;
+    color: #ffffff;
+    text-align: left;
+}
+ */
+
+
+
+/* 
+th {
+  border-top: 1px solid #000000;
+  border-bottom: 1px solid #000000;
+  border-right: 1px solid #000000;
+}
+ 
+th:first-child {
+  border-left: 1px solid #000000;
+} */
+
+
+</style>
+
+<style>
+    /* Custom CSS to darken the outside border of the DataTables table */
+    table.dataTable {
+        border: 0.5px solid #5f915a; 
+        /* Darken the outer border */
+    }
+    table.dataTable thead th,
+    table.dataTable tfoot th {
+        border-bottom: 1px solid #5f915a; /* Darken the header and footer borders */
+    }
+    table.dataTable tbody td {
+        border: 1px solid #ccc; /* Optional: Customize inner cell borders if needed */
+    }
+</style>
+
+
+
+
+  <style>
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice {
+      background-color: #007bff;
+      border-color: #006fe6;
+      color: #fff;
+      padding: 0 10px;
+      margin-top: .31rem;
+  }
+
+
+    .indicator {
+      font-weight: bold;
+    }
+
+    .sub-indicator {
+      padding-left: 24px;
+    }
+
+    .expandable-table-caret {
+      cursor: pointer;
+    }
+
+
+    td {
+      text-align: left;
+    }
+  </style>
+
+
+
+  <body class="hold-transition sidebar-mini">
+    <div class="wrapper">
+    
+      {% include "navbar.html" %}
+      {% include "sidebar.html" %}
+
+     
+
+      <div class="content-wrapper">
+        <section class="content">
+          <div class="container-fluid my-4">
+
+            <div class="modal fade" id="annualPlanExcel" tabindex="-1" role="dialog" aria-labelledby="annualPlanExcelLabel" aria-hidden="true">
+              <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="annualPlanExcelLabel">
+                     Batch Upload
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+                  </div>
+                  <form method='POST' name="fileTopic"  enctype="multipart/form-data">
+                    <div class="modal-body">
+          
+                      {% csrf_token %}
+                      <p class="text-info">Click Download button to download Excel format.
+                        <a href="{% url 'export_quarter_plan_temp' %}"   download
+                        class="btn btn-info">Download</a>
+                      </p>
+          
+                      <div class="row justify-content-start mt-5">
+                        <div class="col-12">
+                          <label for="">Add Excel</label>
+                          {{formFile.as_p}}
+                        </div>
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                        Cancel
+                      </button>
+                      <button type="submit" name="fileAnnualValue" class="btn btn-primary">Upload Quarter Targets</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+      
+            <div class="modal fade" id="performanceModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                      <div class="modal-header">
+                          <h5 class="modal-title" id="exampleModalLabel">Set Target</h5><h6 id="year"></h6>
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                          </button>
+                      </div>
+                      <div class="modal-body">
+                          <div class="form-group">
+                              <label for="kpiName">KPI Name:</label>
+                              <input type="text" class="form-control" id="kpiName" readonly>
+                          </div>
+                          <div class="form-group">
+                              <label for="annualTarget">Annual Target:</label>
+                              <input type="number"  class="form-control" id="annualTarget" readonly>
+                          </div>
+                         
+                      </div>
+                      <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                          <button type="button" class="btn btn-primary" id="savePerformance">Save Targwt</button>
+                      </div>
+                  </div>
+              </div>
+            </div>
+
+
+            <div class="modal fade" id="qTargetModal" tabindex="-1" role="dialog" aria-labelledby="qTargetModalLabel1" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content">
+                      <div class="modal-header">
+                          <h5 class="modal-title" id="qexampleModalLabel">Set Quarter Target</h5>
+                          <h5 id="qyear"></h5>
+                          <button type="button" class="close"  onclick="closeModal()" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                          </button>
+                      </div>
+                      <form method='POST' name="quarterTargetForm" enctype="multipart/form-data">
+                          <input type="hidden" id="quarter-status" title="entry-status" data-status="" />
+                          <input type="hidden" id="kpi_id" title="kpi_id" data-id="" />
+                          <div class="modal-body">
+                              <div class="form-group">
+                                  <label for="kpiName">KPI Name:</label>
+                                  <input type="text" class="form-control" id="qkpiName" readonly>
+                                  <input type="hidden" class="form-control" id="qannualPlanIdNew" readonly>
+                              </div>
+                              <div class="form-group">
+                                  <label for="year_value">Year:</label>
+                                  <input type="number" class="form-control" id="year_value" readonly>
+                              </div>
+                              <div class="form-group">
+                                  <label for="quarter_value">Quarter:</label>
+                                  <input type="text" class="form-control" id="quarter_value" readonly>
+                              </div>
+                              <div class="form-group">
+                                  <label for="qannualTarget">Quarter Target:</label>
+                                  <input type="number" class="form-control" id="qannualTarget">
+                              </div>
+                          </div>
+                          <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary"  onclick="closeModal()">Close</button>
+                              <button type="button" class="btn btn-primary" id="qsavePerformance">Save Target</button>
+                          </div>
+                      </form>
+                  </div>
+              </div>
+          </div>
+          
+
+
+            
+            <div class="row">
+
+              <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-danger">
+                  <div class="inner">
+                    <h6>{{policy_area_count.policyAreaEng}}</h6>
+        
+                    <p>Policy Areas</p>
+                  </div>
+                  <div class="icon">
+                    {{ policy_area_count.icon.as_html  }}
+                    
+                  </div>
+                  <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+              </div>
+        
+        
+        
+              <div class="col-lg-3 col-6">
+                  <!-- small box -->
+                  <div class="small-box bg-info">
+                      <div class="inner">
+                          <h3>{{ goal_count }}</h3>
+                          <p>Total Goals</p>
+                      </div>
+                      <div class="icon">
+                          <i class="fas fa-bullseye"></i> <!-- Icon for Goals -->
+                      </div>
+                      <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                  </div>
+              </div>
+              <!-- ./col -->
+              <div class="col-lg-3 col-6">
+                  <!-- small box -->
+                  <div class="small-box bg-success">
+                      <div class="inner">
+                          <h3>{{ kra_count }}</h3>
+                          <p>Total KRAs</p>
+                      </div>
+                      <div class="icon">
+                          <i class="fas fa-briefcase"></i> <!-- Icon for KRAs -->
+                      </div>
+                      <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                  </div>
+              </div>
+              
+              <!-- ./col -->
+              <div class="col-lg-3 col-6">
+                  <!-- small box -->
+                  <div class="small-box bg-warning">
+                      <div class="inner">
+                          <h3>{{ indicator_count }}</h3>
+                          <p>Total Indicators</p>
+                      </div>
+                      <div class="icon">
+                          <i class="fas fa-chart-line"></i> <!-- Icon for Indicators -->
+                      </div>
+                      <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                  </div>
+              </div>
+        
+        
+            </div>
+
+            <div class="row">
+                <input type="hidden" id="qdataEntry"  title="entry-date" class="btn btn-block bg-gradient-primary btn-xs"  data-entry-year ="{{qentry.yearOfEntry}}" data-entry-quarter="{{qentry.quarter}}" data-entry-date ="{{qentry.check_entryDate}}" />
+              <div class="col-12">
+                <div class="card">
+                  <div class="card-header">
+                    <h3 class="card-title">Quarter and Anuual planning</h3>
+                   
+                    <button type="button" class="btn btn-success m-1" data-toggle="modal" data-target="#annualPlanExcel"
+        data-bs-whatever="@mdo">
+  + Multi Insert
+</button>
+                  </div>
+                  <div class="card-body ">
+
+                  
+                  
+                  <table id="example" class="table-responsive table styled-table  cell-border table-hover table-md">
+                    <thead>
+                        <tr>
+                            <th>Goal</th>
+                            <th>KRA</th>
+                            <th>Indicator</th>
+                            {% for year in years %}
+                                <th>{{ year.year_amh }}</th>
+
+                                {% if year.year_amh == 2017 %}
+                                <th>Q1</th>
+                                <th>Q2</th>
+                                <th>Q3</th>
+                                <th>Q4</th>
+
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for goal in strategic_goals %}
+                            {% for kra in goal.kra_goal.all %}
+                                {% for indicator in kra.indicators.all %}
+                                    <tr>
+                                        <td>{{ goal.goal_name_eng }}</td>
+                                        <td>{{ kra.activity_name_eng }}</td>
+                                        <td>{{ indicator.kpi_name_eng }}  <a href="{% url 'indicator_detail' indicator.id %}"> <i class="fas fa-eye"></i> </a></td>
+                                        {% for year in years %}
+                                        <td>
+                                          {% with annual_plans_lookup|get_item:indicator.id|get_item:year.id as plan %}
+                                              {% if plan %}
+                                                 
+                                                  {% if plan.annual_target %}
+                                                      <button type="button" title="Annual Target" class="btn btn-block bg-gradient-success btn-xs"
+                                                              data-target="#performanceModal" data-kpi-name="{{ indicator.kpi_name_eng }}"
+                                                              data-annual-target="{{ plan.annual_target }}" data-annual-year="{{ plan.year }}" 
+                                                              data-annual-performance="{{ plan.annual_performance }}" data-annual-plan-id="{{ plan.id }}"
+                                                              id="targetButton_{{ plan.id }}">
+                                                       {{ plan.annual_target }}
+                                                      </button>
+                                                  {% else %}
+                                                      <button type="button" title="Annual Target" data-annual-year="{{ year }}"  class="btn btn-block bg-gradient-success btn-xs">
+                                                          N/A
+                                                      </button>
+                                                  {% endif %}
+                                      
+                                                  {% if plan.annual_performance %}
+                                                      <button type="button" title="Annual Performance" class="btn btn-block bg-gradient-info btn-xs performance-button"
+                                                              
+                                                              id="performanceButton_{{ plan.id }}">
+                                                          {{ plan.annual_performance }}
+                                                      </button>
+                                                  
+                                                  {% endif %}
+                                              {% endif %}
+                                          {% endwith %}
+                                      </td>
+                                      
+                                      {% if year.year_amh == 2017 %}
+
+                                          {% for quarter in quarters %}
+                                      {% with quarter_progress_lookup|get_item:indicator.id|get_item:year.id|get_item:quarter.id as quarters %}
+                                       
+                                      
+                                      <td>
+                                              {% if quarters %}
+                                                  {% if quarters.quarter_target %}
+                                                      <button type="button" title="quarter Target" class="btn btn-block bg-gradient-success btn-xs"
+                                                              data-target="#qTargetModal" data-kpi-name="{{ indicator.kpi_name_eng }}"
+                                                              data-quarter-target="{{ quarters.quarter_target }}" data-quarter-year="{{ quarters.year }}"
+                                                              data-quarter="{{ quarters.quarter }}"
+                                                              data-status="yes"
+                                                              data-kpi_id = "{{indicator.id}}"
+                                                              data-quarter-performance="{{ quarters.quarter_performance }}" data-quarter-id="{{ quarters.id }}"
+                                                              id="quarterTargetButton_{{indicator.id}}_{{quarter}}_{{year.year_amh}}">
+                                                          {{ quarters.quarter_target }}
+                                                      </button>
+                                                      <button type="button" title="quarter Performance" class="btn btn-block bg-gradient-info btn-xs performance-button"
+                                                            
+                                                              id="quarterPerformanceButton_{{ quarters.id }}">
+                                                          {{ quarters.quarter_performance }}
+                                                      </button>
+                                                  {% else %}
+                                                      <button type="button" title="Quarter  Target" class="btn btn-block bg-gradient-success btn-xs"
+                                                              data-target="#qTargetModal" data-kpi-name="{{ indicator.kpi_name_eng }}"
+                                                              data-quarter-target="N/A" data-quarter-year="{{ year.year_amh }}"
+                                                              data-quarter="{{quarter}}"
+                                                              data-status="no"
+                                                              data-kpi_id = "{{indicator.id}}"
+                                                              data-quarter-performance="N/A" data-quarter-id="N/A"
+                                                              id="quarterTargetButton_{{indicator.id}}_{{quarter}}_{{year.year_amh}}">
+                                                          N/A
+                                                      </button>
+                                                     
+                                                  {% endif %}
+                                              {% else %}
+                                                        <button type="button" title="Quarter  Target" class="btn btn-block bg-gradient-success btn-xs"
+                                                                data-target="#qTargetModal" data-kpi-name="{{ indicator.kpi_name_eng }}"
+                                                                data-quarter-target="N/A" data-quarter-year="{{ year.year_amh }}"
+                                                                data-quarter="{{quarter}}"
+                                                                data-status="no"
+                                                                data-kpi_id = "{{indicator.id}}"
+                                                                data-quarter-performance="N/A" data-quarter-id="N/A"
+                                                                id="quarterTargetButton_{{indicator.id}}_{{quarter}}_{{year.year_amh}}">
+                                                    N/A
+                                                </button>
+                                                 
+                                              {% endif %}
+                                          </td>
+                                          
+                                      {% endwith %}
+                                      {% endfor %}
+
+                                  {% endif %}
+                                        {% endfor %}
+                                    </tr>
+                                {% endfor %}
+                            {% endfor %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+ </div>
+</div>
+</div>
+                 
+              </div>
+
+
+            </div>
+          </div>
+        </section>
+      </div>
+
+      {% include "footer.html" %}
+
+      
+    
+      <script src="https://cdn.datatables.net/2.0.8/js/dataTables.js"></script>
+      <script src="https://cdn.datatables.net/rowgroup/1.5.0/js/dataTables.rowGroup.js"></script>
+      <script src="https://cdn.datatables.net/rowgroup/1.5.0/js/rowGroup.dataTables.js"></script>
+      <script src="https://cdn.datatables.net/fixedheader/4.0.1/js/dataTables.fixedHeader.js"></script>
+      <script src="https://cdn.datatables.net/fixedheader/4.0.1/js/fixedHeader.dataTables.js"></script>
+
+      <script src="{% static 'plugins/select2/js/select2.full.min.js' %}"></script>
+    
+
+        
+ 
+    <script> 
+
+        $(document).ready(function () {
+            $('#multiSelect').select2();
+          
+              // Function to show the loading animation
+            function showLoadingAnimation() {
+                $('#loading-animation').show();
+            }
+
+            // Function to hide the loading animation
+            function hideLoadingAnimation() {
+                $('#loading-animation').hide();
+            }
+
+
+
+            
+          });
+
+    </script>
+
+
+
+
+
+
+<script>
+
+function closeModal() {
+        $('#qTargetModal').modal('hide');
+    }
+
+
+$(document).ready(function() {
+
+
+      // Function to open the performance modal and set its content
+      function openPerformanceModal1(kpiName, quarterTarget, quarterPlanId, year,quarter, status,kpi_id) {
+
+          // $('#newPerformance').val(1);
+
+
+
+          $('#qkpiName').val(kpiName);
+          $('#year_value').val(year);
+          $('#quarter_value').val(quarter);
+          $('#qannualTarget').val(quarterTarget);
+          // let qnewPlanbutton = document.getElementById(`quarterTargetButton_${quarterPlanId}`);
+          
+          $('#quarter-status').attr('data-status', status);
+          $('#kpi_id').attr('data-id', kpi_id);
+        //   console.log($('#quarter-status').attr('data-status')); 
+          $('#qannualPlanIdNew').val(quarterPlanId);
+          
+          $('#qyear').text(year);
+          $('#qTargetModal').modal('show');
+
+         
+        }
+        
+        // Event handler for performance buttons
+        $('.btn[data-quarter-target]').on('click', function() {
+          const buttonData = $(this).data();
+          const qentry = $('#qdataEntry').data();
+         
+          // console.log( buttonData)
+          // Disable the performance input and save button if the year is different from the entry year
+          if (buttonData.quarterYear !== qentry.entryYear ) {
+           
+            $('#qannualTarget').prop('disabled', true);
+          } else {
+            $('#qannualTarget').prop('disabled', false);
+          
+          }
+        
+
+            
+
+            openPerformanceModal1(buttonData.kpiName, buttonData.quarterTarget,  buttonData.quarterId, buttonData.quarterYear,buttonData.quarter, buttonData.status,buttonData.kpi_id );
+      
+          // Open the performance modal with the selected KPI data
+
+        
+        });
+
+
+
+        $('#qsavePerformance').on('click', function() {
+            
+              
+
+
+            var data_status = $('#quarter-status').attr('data-status');
+            
+
+         
+
+              var qkpiName = $('#qkpiName').val();
+              var year = $('#year_value').val();
+              var quarter = $('#quarter_value').val();
+              var quarterPlanId = $('#qannualPlanIdNew').val();
+              var quarterTarget = $('#qannualTarget').val();
+              var kpi_id = $('#kpi_id').attr('data-id');
+              var kpi_status = $('#quarter-status').attr('data-status');
+            if(data_status === 'no'){
+            var quarterPlanId = -1
+            }
+              // Perform AJAX request to update performance data
+              $.ajax({
+                  type: 'POST',
+                  url: '{% url "update_quarter_plan" %}',
+                  data: {
+                      'target': quarterTarget,
+                      'kpi_name': qkpiName,
+                      'year':year,
+                      'quarter':quarter,
+                      'quarter_plan_id':  quarterPlanId,
+                      'kpi_id':kpi_id,
+                      'kpi_status':kpi_status,
+                      csrfmiddlewaretoken: '{{ csrf_token }}',
+                  },
+                  success: function(response) {
+                    // console.log(response)
+                      if (response.success) {
+
+                        var buttonId = `quarterTargetButton_${kpi_id}_${quarter}_${year}`;
+                        // console.log('Button ID:', buttonId);
+                        var qnewTargetButton = $(`#${buttonId}`);
+                        // console.log('Button Element:', qnewTargetButton);
+                    
+                    // Update button text with the new target
+                        qnewTargetButton.text(quarterTarget);
+                          qnewTargetButton.attr('data-status', 'yes');
+
+
+                    
+                          
+                          // Show a success message
+                          showToast('&#128515 Hello, User', 'The Quarter performance successfully Inserted', 'bg-success');
+                      } else {
+                          // Show an error message
+                          showToast('&#128532 Hello User', 'An error occurred while updating performance', 'bg-danger');
+                      }
+      
+                      // Close the modal
+                      $('#qTargetModal').modal('hide');
+                  },
+                  error: function() {
+                      // Show an error message
+                      showToast('&#128532 Hello User', 'An error occurred while updating performance1', 'bg-danger');
+                  },
+              });
+          
+          
+            });
+      
+          // Function to show Toast messages
+          function showToast(title, body, cssClass) {
+              $(document).Toasts('create', {
+                  class: cssClass,
+                  title: title,
+                  autohide: true,
+                  delay: 3000,
+                  subtitle: 'MoPD',
+                  body: body
+              });
+          }
+
+      });
+</script>
+
+<script>
+  $(document).ready(function() {
+
+   
+
+
+      // Function to open the performance modal and set its content
+      function openPerformanceModal(kpiName, annualTarget, annualPerformance, annualPlanId, year,) {
+
+          // $('#newPerformance').val(1);
+
+          $('#kpiName').val(kpiName);
+          $('#annualTarget').val(annualTarget);
+          let newPlanbutton = document.getElementById(`targetButton_${annualPlanId}`);
+          
+          $('#newPerformance').val(newPlanbutton.getAttribute('data-annual-performance'));
+          $('#annualPlanIdNew').val(annualPlanId);
+          $('#year').val(year);
+          $('#performanceModal').modal('show');
+        }
+        
+        // Event handler for performance buttons
+        $('.btn[data-annual-performance ]').on('click', function() {
+          const buttonData = $(this).data();
+          const entry = $('#dataEntry').data();
+         
+        
+          // Disable the performance input and save button if the year is different from the entry year
+          if (buttonData.annualYear !== entry.entryYear) {
+            $('#newPerformance').prop('disabled', true);
+            $('#savePerformance').prop('disabled', true);
+          } else {
+            $('#newPerformance').prop('disabled', false);
+            $('#savePerformance').prop('disabled', false);
+          }
+        
+          // Open the performance modal with the selected KPI data
+          openPerformanceModal(buttonData.kpiName, buttonData.annualTarget, buttonData.annualPerformance, buttonData.annualPlanId, buttonData.annualYear, );
+        });
+
+      // Event handler to save performance data
+      $('#savePerformance').on('click', function() {
+          var newPerformance = $('#newPerformance').val();
+          var annualTarget = $('#annualTarget').val();
+          var kpiName = $('#kpiName').val();
+          var annualPlanId = $('#annualPlanIdNew').val();
+          
+
+          $.ajax({
+              type: 'POST',
+              url: '{% url "update_performance" %}',
+              data: {
+                  'performance': newPerformance,
+                  'kpi_name': kpiName,
+                  'annual_plan_id': annualPlanId,
+                  csrfmiddlewaretoken: '{{ csrf_token }}',
+              },
+              success: function(response) {
+                  if (response.success) {
+                      // Show a success toast message
+                      showToast('&#128515 Hello, User', 'The Annual performance successfully Inserted', 'bg-success');
+
+                      var performanceButton =  $('#performanceButton_' + annualPlanId);
+                      if (performanceButton.length > 0) {
+                          performanceButton.text(newPerformance);
+                      } else {
+                          // Create a new performance button
+                          var newPerformanceButton = $('<button>', {
+                              'type': 'button',
+                              'id':`performanceButton_${annualPlanId}`,
+                              'class': 'btn btn-block btn-outline-info btn-xs performance-button',
+                              'data-toggle': 'modal',
+                              'data-target': '#performanceModal',
+                              'data-kpi-name': kpiName,
+                              'data-annual-target': annualTarget,
+                              'data-annual-performance': newPerformance,
+                              'data-annual-plan-id': annualPlanId,
+                          }).text(newPerformance);
+                          // let newPlanbutton = document.getElementById(`targetButton_${annualPlanId}`)
+                          // Append the new performance button after the target button
+                          $(`#targetButton_${annualPlanId}`).after(newPerformanceButton);
+                          
+                      }
+
+          let newPerformancebutton = document.getElementById(`performanceButton_${annualPlanId}`);
+          let newPlanbutton = document.getElementById(`targetButton_${annualPlanId}`);
+
+          if (newPlanbutton) {
+     
+          newPlanbutton.setAttribute('data-annual-performance', newPerformance);
+            }
+                  } else {
+                      // Show an error toast message
+                      showToast('&#128532 Hello User', 'Failed to update performance.', 'bg-danger');
+                  }
+
+                  // Close the modal
+                  $('#performanceModal').modal('hide');
+              },
+              error: function() {
+                  // Show an error toast message
+                  showToast('&#128532 Hello User', 'An error occurred while updating performance', 'bg-danger');
+              },
+          });
+      });
+
+      // Function to show toast messages
+      function showToast(title, body, cssClass) {
+          $(document).Toasts('create', {
+              class: cssClass,
+              title: title,
+              subtitle: 'MoPD',
+              autohide: true,
+              delay: 3000, // Autohide after 3 seconds
+              body: body
+          });
+      }
+  });
+</script>
+
+    
+
+
+<script>
+  $(document).ready(function() {
+      $('#example').DataTable({
+        pageLength: 200, // Show 100 entries by default
+        lengthMenu: [[ 50, 100, -1], [ 50, 100, "All"]] ,
+          rowGroup: {
+              dataSrc: [0, 1],  // Group by Goal Name (2nd column) and KRA Name (3rd column)
+              startRender: function (rows, group, level) {
+                  // Apply different classes based on the group level
+                  var className = level === 0 ? 'group-header-1' : 'group-header-2';
+                  return $('<tr/>')
+                      .append('<td colspan="10" class="group-header ' + className + '">' + group + '</td>');
+              }
+          },
+          responsive: true,
+          fixedHeader: true,
+          columnDefs: [
+              { targets: [0, 1], visible: false }  // Hide Goal Name and KRA Name columns from display
+          ],
+          drawCallback: function(settings) {
+              var api = this.api();
+              // Apply styles to the grouped rows
+              api.rows({page: 'current'}).nodes().each(function(row, i) {
+                  if ($(row).hasClass('group-header')) {
+                      // Add your custom styles here if needed
+                  }
+              });
+          }
+      });
+  });
+</script>
+    </div>
+  </body>
+</html>

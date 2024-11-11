@@ -1,0 +1,203 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+  {% include "head.html" %}
+  {% csrf_token %}
+  <link rel="stylesheet" href="{% static  'plugins/select2/css/select2.min.css' %}" >
+  <link rel="stylesheet" href="{% static  'plugins/select2/css/select2-bootstrap4.min.css' %}" >
+  
+
+  <style>
+
+          .select2-container--default .select2-selection--multiple .select2-selection__choice {
+            background-color: #007bff;
+            border-color: #006fe6;
+            color: #fff;
+            padding: 0 10px;
+            margin-top: .31rem;
+            white-space: normal;
+        
+        }
+
+        .select2-container .select2-selection--multiple .select2-selection__rendered {
+          white-space: normal;
+        }
+          .indicator {
+            font-weight: bold;
+          }
+
+          .sub-indicator {
+            padding-left: 24px;
+          }
+
+          .expandable-table-caret {
+            cursor: pointer;
+          }
+
+
+          td {
+            text-align: left;
+          }
+  </style>
+
+
+
+  <body class="">
+    <div class="wrapper">
+    
+      <div class="row">
+            
+        <div class="col-12">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Development Plan</h3>
+            </div>
+            <div class="card-body p-0">
+              <div class="table-responsive" id="table">
+            
+                {% load mptt_tags %}
+
+
+
+                <table class="table table-hover table-sm" id="indicator-table">
+                  <thead>
+                      <tr>
+                          <th class="align-middle">Indicator</th>
+                          <th class="align-middle">Ministry</th>
+                          
+                          <th class="align-middle">KRA</th>
+                          {% for year in years %}
+                          <th class="align-middle">{{ year }}</th>
+                          {% endfor %}
+                          <!-- Add more years as needed -->
+                      </tr>
+                  </thead>
+                  <tbody>
+                      {% for indicator in indicators %}
+                      <tr>
+                          <td class="border-0 indicator">{{ indicator.kpi_name_eng }} ({{ indicator.kpi_measurement_units }})   <a href="{% url 'indicator_detail' indicator.id %}"> <i class="far fa-eye"></i> </a></td>
+                          <td class="border-0 indicator">  <small class="badge badge-primary">{{ indicator.responsible_ministries.code }}</small></td>
+
+
+                          <td class="border-0 indicator">{{ indicator.keyResultArea }}</td>
+                          {% for year in years %}
+                          <td>
+                              {% for plan in annual_plans %}
+                              {% if plan.indicator == indicator and plan.year == year %}
+                
+                             
+                
+                              
+                              <button type="button"  title="Anuual target" class="btn btn-block bg-gradient-success btn-xs"> {{ plan.annual_target|floatformat:3 }} </button>
+                            
+                              {% if plan.annual_performance %}
+                              <button type="button" title="Anuual Performance"  class="btn btn-block bg-gradient-info btn-xs performance-button"      data-annual-plan-id="{{ plan.id }}" id="performanceButton_{{ plan.id }}"> {{ plan.annual_performance|floatformat:3 }} </button>
+                          
+                            
+                              {% endif %}
+                              {% endif %}
+                              {% endfor %}
+                          </td>
+                          {% endfor %}
+                      </tr>
+                      {% if indicator.sub_kpi.all %}
+                      {% recursetree indicator.sub_kpi.all %}
+                      <tr data-widget="expandable-table" aria-expanded="false">
+                          <td>
+                              <i class="expandable-table-caret fas fa-caret-right fa-fw"></i>
+                              {{ node.sub_kpi_name_eng }}
+                          </td>
+                          {% for year in years %}
+                          <td>
+                              {% for plan in annual_plans %}
+                              {% if plan.sub_indicator == node and plan.year == year %}
+                              <button type="button" title="Anuual target" class="btn btn-block bg-gradient-success btn-xs" data-toggle="modal" data-target="#performanceModal" data-kpi-name="{{ node.sub_kpi_name_eng }}"       > {{ plan.annual_target|floatformat:3 }} </button>
+                              
+                              {% if plan.annual_performance %}
+                              <button type="button" title="Anuual Performance" class="btn btn-block bg-gradient-info btn-xs performance-button" > {{ plan.annual_performance|floatformat:3 }} </button>
+                          
+                
+                              {% endif %}
+                              {% endif %}
+                              {% endfor %}
+                          </td>
+                          {% endfor %}
+                      </tr>
+                      {% if not node.is_leaf_node %}
+                      <tr class="expandable-body">
+                          <td colspan="12">
+                              <div class="p-0">
+                                  <!-- Sub-Indicator 1.1.1 -->
+                                  <table class="table table-hover table-sm sub-indicator">
+                                      <tbody>
+                                          <tr>
+                                              <td>{{ children }}</td>
+                                              {% for year in years %}
+                                              <td class="sub-indicator">
+                                                  {% for plan in annual_plans %}
+                                                  {% if plan.sub_indicator == children and plan.year == year %}
+                                                  <button type="button" title="Anuual target" class="btn btn-block bg-gradient-success btn-xs"   > {{ plan.annual_target|floatformat:3 }} </button>
+                                                  
+                                                  {% if plan.annual_performance %}
+                                                  <button type="button" title="Anuual Performance" class="btn btn-block bg-gradient-info btn-xs performance-button" > {{ plan.annual_performance|floatformat:3 }} </button>
+                                                
+                                                  {% endif %}
+                                                  {% endif %}
+                                                  {% endfor %}
+                                              </td>
+                                              {% endfor %}
+                                          </tr>
+                                          <!-- Sub-Indicator 1.1.1.1 -->
+                                      </tbody>
+                                  </table>
+                              </div>
+                          </td>
+                      </tr>
+                      {% endif %}
+                      {% endrecursetree %}
+                      {% endif %}
+                      {% endfor %}
+                  </tbody>
+                </table>
+                
+
+                <!-- Pagination -->
+
+
+
+    
+              
+              
+                
+              </div>
+              
+            </div>
+          </div>
+        </div>
+
+
+      </div>
+      </div>
+
+      {% include "footer.html" %}
+    
+      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+     <!-- Include jQuery -->
+      <script src="{% static 'plugins/select2/js/select2.full.min.js' %}"></script>
+      
+   <!-- Ensure jQuery is included -->
+
+    
+
+
+        
+
+
+  
+  
+
+
+    </div>
+  </body>
+</html>

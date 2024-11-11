@@ -1,0 +1,168 @@
+{% load static %}
+{% load mptt_tags %}
+<!DOCTYPE html>
+<html lang="en">
+  {% include "head.html" %}
+  <style>
+    .indicator {
+      font-weight: bold;
+    }
+
+    .sub-indicator {
+      padding-left: 24px;
+    }
+
+    .expandable-table-caret {
+      cursor: pointer;
+    }
+  </style>
+
+  <body class="hold-transition sidebar-mini">
+    <div class="wrapper">
+      {% include "navbar.html" %}
+      {% include "sidebar.html" %}
+      <div class="content-wrapper">
+        <section class="content">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-12">
+                <div class="card">
+                  <div class="card-header">
+                    <h3 class="card-title">Expandable Table Tree</h3>
+                  </div>
+                  <div class="card-body p-0">
+                    <div class="table-responsive">
+                      <table class="table table-hover">
+                        <thead>
+                          <tr>
+                            <th class="align-middle">Indicator</th>
+                            <th class="align-middle">2021</th>
+                            <th class="align-middle">2022</th>
+                            <th class="align-middle">2023</th>
+                            <th class="align-middle">2024</th>
+                            <th class="align-middle">2025</th>
+                            <!-- Add more years as needed -->
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for indicator in indicators %}
+                            <tr>
+                              <td class="border-0 indicator">{{ indicator.kpi_name_eng }}</td>
+                              {% for year in years %}
+                                <td>
+                                  {% for plan in annual_plans %}
+                                    {% if plan.indicator == indicator and plan.year == year %}
+                                      {{ plan.annual_target }}
+                                    {% endif %}
+                                  {% endfor %}
+                                </td>
+                              {% endfor %}
+                            </tr>
+                            {% if indicator.sub_kpi.all %}
+                              {% recursetree indicator.sub_kpi.all %}
+                                <tr data-widget="expandable-table" aria-expanded="true">
+                                  <td>
+                                    <i class="expandable-table-caret fas fa-caret-right fa-fw"></i>
+                                    {{ node.sub_kpi_name_eng }}
+                                  </td>
+                                  {% for year in years %}
+                                    <td>
+                                      {% for plan in annual_plans %}
+                                        {% if plan.sub_indicator == node and plan.year == year %}
+                                          {{ plan.annual_target }}
+                                        {% endif %}
+                                      {% endfor %}
+                                    </td>
+                                  {% endfor %}
+                                </tr>
+                                {% if not node.is_leaf_node %}
+                                <tr class="expandable-body">
+                                  <td colspan="11">
+                                    <div class="p-0">
+                                      <!-- Sub-Indicator 1.1.1 -->
+                                      <table class="table table-hover sub-indicator">
+                                        <tbody>
+                                          <tr>
+                                            <td>Sub-Indicator 1.1.1</td>
+                                        
+                                            <td>Data</td>
+                                            <td>Data</td>
+                                            <td>Data</td>
+                                            <td>Data</td>
+                                            <td>Data</td>
+                                            <td>Data</td>
+                                            <td>Data</td>
+                                            <td>Data</td>
+                                            <td>Data</td>
+                                            <td>Data</td>
+                                          </tr>
+                                          <!-- Sub-Indicator 1.1.1.1 -->
+                                          
+                                          <tr data-widget="expandable-table" aria-expanded="false">
+                                            <td>
+                                              <i class="expandable-table-caret fas fa-caret-right fa-fw"></i>
+                                              Sub-Indicator 1.1.1.1
+                                            </td>
+                                          
+                                            <td>Data</td>
+                                            <td>Data</td>
+                                            <td>Data</td>
+                                            <td>Data</td>
+                                            <td>Data</td>
+                                            <td>Data</td>
+                                            <td>Data</td>
+                                            <td>Data</td>
+                                            <td>Data</td>
+                                            <td>Data</td>
+                                          </tr>
+                                          <tr class="expandable-body">
+                                            <td colspan="11">
+                                              <div class="p-0">
+                                        
+                                                <table class="table table-hover">
+                                                  <tbody>
+                                                    <tr>
+                                                      <td>Sub-Indicator 1.1.1.1.1</td>
+                                                      <!-- Add data for each year here -->
+                                                      <td>Data</td>
+                                                      <td>Data</td>
+                                                      <td>Data</td>
+                                                      <td>Data</td>
+                                                      <td>Data</td>
+                                                      <td>Data</td>
+                                                      <td>Data</td>
+                                                      <td>Data</td>
+                                                      <td>Data</td>
+                                                      <td>Data</td>
+                                                    </tr>
+                                                
+                                                  </tbody>
+                                                </table>
+                                              </div>
+                                            </td>
+                                          </tr>
+                                      
+                                        </tbody>
+                                      </table>
+                                    </div>
+                                  </td>
+                                </tr>
+                                {% endif %}
+                              {% endrecursetree %}
+                            {% endif %}
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      {% include "footer.html" %}
+    </div>
+  </body>
+</html>

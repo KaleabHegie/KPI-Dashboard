@@ -1,0 +1,171 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  {% include "head.html" %}
+
+  <body class="hold-transition sidebar-mini">
+    <div class="wrapper">
+      {% include "navbar.html" %} 
+      
+      {% include "sidebar.html" %}
+      <div class="content-wrapper">
+
+          <div class="row my-4 mx-1">
+      
+            <div class="col-md-3 col-sm-6 col-12">
+              <div class="info-box bg-gradient-info">
+                <span class="info-box-icon"><i class="far fa-bookmark"></i></span>
+  
+                <div class="info-box-content">
+                  <span class="info-box-text">Bookmarks</span>
+                  <span class="info-box-number">41,410</span>
+  
+                  <div class="progress">
+                    <div class="progress-bar" style="width: 70%"></div>
+                  </div>
+                  <span class="progress-description">
+                    70% Increase in 30 Days
+                  </span>
+                </div>
+                <!-- /.info-box-content -->
+              </div>
+              <!-- /.info-box -->
+            </div>
+            <!-- /.col -->
+            <div class="col-md-3 col-sm-6 col-12">
+              <div class="info-box bg-gradient-success">
+                <span class="info-box-icon"><i class="far fa-thumbs-up"></i></span>
+  
+                <div class="info-box-content">
+                  <span class="info-box-text">Likes</span>
+                  <span class="info-box-number">41,410</span>
+  
+                  <div class="progress">
+                    <div class="progress-bar" style="width: 70%"></div>
+                  </div>
+                  <span class="progress-description">
+                    70% Increase in 30 Days
+                  </span>
+                </div>
+                <!-- /.info-box-content -->
+              </div>
+              <!-- /.info-box -->
+            </div>
+            <!-- /.col -->
+            <div class="col-md-3 col-sm-6 col-12">
+              <div class="info-box bg-gradient-warning">
+                <span class="info-box-icon"><i class="far fa-calendar-alt"></i></span>
+  
+                <div class="info-box-content">
+                  <span class="info-box-text">Events</span>
+                  <span class="info-box-number">41,410</span>
+  
+                  <div class="progress">
+                    <div class="progress-bar" style="width: 70%"></div>
+                  </div>
+                  <span class="progress-description">
+                    70% Increase in 30 Days
+                  </span>
+                </div>
+                <!-- /.info-box-content -->
+              </div>
+              <!-- /.info-box -->
+            </div>
+          <!-- /.col -->
+          <div class="col-md-3 col-sm-6 col-12">
+            <!-- Widget: user widget style 1 -->
+            <div class="card card-widget widget-user">
+              <!-- Add the bg color to the header using any of the bg-* classes -->
+              <div class="widget-user-header bg-info">
+                <h3 class="widget-user-username">{{ministry}}</h3>
+                {% comment %} <h5 class="widget-user-desc">Founder & CEO</h5> {% endcomment %}
+              </div>
+              <div class="widget-user-image">
+                 {% if request.user.user_image  %}
+                 <img class="img-circle elevation-2" src="{{request.user.user_image.url }}" alt="User Avatar">
+                {% else %}
+                <img class="img-circle elevation-2" src="{% static 'dist/img/user2-160x160.jpg' %}" alt="User Avatar">
+                {% endif %}
+              
+              </div>
+              <div class="card-footer">
+                <div class="row">
+                  <div class="col-sm-12 border-right">
+                    <div class="description-block">
+                      <h5 class="description-header">Emial Address</h5>
+                      <span class="description-text">SALES</span>
+                    </div>
+                    <!-- /.description-block -->
+                  </div>
+                  <!-- /.col -->
+                  
+                  <!-- /.col -->
+                </div>
+                <!-- /.row -->
+              </div>
+            </div>
+            <!-- /.widget-user -->
+          </div>
+          <!-- /.col -->
+          <div class="col-md-3 col-sm-6 col-12">
+            <div class="info-box shadow-none">
+              <span class="info-box-icon bg-info"><i class="far fa-envelope"></i></span>
+
+              <div class="info-box-content">
+                <span class="info-box-text">Goals</span>
+                <span class="info-box-number">{{goal_count}}</span>
+              </div>
+              <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+          </div>
+          <!-- /.col -->
+          <div class="col-md-3 col-sm-6 col-12">
+            <div class="info-box shadow-sm">
+              <span class="info-box-icon bg-success"><i class="far fa-flag"></i></span>
+
+              <div class="info-box-content">
+                <span class="info-box-text">Key Result Areas</span>
+                <span class="info-box-number">{{kra_count}}</span>
+              </div>
+              <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+          </div>
+          <!-- /.col -->
+          <div class="col-md-3 col-sm-6 col-12">
+            <div class="info-box shadow">
+              <span class="info-box-icon bg-warning"><i class="far fa-copy"></i></span>
+
+              <div class="info-box-content">
+                <span class="info-box-text">Indicators</span>
+                <span class="info-box-number">{{kpi_count}}</span>
+              </div>
+              <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+          </div>
+          <!-- /.col -->
+
+        
+            <!-- /.col -->
+            
+            <!-- /.col -->
+      
+          <!-- /.col -->
+        </div>
+
+
+        
+
+
+      </div>
+    </div>
+
+
+
+      {% include "footer.html" %}
+
+      
+  </body>
+</html>
