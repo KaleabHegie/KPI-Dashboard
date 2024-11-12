@@ -143,7 +143,9 @@
         </li>
 
 
-        {% endif %} {% if request.user.is_mopd %}
+        {% endif %} 
+        
+        {% if request.user.is_mopd %}
         <li class="nav-header">Data Management</li>
 
         
@@ -204,37 +206,37 @@
           </ul>
         </li>
 
-        <li class="nav-item">
+        {% comment %} <li class="nav-item">
           <a href="#" class="nav-link">
             <i class="nav-icon fas fa-tasks"></i>
             <!-- Icon for KRA -->
             <p>Data Analysis</p>
           </a>
-        </li>
+        </li> {% endcomment %}
 
-        <li class="nav-item">
+        {% comment %} <li class="nav-item">
           <a href="#" class="nav-link">
             <i class="nav-icon fas fa-tasks"></i>
             <!-- Icon for KRA -->
             <p>Data Aggregation</p>
           </a>
-        </li>
+        </li> {% endcomment %}
 
-        <li class="nav-item">
+        {% comment %} <li class="nav-item">
           <a href="#" class="nav-link">
             <i class="nav-icon fas fa-tasks"></i>
 
             <p>Export and Reporting</p>
           </a>
-        </li>
-        <li class="nav-header">Master Report</li>
+        </li> {% endcomment %}
+        {% comment %} <li class="nav-header">Master Report</li>
         <li class="nav-item">
           <a href="{% url 'view_mopd_report' %}" class="nav-link">
             <i class="nav-icon fas fa-file"></i>
             <!-- Icon for KRA -->
             <p>Performace Report</p>
           </a>
-        </li>
+        </li> {% endcomment %}
 
         <!-- <li class="nav-item">
           <a href="{% url 'view_quarter_reports' %}" class="nav-link">
@@ -244,14 +246,14 @@
           </a>
         </li> -->
 
-        <li class="nav-header">Communications</li>
+        {% comment %} <li class="nav-header">Communications</li>
         <li class="nav-item">
           <a href="{% url 'interactions:index' %}" class="nav-link">
             <i class="nav-icon fas fa-file"></i>
             <!-- Icon for KRA -->
             <p>Chat</p>
           </a>
-        </li>
+        </li> {% endcomment %}
 
         {% endif %}
         {% if request.user.is_mopd_admin %}
@@ -379,6 +381,7 @@
         </li>
 
         <li class="nav-header">Master Report</li>
+        
         <li class="nav-item">
           <a href="{% url 'viewMasterReport' %}" class="nav-link">
             <i class="nav-icon fas fa-file"></i>
