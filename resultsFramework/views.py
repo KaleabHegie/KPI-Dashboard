@@ -1420,9 +1420,15 @@ def is_ajax(request):
 def dashboard_mopd(request):
     return render(request, 'dashboard_mopd.html')
 
+@login_required
+@mopd_user_required
 def mopd_policy_area(request):
     return render(request, 'mopd/mopd_policy_area.html')
 
+@login_required
+@mopd_user_required
+def mopd_public_bodies(request):
+    return render(request, 'mopd/mopd_public_bodies.html')
 
 
 
