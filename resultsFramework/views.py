@@ -139,13 +139,13 @@ def get_strategic_goals_with_policies_cache(ministry_id, selected_policies):
 
     return strategic_goals
 
-def get_strategic_goals_with_cache(ministry_id):
+def get_strategic_goals_with_cache(ministry_id, filterGoal=None):
     cache_key = f"strategic_goals_with_ministry_{ministry_id}"
     cache_key2 = f"kra_with_ministry_{ministry_id}"
     strategic_goals = cache.get(cache_key)
     kra = cache.get(cache_key2)
     
-    if strategic_goals is None or kra is None:
+    if strategic_goals is None or kra is None or filterGoal is not None:
         # Prefetch indicators related to the specific ministry
         indicators_prefetch = Prefetch(
             'indicators',
@@ -159,13 +159,20 @@ def get_strategic_goals_with_cache(ministry_id):
         )
 
         # Filter strategic goals by the selected ministry and prefetch related KRAs and indicators
-        strategic_goals = StrategicGoal.objects.filter(
-            kra_goal__indicators__responsible_ministries_id=ministry_id
-        ).prefetch_related(kras_prefetch).distinct().order_by('id')  # Order by id in increasing order
+        if filterGoal is None:
+            strategic_goals = StrategicGoal.objects.filter(
+                kra_goal__indicators__responsible_ministries_id=ministry_id
+            ).prefetch_related(kras_prefetch).distinct().order_by('id')  # Order by id in increasing order
+    
+            # Cache the results
+            cache.set(cache_key, strategic_goals, CACHE_TIMEOUT)
+            cache.set(cache_key2, kra, CACHE_TIMEOUT)
+        else:
+            #filter if goal is given
+            strategic_goals = StrategicGoal.objects.filter(
+                kra_goal__indicators__responsible_ministries_id=ministry_id, policy_area_id__in=filterGoal
+            ).prefetch_related(kras_prefetch).distinct().order_by('id')  # Order by id in increasing order
 
-        # Cache the results
-        cache.set(cache_key, strategic_goals, CACHE_TIMEOUT)
-        cache.set(cache_key2, kra, CACHE_TIMEOUT)
 
     return [strategic_goals, kra]
 
@@ -324,14 +331,21 @@ def export_ministry1(request):
     kra_count = get_strategic_goals_with_cache(u_sector.user_sector.id)[1].count()
     indicator_count = Indicator.objects.filter(
         responsible_ministries_id=u_sector.user_sector.id).count()
-    
 
+
+    # Get the policy IDs from the request (assuming it's passed as GET parameters)
+    selected_policies = request.GET.getlist('selected_policies[]')
 
     # Fetch all policies for the dropdown
     policies = get_policy_areas_by_ministry(u_sector.user_sector.id )
     # Fetch strategic goals with related KeyResultAreas and Indicators
 
-    strategic_goals = StrategicGoal.objects.prefetch_related(
+    if selected_policies:
+        strategic_goals = StrategicGoal.objects.prefetch_related(
+            'kra_goal__indicators'
+        ).filter(policy_area_id__in=selected_policies)
+    else:
+        strategic_goals = StrategicGoal.objects.prefetch_related(
             'kra_goal__indicators'
         ).filter(policy_area_id__in=policies)
 
@@ -393,7 +407,7 @@ def mdip_ministry(request):
 
     # Fetch strategic goals with related KeyResultAreas and Indicators, ordered by 'id'
     if selected_policies:
-        pass
+        strategic_goals = get_strategic_goals_with_cache(u_sector.user_sector.id, selected_policies)[0]
     else:
         strategic_goals = get_strategic_goals_with_cache(u_sector.user_sector.id)[0]
     
@@ -1404,97 +1418,10 @@ def is_ajax(request):
 @login_required
 @mopd_user_required
 def dashboard_mopd(request):
-    policy_area = PolicyArea.objects.all()
-    policy_area_count = PolicyArea.objects.count()
-    goal_count = StrategicGoal.objects.count()
-    kra_count = KeyResultArea.objects.count()
-    indicator_count = Indicator.objects.count()
-    ministry_count = ResponsibleMinistry.objects.count()
-    policy_colors = {   
-        1: 'bg-info',
-        2: 'bg-secondary',
-        3: 'bg-success',
-        4: 'bg-info',
-        5: 'bg-warning',
-        6: 'bg-info',
-        7: 'bg-dark',
-        8: 'bg-warning',
-        9: 'bg-info',
-        10: 'bg-secondary',
-        11: 'bg-info',
-        12: 'bg-secondary',
-        13: 'bg-success',
-        14: 'bg-info',
-        15: 'bg-warning',
-        16: 'bg-info',
-        17: 'bg-warning',
-        18: 'bg-dark',
-        19: 'bg-info',
-        20: 'bg-success',
-        21: 'bg-warning',
-        22: 'bg-secondary',
-        23: 'bg-success',
-        24: 'bg-warning',
-        # Add more policies and corresponding colors as needed
-    }
-
-    context = {
-        'goal_count': goal_count,
-        'kra_count': kra_count,
-        'indicator_count': indicator_count,
-        'ministry_count': ministry_count,
-        'policy_area_count':policy_area_count,
-        'policy_area':policy_area,
-        'policy_colors':policy_colors
-    }
-
-    return render(request, 'dashboard_mopd.html', context)
-
-
-
+    return render(request, 'dashboard_mopd.html')
 
 def mopd_policy_area(request):
-
-
-    policy_area = PolicyArea.objects.all()
-
-   
-
-    policy_colors = {   
-        1: 'bg-info',
-        2: 'bg-secondary',
-        3: 'bg-success',
-        4: 'bg-info',
-        5: 'bg-warning',
-        6: 'bg-info',
-        7: 'bg-dark',
-        8: 'bg-warning',
-        9: 'bg-info',
-        10: 'bg-secondary',
-        11: 'bg-info',
-        12: 'bg-secondary',
-        13: 'bg-success',
-        14: 'bg-info',
-        15: 'bg-warning',
-        16: 'bg-info',
-        17: 'bg-warning',
-        18: 'bg-dark',
-        19: 'bg-info',
-        20: 'bg-success',
-        21: 'bg-warning',
-        22: 'bg-secondary',
-        23: 'bg-success',
-        24: 'bg-warning',
-        # Add more policies and corresponding colors as needed
-    }
-
-    context = {
-       
-        'policy_area':policy_area,
-        'policy_colors':policy_colors
-    }
-
-    return render(request, 'mopd/mopd_policy_area.html', context)
+    return render(request, 'mopd/mopd_policy_area.html')
 
 
 

@@ -10,6 +10,7 @@
 
   <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.dataTables.css" >
   <link rel="stylesheet" href="  https://cdn.datatables.net/rowgroup/1.5.0/css/rowGroup.dataTables.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/3.1.2/css/buttons.dataTables.css">
 
 
   <style>
@@ -306,6 +307,52 @@ th:first-child {
             </div>
 
             <div class="row">
+              <div class="col-12">
+                  <div class="card ">
+
+                    
+                      <div class="card-header group-header-1">
+                          <h3 class="card-title">Filter</h3>
+                          <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                              <i class="fas fa-minus"></i>
+                            </button>
+                          </div>
+                      </div>
+
+                     
+                      <div class="card-body row p-0 mt-3">
+                          <div class="col-md-12">
+
+                              <form id="filterForm" method="get">
+                              
+                                <div class="form-group m-3">
+                                    <label>Filter Policy Area</label>
+                                    <select class="select2 form-control" id="multiSelect" name="selected_policies[]" multiple="multiple" data-placeholder="Select a Policy Area">
+                                      {% for policy in policies %}
+                                      <option value="{{ policy.id }}" {% if policy.id|stringformat:"s" in selected_policies %}selected{% endif %}>{{ policy.policyAreaEng }}</option>
+                                      {% endfor %}
+                                    </select>
+                                  
+                                </div>
+                        
+                          </div>
+                         
+                      </div>
+
+                      
+                      <div class="col-md-3 my-2">
+                        <button type="submit" id="submitButton" class="btn group-header-1
+                        
+                         btn-block"><i class="fa fa-database"></i> Filter</button>
+                    </div>
+                    </form>
+                  </div>
+              </div>
+            </div>
+          
+
+            <div class="row">
                 <input type="hidden" id="qdataEntry"  title="entry-date" class="btn btn-block bg-gradient-primary btn-xs"  data-entry-year ="{{qentry.yearOfEntry}}" data-entry-quarter="{{qentry.quarter}}" data-entry-date ="{{qentry.check_entryDate}}" />
               <div class="col-12">
                 <div class="card">
@@ -463,6 +510,10 @@ th:first-child {
       <script src="https://cdn.datatables.net/rowgroup/1.5.0/js/rowGroup.dataTables.js"></script>
       <script src="https://cdn.datatables.net/fixedheader/4.0.1/js/dataTables.fixedHeader.js"></script>
       <script src="https://cdn.datatables.net/fixedheader/4.0.1/js/fixedHeader.dataTables.js"></script>
+
+      <script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
+      <script src="https://cdn.datatables.net/buttons/3.1.2/js/dataTables.buttons.js"></script>
+      <script src="https://cdn.datatables.net/buttons/3.1.2/js/buttons.html5.min.js"></script>
 
       <script src="{% static 'plugins/select2/js/select2.full.min.js' %}"></script>
     
@@ -769,6 +820,12 @@ $(document).ready(function() {
       $('#example').DataTable({
         pageLength: 200, // Show 100 entries by default
         lengthMenu: [[ 50, 100, -1], [ 50, 100, "All"]] ,
+        layout: {
+                  topEnd: 'search',
+                  topStart: {
+                  buttons: ['copy', 'csv', 'excel',]
+                },
+              },
           rowGroup: {
               dataSrc: [0, 1],  // Group by Goal Name (2nd column) and KRA Name (3rd column)
               startRender: function (rows, group, level) {
@@ -778,6 +835,7 @@ $(document).ready(function() {
                       .append('<td colspan="10" class="group-header ' + className + '">' + group + '</td>');
               }
           },
+          
           responsive: true,
           fixedHeader: true,
           columnDefs: [

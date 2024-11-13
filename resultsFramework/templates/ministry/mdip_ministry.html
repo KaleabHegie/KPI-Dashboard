@@ -10,6 +10,7 @@
   
   <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.dataTables.css" >
   <link rel="stylesheet" href="  https://cdn.datatables.net/rowgroup/1.5.0/css/rowGroup.dataTables.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/3.1.2/css/buttons.dataTables.css">
 
 
   <style>
@@ -319,12 +320,26 @@ th:first-child {
       <script src="https://cdn.datatables.net/fixedheader/4.0.1/js/dataTables.fixedHeader.js"></script>
       <script src="https://cdn.datatables.net/fixedheader/4.0.1/js/fixedHeader.dataTables.js"></script>
 
+      <script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
+      <script src="https://cdn.datatables.net/buttons/3.1.2/js/dataTables.buttons.js"></script>
+      <script src="https://cdn.datatables.net/buttons/3.1.2/js/buttons.html5.min.js"></script>
+      
+
       <script src="{% static 'plugins/select2/js/select2.full.min.js' %}"></script>
-      <script>
+        <script>
         $(document).ready(function() {
             $('#example').DataTable({
-             pageLength: -1,
-             ordering: false,  // Disable sorting
+                pageLength: 100, // Show 100 entries by default
+                lengthMenu: [[ 50, 100, -1], [ 50, 100, "All"]],
+                ordering: false,  // Disable sorting
+                layout: {
+                  topEnd: 'search',
+                  topStart: {
+                  buttons: ['copy', 'csv', 'excel',]
+                },
+                
+              },
+                
                 rowGroup: {
                     dataSrc: [0, 1],  // Group by Goal Name (2nd column) and KRA Name (3rd column)
                     startRender: function (rows, group, level) {
@@ -334,6 +349,7 @@ th:first-child {
                             .append('<td colspan="10" class="group-header ' + className + '">' + group + '</td>');
                     }
                 },
+
                 responsive: true,
                 fixedHeader: true,
                 columnDefs: [
