@@ -135,13 +135,13 @@ def get_strategic_goals_with_policies_cache(ministry_id, selected_policies):
 
     return strategic_goals
 
-def get_strategic_goals_with_cache(ministry_id):
+def get_strategic_goals_with_cache(ministry_id, filterGoal=None):
     cache_key = f"strategic_goals_with_ministry_{ministry_id}"
     cache_key2 = f"kra_with_ministry_{ministry_id}"
     strategic_goals = cache.get(cache_key)
     kra = cache.get(cache_key2)
     
-    if strategic_goals is None or kra is None:
+    if strategic_goals is None or kra is None or filterGoal is not None:
         # Prefetch indicators related to the specific ministry
         indicators_prefetch = Prefetch(
             'indicators',
@@ -155,13 +155,20 @@ def get_strategic_goals_with_cache(ministry_id):
         )
 
         # Filter strategic goals by the selected ministry and prefetch related KRAs and indicators
-        strategic_goals = StrategicGoal.objects.filter(
-            kra_goal__indicators__responsible_ministries_id=ministry_id
-        ).prefetch_related(kras_prefetch).distinct().order_by('id')  # Order by id in increasing order
+        if filterGoal is None:
+            strategic_goals = StrategicGoal.objects.filter(
+                kra_goal__indicators__responsible_ministries_id=ministry_id
+            ).prefetch_related(kras_prefetch).distinct().order_by('id')  # Order by id in increasing order
+    
+            # Cache the results
+            cache.set(cache_key, strategic_goals, CACHE_TIMEOUT)
+            cache.set(cache_key2, kra, CACHE_TIMEOUT)
+        else:
+            #filter if goal is given
+            strategic_goals = StrategicGoal.objects.filter(
+                kra_goal__indicators__responsible_ministries_id=ministry_id, policy_area_id__in=filterGoal
+            ).prefetch_related(kras_prefetch).distinct().order_by('id')  # Order by id in increasing order
 
-        # Cache the results
-        cache.set(cache_key, strategic_goals, CACHE_TIMEOUT)
-        cache.set(cache_key2, kra, CACHE_TIMEOUT)
 
     return [strategic_goals, kra]
 
@@ -389,7 +396,7 @@ def mdip_ministry(request):
 
     # Fetch strategic goals with related KeyResultAreas and Indicators, ordered by 'id'
     if selected_policies:
-        pass
+        strategic_goals = get_strategic_goals_with_cache(u_sector.user_sector.id, selected_policies)[0]
     else:
         strategic_goals = get_strategic_goals_with_cache(u_sector.user_sector.id)[0]
     
