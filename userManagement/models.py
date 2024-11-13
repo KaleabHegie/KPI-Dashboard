@@ -74,6 +74,8 @@ class ResponsibleMinistry(models.Model):
     responsible_ministry_amh = models.CharField(
         max_length=350, blank=True, null=True)
     code = models.CharField(max_length=200)
+    is_affiliated  = models.BooleanField(default=False, blank=True , null = True)
+    affiliated_to = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True)
     image = models.ImageField(upload_to='ministryImage' , blank=True , null = True)
     ministry_is_visable = models.BooleanField(default=False, blank=True , null = True)
     ministry_rank  = models.IntegerField(default=400, blank=True , null = True)

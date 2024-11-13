@@ -29,6 +29,7 @@ from userManagement.admin import handle_uploaded_responsible_ministry_file, conf
 from rest_framework.decorators import api_view
 from .serializers import *
 from .resource import *
+from rest_framework.response import Response
 from .admin import (
     YearResource,
     NationalPlanResource,
@@ -92,6 +93,9 @@ from django.db.models import Q
 CACHE_TIMEOUT = 2 * 1 # 1 hour
 
 
+
+######Result frame work
+from resultsFramework.api_ministry.serializers import *
 
 
 
@@ -415,6 +419,51 @@ def mdip_ministry(request):
     }
 
     return render(request, 'ministry/mdip_ministry.html', context)
+
+
+
+
+#### Affiliated Ministries #########################################
+
+
+
+@api_view(['GET'])
+def year_quarter_list(request):
+    if request.method == 'GET':
+        current_year = Year.objects.filter(is_current_year = True).first().year_amh
+        year = Year.objects.filter(Q(year_amh__lte = current_year))
+
+        yearSerializer = YearSerializer(year, many=True, context={'request': request})
+        quarter = Quarter.objects.all()
+        quarterSerializer = QuarterSerializer(quarter, many=True, context={'request': request})
+        context = {
+            'years' : yearSerializer.data,
+            'quarters' : quarterSerializer.data,
+        }
+        return Response(context)
+
+
+@login_required
+def affiliated_ministries(request):
+    u_sector = UserSector.objects.get(user=request.user) 
+    context = {
+       "affiliated_ministries" : ResponsibleMinistry.objects.filter(affiliated_to=u_sector.user_sector)
+    }
+    return render(request, 'ministry/affiliated_ministries.html' , context)
+
+
+
+
+@login_required
+@api_view(['GET'])
+def affiliated_ministries_list(request):
+    u_sector = UserSector.objects.get(user=request.user)
+    if request.method == 'GET':
+        ministries = ResponsibleMinistry.objects.filter(affiliated_to=u_sector.user_sector)
+        serializer = MinistrySerializer(ministries, many=True, context={'request': request})
+        return Response(serializer.data)
+
+
 
 
 def export_quarter_plan_temp(request):

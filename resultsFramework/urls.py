@@ -17,6 +17,12 @@ urlpatterns = [
     path('view-goals/', view_goals, name='view_goals'),
     path('view_key_result_areas/', view_key_result_areas, name='view_kra'),
 
+
+    # affiliated
+    path('year_quarter_list/' , year_quarter_list  ),
+    path('affiliated_ministries/', affiliated_ministries, name='affiliated_ministries'),
+    path('affiliated_ministries_list/', affiliated_ministries_list, name='affiliated_ministries_list'),
+
     path('dashboard/', ministry_dashboard, name="ministry"),
     path('policy_area_ministry/', policy_area_ministry, name='policy_area_ministry_url'),
     path('mdip_ministry/', mdip_ministry, name='mdip_ministry_url'),
