@@ -327,14 +327,21 @@ def export_ministry1(request):
     kra_count = get_strategic_goals_with_cache(u_sector.user_sector.id)[1].count()
     indicator_count = Indicator.objects.filter(
         responsible_ministries_id=u_sector.user_sector.id).count()
-    
 
+
+    # Get the policy IDs from the request (assuming it's passed as GET parameters)
+    selected_policies = request.GET.getlist('selected_policies[]')
 
     # Fetch all policies for the dropdown
     policies = get_policy_areas_by_ministry(u_sector.user_sector.id )
     # Fetch strategic goals with related KeyResultAreas and Indicators
 
-    strategic_goals = StrategicGoal.objects.prefetch_related(
+    if selected_policies:
+        strategic_goals = StrategicGoal.objects.prefetch_related(
+            'kra_goal__indicators'
+        ).filter(policy_area_id__in=selected_policies)
+    else:
+        strategic_goals = StrategicGoal.objects.prefetch_related(
             'kra_goal__indicators'
         ).filter(policy_area_id__in=policies)
 
