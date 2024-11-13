@@ -12,6 +12,7 @@ urlpatterns = [
     path('home/', index, name='mopd_url'),
     path('',dashboard_mopd, name='dashboard_mopd_url'),
     path('mopd_policy_area/', mopd_policy_area, name='mopd_policy_area_url'),
+    path('mopd_public_bodies/', mopd_public_bodies, name='mopd_public_bodies_url'),
     path('mopd_mdip/', mopd_mdip, name='mopd_mdip_url'),
     path('annual-quarter/', mopd_result_matrix, name='mopd_result_matrix'),
     path('view-goals/', view_goals, name='view_goals'),
