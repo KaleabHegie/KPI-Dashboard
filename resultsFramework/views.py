@@ -475,8 +475,11 @@ def year_quarter_list(request):
 @login_required
 def affiliated_ministries(request):
     u_sector = UserSector.objects.get(user=request.user) 
+    main_ministry = ResponsibleMinistry.objects.filter(id=u_sector.user_sector.id)
+    affiliated_ministries = ResponsibleMinistry.objects.filter(affiliated_to=u_sector.user_sector)
+    ministries = list(main_ministry) + list(affiliated_ministries)
     context = {
-       "affiliated_ministries" : ResponsibleMinistry.objects.filter(affiliated_to=u_sector.user_sector)
+       "affiliated_ministries" : ministries
     }
     return render(request, 'ministry/affiliated_ministries.html' , context)
 
@@ -488,7 +491,9 @@ def affiliated_ministries(request):
 def affiliated_ministries_list(request):
     u_sector = UserSector.objects.get(user=request.user)
     if request.method == 'GET':
-        ministries = ResponsibleMinistry.objects.filter(affiliated_to=u_sector.user_sector)
+        main_ministry = ResponsibleMinistry.objects.filter(id=u_sector.user_sector.id)
+        affiliated_ministries = ResponsibleMinistry.objects.filter(affiliated_to=u_sector.user_sector)
+        ministries = list(main_ministry) + list(affiliated_ministries)
         serializer = MinistrySerializer(ministries, many=True, context={'request': request})
         return Response(serializer.data)
 

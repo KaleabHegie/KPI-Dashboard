@@ -100,6 +100,7 @@ class NationalPlan(models.Model):
 class PolicyArea(models.Model):
     policyAreaEng = models.CharField(max_length=450, blank=True)
     policyAreaAmh = models.CharField(max_length=450, blank=True)
+    description = models.TextField(null=True, blank=True)
     icon = IconField()
     rank = models.IntegerField(default=400)
     sdg = models.ManyToManyField("SDG",  blank=True, related_name='sdgs')
