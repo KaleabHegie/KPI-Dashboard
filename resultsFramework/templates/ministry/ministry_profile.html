@@ -1,0 +1,174 @@
+{% load custom_filters %}
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+{% include "head.html" %}
+{% csrf_token %}
+<link rel="stylesheet" href="{% static  'plugins/select2/css/select2.min.css' %}">
+<link rel="stylesheet" href="{% static  'plugins/select2/css/select2-bootstrap4.min.css' %}">
+
+<link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.dataTables.css">
+<link rel="stylesheet" href="  https://cdn.datatables.net/rowgroup/1.5.0/css/rowGroup.dataTables.css">
+
+<style>
+  .card-shadow:hover {
+    box-shadow: 0 15px 15px 0 rgba(0, 0, 0, .16);
+    transform: translateY(-5px);
+    cursor: pointer;
+    border: 1px solid red;
+  }
+</style>
+
+<body class="hold-transition sidebar-mini">
+  <div class="wrapper">
+
+    {% include "sidebar.html" %}
+    {% include "navbar.html" %}
+    <div class="content-wrapper">
+      <div class="container-fluid col-lg-9 pt-3 pt-lg-5 pb-3">
+        <div class="card shadow-sm">
+          <div class="d-flex align-items-center mb-4">
+            <img src="user-photo.jpg" alt="Ministry of Planning and Development Logo"
+              class="rounded-circle border border-3 border-success shadow-sm me-3"
+              style="width: 120px; height: 120px; object-fit: cover;">
+            <div>
+              <h2 class="mb-1">Ministry of Planning and Development</h2>
+            </div>
+          </div>
+          <div class="card-body bg-light rounded-3 p-3">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <strong>Ministry Code:</strong> <span class="text-muted">MOPD</span>
+              </li>
+              <li class="list-group-item">
+                <strong>Emails:</strong>
+                <ul class="list-unstyled mt-2 ms-3">
+                  <li class="bg-white p-2 rounded shadow-sm mb-2">john.doe@example.com</li>
+                  <li class="bg-white p-2 rounded shadow-sm">johndoe.work@example.com</li>
+                </ul>
+              </li>
+              <li class="list-group-item">
+                <strong>Phone Numbers:</strong>
+                <ul class="list-unstyled mt-2 ms-3">
+                  <li class="bg-white p-2 rounded shadow-sm mb-2">+123456789</li>
+                  <li class="bg-white p-2 rounded shadow-sm">+987654321</li>
+                </ul>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <strong>Head Office Address:</strong> <span class="text-muted">123 Main St, Anytown, Ethiopia</span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <strong>City:</strong> <span class="text-muted">Addis Ababa</span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <strong>Country:</strong> <span class="text-muted">Ethiopia</span>
+              </li>
+            </ul>
+          </div>
+          <div class="card-footer d-flex justify-content-end mt-4">
+            <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#editProfileModal">Edit
+              Profile</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!--Indicator Detail Modal-->
+
+  <!-- Edit Profile Modal -->
+  <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="mb-3">
+              <label for="ministryCode" class="form-label">Ministry Code</label>
+              <input type="text" class="form-control" id="ministryCode" value="MOPD">
+            </div>
+            <div class="mb-3">
+              <label for="emails" class="form-label">Emails</label>
+              <div id="emailList">
+                <input type="email" class="form-control mb-2" placeholder="Email 1" value="john.doe@example.com">
+                <input type="email" class="form-control mb-2" placeholder="Email 2" value="johndoe.work@example.com">
+              </div>
+              <button type="button" class="btn btn-outline-primary btn-sm mt-2" onclick="addEmail()">Add Email</button>
+            </div>
+            <div class="mb-3">
+              <label for="phoneNumbers" class="form-label">Phone Numbers</label>
+              <div id="phoneList">
+                <input type="tel" class="form-control mb-2" placeholder="Phone 1" value="+123456789">
+                <input type="tel" class="form-control mb-2" placeholder="Phone 2" value="+987654321">
+              </div>
+              <button type="button" class="btn btn-outline-primary btn-sm mt-2" onclick="addPhone()">Add Phone
+                Number</button>
+            </div>
+            <div class="mb-3">
+              <label for="address" class="form-label">Head Office Address</label>
+              <input type="text" class="form-control" id="address" value="123 Main St, Anytown, Ethiopia">
+            </div>
+            <div class="mb-3">
+              <label for="city" class="form-label">City</label>
+              <input type="text" class="form-control" id="city" value="Addis Ababa">
+            </div>
+            <div class="mb-3">
+              <label for="country" class="form-label">Country</label>
+              <input type="text" class="form-control" id="country" value="Ethiopia">
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  {% include "footer.html" %}
+
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/highcharts-more.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+  <script src="https://cdn.datatables.net/2.0.8/js/dataTables.js"></script>
+  <script src="https://cdn.datatables.net/rowgroup/1.5.0/js/dataTables.rowGroup.js"></script>
+  <script src="https://cdn.datatables.net/rowgroup/1.5.0/js/rowGroup.dataTables.js"></script>
+  <script src="https://cdn.datatables.net/fixedheader/4.0.1/js/dataTables.fixedHeader.js"></script>
+  <script src="https://cdn.datatables.net/fixedheader/4.0.1/js/fixedHeader.dataTables.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.2.1/axios.min.js"></script>
+
+  <script src="{% static 'plugins/select2/js/select2.full.min.js' %}"></script>
+
+  <script src="{% static " admin/js/affiliated.js" %}"></script>
+
+
+</body>
+<script>
+  function addEmail() {
+    const emailList = document.getElementById('emailList');
+    const newEmailInput = document.createElement('input');
+    newEmailInput.type = 'email';
+    newEmailInput.className = 'form-control mb-2';
+    newEmailInput.placeholder = `Email ${emailList.children.length + 1}`;
+    emailList.appendChild(newEmailInput);
+  }
+
+  function addPhone() {
+    const phoneList = document.getElementById('phoneList');
+    const newPhoneInput = document.createElement('input');
+    newPhoneInput.type = 'tel';
+    newPhoneInput.className = 'form-control mb-2';
+    newPhoneInput.placeholder = `Phone ${phoneList.children.length + 1}`;
+    phoneList.appendChild(newPhoneInput);
+  }
+</script>
+
+</html>

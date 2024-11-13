@@ -50,6 +50,165 @@
             <div class="row m-0" id="goalWithKraList"></div>
             </div>
         </div>
+
+
+
+
+
+
+
+
+
+         <!--Indicator Detail Modal-->
+    <div class="modal fade" id="indicatorModal" tabindex="-1" aria-labelledby="indicatorModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="indicatorModalLabel">Modal title</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+
+
+                        <div class="col-xl-7">
+                            <div class="simplebar-content" style="padding: 20px;">
+                                <div class="card">
+                                    <div class="table-body card-body pt-0">
+                                        <div class="table-responsive">
+                                            <table class="table table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Basic Info</th>
+                                                        <th class="text-end"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="kpi-info-table">
+                                                    <tr>
+                                                        <td>
+                                                            <div class="d-flex align-items-center text-muted">
+                                                                <span class="text-truncate w-100">KPI Meas..
+                                                                    units</span>
+                                                            </div>
+                                                        </td>
+                                                        <td class="text-end">
+                                                            <span id="kpi-unit"
+                                                                class="badge bg-light-success">Team</span>
+                                                        </td>
+                                                    </tr>
+
+                                                    <tr>
+                                                        <td>
+                                                            <div class="d-flex align-items-center text-muted">
+                                                                <span class="text-truncate w-100">kPI Char</span>
+                                                            </div>
+                                                        </td>
+                                                        <td class="text-end">
+                                                            <span id="kpi-char"
+                                                                class="badge bg-light-success">Team</span>
+                                                        </td>
+                                                    </tr>
+
+
+                                                    <tr>
+                                                        <td>
+                                                            <div class="d-flex align-items-center text-muted">
+                                                                <span class="text-truncate w-100">kPI Wight</span>
+                                                            </div>
+                                                        </td>
+                                                        <td class="text-end">
+                                                            <span id="kpi-weight"
+                                                                class="badge bg-light-success">Team</span>
+                                                        </td>
+                                                    </tr>
+
+                                                    <tr>
+                                                        <td>
+                                                            <div class="d-flex align-items-center text-muted">
+                                                                <span class="text-truncate w-100">KRA</span>
+                                                            </div>
+                                                        </td>
+                                                        <td class="text-end">
+                                                            <span id="kpi-kra"
+                                                                class="badge bg-light-success">Team</span>
+                                                        </td>
+                                                    </tr>
+
+                                                    <tr>
+                                                        <td>
+                                                            <div class="d-flex align-items-center text-muted">
+                                                                <span class="text-truncate w-100">Goal</span>
+                                                            </div>
+                                                        </td>
+                                                        <td class="text-end">
+                                                            <span id="kpi-goal"
+                                                                class="badge bg-light-success">Team</span>
+                                                        </td>
+                                                    </tr>
+
+                                                    <tr>
+                                                        <td>
+                                                            <div class="d-flex align-items-center text-muted">
+                                                                <span class="text-truncate w-100">Ministry</span>
+                                                            </div>
+                                                        </td>
+                                                        <td class="text-end">
+                                                            <span id="kpi-ministry"
+                                                                class="badge bg-light-success">Team</span>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--Chart Target Vs Performance-->
+                        <div class="col-xl-5 card" id="indicator-key-performance-chart">
+                        </div>
+
+
+                        <!--Table relation-->
+
+                        <div class="col-12">
+                            <div class="table-reponsive">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 id="table-title" >Annual Plan</h5>
+                                    </div>
+                                    <div class="card-body table-border-style">
+                                        <div class="table-responsive">
+                                            <table class="table table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th id="table-year-type">Year</th>
+                                                        <th>Plan</th>
+                                                        <th>Perf</th>
+                                                        <th>Score</th>
+                                                        <th>Chg in abs (number) from Pr Year</th>
+                                                        <th>Chg in abs (percent) from Pr Year</th>
+                                                    </tr>
+                                                </thead>
+
+                                                <tbody id="modalAnnualPlanTable">
+                                                </tbody>
+
+
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
       {% include "footer.html" %}
     
       <script src="https://code.highcharts.com/highcharts.js"></script>

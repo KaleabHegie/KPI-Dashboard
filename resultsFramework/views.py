@@ -385,11 +385,17 @@ def mdip_ministry(request):
     indicator_count = Indicator.objects.filter(
         responsible_ministries_id=u_sector.user_sector.id).count()
     
+    # Get the policy IDs from the request (assuming it's passed as GET parameters)
+    selected_policies = request.GET.getlist('selected_policies[]')
+
     # Fetch all policies for the dropdown
     policies = get_policy_areas_by_ministry(u_sector.user_sector.id)
 
     # Fetch strategic goals with related KeyResultAreas and Indicators, ordered by 'id'
-    strategic_goals = get_strategic_goals_with_cache(u_sector.user_sector.id)[0]
+    if selected_policies:
+        pass
+    else:
+        strategic_goals = get_strategic_goals_with_cache(u_sector.user_sector.id)[0]
     
 
     # Fetch all visible years for the annual plans
@@ -421,7 +427,16 @@ def mdip_ministry(request):
     return render(request, 'ministry/mdip_ministry.html', context)
 
 
+##### Profile ##########
 
+@login_required
+def ministry_profile(request):
+    u_sector = UserSector.objects.get(user=request.user)
+    ministry = ResponsibleMinistry.objects.get(id=u_sector.user_sector.id)
+    context = {
+        'ministry' : ministry
+    }
+    return render(request, 'ministry/ministry_profile.html' , context)
 
 #### Affiliated Ministries #########################################
 

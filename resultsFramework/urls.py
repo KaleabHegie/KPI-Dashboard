@@ -18,6 +18,10 @@ urlpatterns = [
     path('view_key_result_areas/', view_key_result_areas, name='view_kra'),
 
 
+    # Profile
+    path('ministry_profile/', ministry_profile, name='ministry_profile'),
+
+
     # affiliated
     path('year_quarter_list/' , year_quarter_list  ),
     path('affiliated_ministries/', affiliated_ministries, name='affiliated_ministries'),

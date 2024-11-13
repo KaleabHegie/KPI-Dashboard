@@ -257,14 +257,13 @@ const ministryCard = async () => {
   let type = $("#dataType").val();
   let typeValue = $("#dataTypeLists").val();
   typeValue = 2016;
-  let url = `/affiliated_ministries_list/${
-    type == "year"
+  let url = `/affiliated_ministries_list/${type == "year"
       ? "?year=" + typeValue
       : "?year=" +
-        typeValue.split("-")[0] +
-        "&quarter=" +
-        typeValue.split("-")[1]
-  }`;
+      typeValue.split("-")[0] +
+      "&quarter=" +
+      typeValue.split("-")[1]
+    }`;
   let data = await fetchData(url);
   $("#ministryCardLists").html(``);
   const card = data.map((ministry, index) => {
@@ -308,15 +307,16 @@ const goalListCard = async (ministry_id, id, color, policy_area_name) => {
   let type = $("#dataType").val();
   let typeValue = $("#dataTypeLists").val();
 
+  typeValue = 2016;
+
   //check is year or quarter
-  let url = `/api/ministry/policy_area_with_goal/${id}?ministry_id=${ministry_id}${
-    type == "year"
+  let url = `/api/ministry/policy_area_with_goal/${id}?ministry_id=${ministry_id}${type == "year"
       ? "&year=" + typeValue
       : "&year=" +
-        typeValue.split("-")[0] +
-        "&quarter=" +
-        typeValue.split("-")[1]
-  }`;
+      typeValue.split("-")[0] +
+      "&quarter=" +
+      typeValue.split("-")[1]
+    }`;
   let goals = await fetchData(url);
 
   let card = goals.policy_area_goal.map((goal) => {
@@ -324,31 +324,24 @@ const goalListCard = async (ministry_id, id, color, policy_area_name) => {
       goal.ministry_strategic_goal_score_card.avg_score.toFixed(2);
     return `
    <div class="col-md-6">
-   <div class="card card-shadow" style="height: 170px; border-style: solid; border-width: 1px; border-color: var(--bs-${color})" name="goal-card" data-goal="${
-      goal.id
-    }" data-goal-name="${
-      goal.goal_name_eng
-    }" data-color="${color}" data-score-color="${
-      goal.ministry_strategic_goal_score_card.scorecard_color
-    }" data-score="${avgScoreWidth}"  data-ministryId="${ministry_id}">
+   <div class="card card-shadow" style="height: 170px; border-style: solid; border-width: 1px; border-color: var(--bs-${color})" name="goal-card" data-goal="${goal.id
+      }" data-goal-name="${goal.goal_name_eng
+      }" data-color="${color}" data-score-color="${goal.ministry_strategic_goal_score_card.scorecard_color
+      }" data-score="${avgScoreWidth}"  data-ministryId="${ministry_id}">
        <div class="card-body">
            <div class="h-100">
-              <h6 class="mb-2 f-w-400  data-bs-toggle="tooltip" data-bs-placement="top" title="${
-                goal.goal_name_eng
-              }" text-muted">${
-      goal.goal_name_eng.length > 45
+              <h6 class="mb-2 f-w-400  data-bs-toggle="tooltip" data-bs-placement="top" title="${goal.goal_name_eng
+      }" text-muted">${goal.goal_name_eng.length > 45
         ? goal.goal_name_eng.slice(0, 45) + "..."
         : goal.goal_name_eng
-    }</h6>
+      }</h6>
            </div>
        </div>
        <div class="card-footer">
                 <div class="w-100 progress" style="height: 20px">
-                       <div class="progress-bar" role="progressbar" style="width: ${avgScoreWidth}%; background-color:${
-      goal.ministry_strategic_goal_score_card.scorecard_color
-    };" aria-valuenow="${
-      goal.ministry_strategic_goal_score_card.avg_score
-    }" aria-valuemin="0" aria-valuemax="100">${avgScoreWidth}%</div>
+                       <div class="progress-bar" role="progressbar" style="width: ${avgScoreWidth}%; background-color:${goal.ministry_strategic_goal_score_card.scorecard_color
+      };" aria-valuenow="${goal.ministry_strategic_goal_score_card.avg_score
+      }" aria-valuemin="0" aria-valuemax="100">${avgScoreWidth}%</div>
                    </div>
        </div>
    </div>
@@ -376,23 +369,20 @@ const filterDataOption = async () => {
 
   const yearOption = () => {
     return data?.years?.map((year, index) => {
-      return `<option ${
-        index + 1 == data.years.length ? "selected" : ""
-      } value="${year.year_amh}">${year.year_amh}</option>`;
+      return `<option ${index + 1 == data.years.length ? "selected" : ""
+        } value="${year.year_amh}">${year.year_amh}</option>`;
     });
   };
 
   const quarterOption = () => {
     return data?.years?.map((year, indexYear) => {
       return data?.quarters?.map((quarter, indexQuarter) => {
-        return `<option ${
-          indexYear + 1 == data.years.length &&
-          indexQuarter + 1 == data.quarters.length
+        return `<option ${indexYear + 1 == data.years.length &&
+            indexQuarter + 1 == data.quarters.length
             ? "selected"
             : ""
-        }  value="${year.year_amh}-${quarter.quarter_eng}">${year.year_amh} (${
-          quarter.quarter_eng
-        })</option>`;
+          }  value="${year.year_amh}-${quarter.quarter_eng}">${year.year_amh} (${quarter.quarter_eng
+          })</option>`;
       });
     });
   };
@@ -419,28 +409,14 @@ const selectedMinistryCard = async (
 ) => {
   let type = $("#dataType").val();
   let typeValue = $("#dataTypeLists").val();
+  typeValue = 2016
 
   //check is year or quarter
 
-  let url = `/api/ministry/dashboard_ministries/${ministry_id}${
-    type == "year"
-      ? "?year=" + typeValue
-      : "?year=" +
-        typeValue.split("-")[0] +
-        "&quarter=" +
-        typeValue.split("-")[1]
-  }`;
+  let url = `/api/ministry/dashboard_ministries/${ministry_id}${type == "year" ? "?year=" + typeValue : "?year=" + typeValue.split("-")[0] + "&quarter=" + typeValue.split("-")[1]}`;
   let ministry_dashboard = await fetchData(url);
 
-  ministryData = await fetchData(
-    `/api/ministry/ministry_with_policy_area/${ministry_id}${
-      type == "year"
-        ? "?year=" + typeValue
-        : "?year=" +
-          typeValue.split("-")[0] +
-          "&quarter=" +
-          typeValue.split("-")[1]
-    }`
+  ministryData = await fetchData(`/api/ministry/ministry_with_policy_area/${ministry_id}${type == "year" ? "?year=" + typeValue : "?year=" + typeValue.split("-")[0] + "&quarter=" + typeValue.split("-")[1]}`
   );
 
   $("#ministryKra").html(``);
@@ -489,22 +465,19 @@ const selectedMinistryCard = async (
     ministryData.forEach(async (policy) => {
       let policyAreaCard = `
         <div class="col-lg-6" style="margin-bottom: 50px">
-        <div style="background-color: ${
-          bgColorList[Math.floor(Math.random() * bgColorList.length)]
+        <div style="background-color: ${bgColorList[Math.floor(Math.random() * bgColorList.length)]
         }" class="card h-100 dropbox-card" data-ministryId="${ministry_id}">
            <div class="card-body">
                 <div class="d-flex align-items-center justify-content-between">
                     <h5 class="text-white">${policy.policyAreaEng}</h5>
-                    <div><i class="fas ${
-                      policy.icon
-                        ? "fa-" + policy.icon.split(",")[1]
-                        : "fa-tractor"
-                    } text-white" style="font-size:80px"></i></div>
+                    <div><i class="fas ${policy.icon
+          ? "fa-" + policy.icon.split(",")[1]
+          : "fa-tractor"
+        } text-white" style="font-size:80px"></i></div>
                 </div>
                 <div class="row justify-content-center ">
-                    <div class="col chartdiv  pt-5 w-100 h-100" id="chartdiv${
-                      policy.id
-                    }"></div>
+                    <div class="col chartdiv  pt-5 w-100 h-100" id="chartdiv${policy.id
+        }"></div>
                 </div>
             </div>
         </div>
@@ -570,26 +543,22 @@ const selectedMinistryCard = async (
 
       let policyAreaCard = `
                 <div class="col-lg-6" style="margin-bottom: 50px;">
-                    <div style="background-color: ${
-                      bgColorList[
-                        Math.floor(Math.random() * bgColorList.length)
-                      ]
-                    }" class="card dropbox-card" data-ministryId="${ministry_id}">
+                    <div style="background-color: ${bgColorList[
+        Math.floor(Math.random() * bgColorList.length)
+        ]
+        }" class="card dropbox-card" data-ministryId="${ministry_id}">
                         <div class="card-body" style="height:350px;">
                             <div class="d-flex align-items-center justify-content-between">
-                                <h5 class="text-white">${
-                                  policy.policyAreaEng
-                                }</h5>
-                                <div><i class="fas ${
-                                  policy.icon
-                                    ? "fa-" + policy.icon.split(",")[1]
-                                    : "fa-tractor"
-                                } text-white" style="font-size:80px"></i></div>
+                                <h5 class="text-white">${policy.policyAreaEng
+        }</h5>
+                                <div><i class="fas ${policy.icon
+          ? "fa-" + policy.icon.split(",")[1]
+          : "fa-tractor"
+        } text-white" style="font-size:80px"></i></div>
                             </div>
                             <div class="d-flex align-items-center h-75">
-                                <div class="col chartdiv" id="chartdiv${
-                                  policy.id
-                                }"></div>
+                                <div class="col chartdiv" id="chartdiv${policy.id
+        }"></div>
                             </div>
                         </div>
                     </div>
@@ -612,38 +581,37 @@ const selectedMinistryCard = async (
   }
 };
 
+const selectedGoalCard = async (goal_id, ministry_id, color, score, scoreColor) => {
+  let type = $("#dataType").val()
+  let typeValue = $("#dataTypeLists").val()
 
+  typeValue = 2016
 
-const selectedGoalCard = async (goal_id ,ministry_id , color, score, scoreColor) => {
-    let type = $("#dataType").val()
-    let typeValue = $("#dataTypeLists").val()
-    
-  
-    //check is year or quarter
-    let url = `/api/ministry/goal_with_kra/${goal_id}?ministry_id=${ministry_id}${type == 'year' ? '&year='+typeValue : '&year='+typeValue.split('-')[0]+'&quarter='+typeValue.split('-')[1]}`
-    let goal = await fetchData(url)
-    $("#goalWithKraList").html(``);
-    $("#goalWithKraList").append(
-      `<div>
+  //check is year or quarter
+  let url = `/api/ministry/goal_with_kra/${goal_id}?ministry_id=${ministry_id}${type == 'year' ? '&year=' + typeValue : '&year=' + typeValue.split('-')[0] + '&quarter=' + typeValue.split('-')[1]}`
+  let goal = await fetchData(url)
+  $("#goalWithKraList").html(``);
+  $("#goalWithKraList").append(
+    `<div>
          <h3 style="color: var(--bs-${color})"><span class="badge" style="background-color: ${scoreColor};">  ${score} </span> &nbsp${goal.goal_name_eng}</h3>
          <hr>
        </div>
       `
-    );
-   
-    if (goal.kra_goal.length > 0) {
-      let kra_lists = goal.kra_goal.map((kra) => {
-        return `
+  );
+
+  if (goal.kra_goal.length > 0) {
+    let kra_lists = goal.kra_goal.map((kra) => {
+      return `
         <h6 name="kra-lists" class="pt-3 col-6"><span class="badge" style="background-color: ${kra?.ministry_key_result_area_score_card?.scorecard_color};">  ${Math.floor(kra?.ministry_key_result_area_score_card?.avg_score) || 0}</span> &nbsp ${kra.activity_name_eng}</h6>
          ${indicatorList(kra.indicators).join("")}
           `;
-      });
-      let goalHtml = `
+    });
+    let goalHtml = `
            <div class="row">
               ${kra_lists.join("")}
           </div> `;
 
-          $("#goalWithKraList").append(`
+    $("#goalWithKraList").append(`
 
             <div class="form-check mb-2">
                <input class="form-check-input" type="checkbox" value="" id="showIndicator"> 
@@ -708,46 +676,41 @@ const selectedGoalCard = async (goal_id ,ministry_id , color, score, scoreColor)
      
             ${goalHtml}
             `)
-         }
-    else {
-      $("#goalWithKraList").append(`
+  }
+  else {
+    $("#goalWithKraList").append(`
       <h4 class="text-center text-danger mb-5">No data found for this goal</h4>
       `);
-    }
-  };
+  }
+};
+const indicatorList = (indicators) => {
+  return indicators.map((indicator) => {
+
+    let previousIndicator = indicator?.annual_indicators?.find((item) => item?.year == (indicator?.annual[0]?.year - 1))
+    let diff = Math.floor(indicator?.annual[0]?.annual_performance - previousIndicator?.annual_performance)
+    let direction = diff > 1 ? 'fa-arrow-up' : diff >= 0 && diff == 0 ? 'fa-arrow-right' : 'fa-arrow-down'
+    let directionColor = diff > 1 ? 'text-success' : diff >= 0 && diff == 0 ? 'text-dark' : 'text-danger'
+
+    let hasTarget = indicator?.annual[0]?.annual_target ? 'primary' : 'primary'
+    let score = indicator?.annual[0]?.score || 'None'
 
 
 
-
-
-  const indicatorList = (indicators) =>{
-    return indicators.map((indicator) =>{
-
-      let previousIndicator = indicator?.annual_indicators?.find((item) => item?.year == (indicator?.annual[0]?.year-1) )
-      let diff = Math.floor(indicator?.annual[0]?.annual_performance - previousIndicator?.annual_performance)
-      let direction = diff > 1 ? 'fa-arrow-up' : diff >= 0 &&  diff == 0 ? 'fa-arrow-right': 'fa-arrow-down'
-      let directionColor = diff > 1 ? 'text-success' : diff >= 0 &&  diff == 0 ? 'text-dark': 'text-danger'
-            
-      let hasTarget = indicator?.annual[0]?.annual_target ? 'primary' : 'primary'
-      let score = indicator?.annual[0]?.score || 'None'
+    let performanceType = score >= 70 ? 'good' : (score >= 50 ? 'average' : (score < 50 ? 'poor' : 'nodata'))
 
 
 
-      let performanceType = score >= 70 ? 'good' :( score >= 50 ? 'average' : (score < 50 ? 'poor' : 'nodata'))
-
-
-
-      return `
+    return `
           <div name="indicator-lists" class="col-lg-4 d-none border">
               <div name="${performanceType}">
                   <div class="d-flex align-items-center">
                       <div class="flex-shrink-0">
-                        <span class="p-2 d-block rounded-circle"  style="height: 30px; width: 30px; font-size: 70px; background-color: ${indicator?.annual[0]?.annual_target || indicator?.annual[0]?.quarter_target  ? indicator?.annual[0]?.scorecard || 'red' : 'gray'}"></span>
+                        <span class="p-2 d-block rounded-circle"  style="height: 30px; width: 30px; font-size: 70px; background-color: ${indicator?.annual[0]?.annual_target || indicator?.annual[0]?.quarter_target ? indicator?.annual[0]?.scorecard || 'red' : 'gray'}"></span>
                       </div>
-                      <div class="ml-3"> &nbsp <i class="fas ${ indicator?.annual[0]?.annual_target ? direction : 'fa-arrow-up'}  ${indicator?.annual[0]?.annual_target ? directionColor : 'text-muted' }  " style=" font-size: 30px;"></i></div>
+                      <div class="ml-3"> &nbsp <i class="fas ${indicator?.annual[0]?.annual_target ? direction : 'fa-arrow-up'}  ${indicator?.annual[0]?.annual_target ? directionColor : 'text-muted'}  " style=" font-size: 30px;"></i></div>
                       <div class="flex-grow-1 mx-2">
                           <button name="indicator-btn" data-indicator-name="${indicator.kpi_name_eng}"  data-indicator-id="${indicator.id}" class="btn btn btn-link-secondary mb-0 d-grid text-start" type="button" data-bs-toggle="modal" data-bs-target="#indicatorModal" aria-controls="offcanvasExample">
-                              <span class="w-100" data-bs-toggle="tooltip" data-bs-placement="top" title="${indicator.kpi_name_eng}">${indicator.kpi_name_eng.length > 25 ? indicator.kpi_name_eng.slice(0,25) + '...' : indicator.kpi_name_eng}</span>
+                              <span class="w-100" data-bs-toggle="tooltip" data-bs-placement="top" title="${indicator.kpi_name_eng}">${indicator.kpi_name_eng.length > 25 ? indicator.kpi_name_eng.slice(0, 25) + '...' : indicator.kpi_name_eng}</span>
                           </button>
                       </div>
                       <div class="badge bg-light-secondary f-12">${score}</div>
@@ -755,7 +718,195 @@ const selectedGoalCard = async (goal_id ,ministry_id , color, score, scoreColor)
               </div>
           </div>
         `
-    })
+  })
+}
+const chartProgressVsPerformance = (years, target, performance) => {
+  $("#indicator-key-performance-chart").html("")
+  var options = {
+    series: [{
+      name: 'Performance',
+      data: performance
+    },
+    ],
+    chart: {
+      height: 350,
+      type: 'line',
+      zoom: {
+        enabled: false
+      }
+    },
+    dataLabels: {
+      enabled: false
+    },
+    stroke: {
+      curve: 'straight'
+    },
+    grid: {
+      row: {
+        colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
+        opacity: 0.5
+      },
+    },
+    xaxis: {
+      categories: years,
+    }
+  };
+
+
+  //   var options = {
+  //     series: [{
+  //     name: 'Target',
+  //     data: target
+  //   }, {
+  //     name: 'Performance',
+  //     data: performance
+  //   }],
+  //     chart: {
+  //     type: 'bar',
+  //     height: 350,
+  //     parentHeightOffset: 0,
+  //     toolbar: {
+  //       show: false
+  //     }
+  //   },
+  //   grid: {
+  //     show: true
+  // },
+  //   plotOptions: {
+  //     bar: {
+  //       horizontal: false,
+  //       columnWidth: '85%',
+  //       endingShape: 'rounded'
+  //     },
+  //   },
+  //   dataLabels: {
+  //     enabled: false
+  //   },
+  //   stroke: {
+  //     show: true,
+  //     width: 2,
+  //     colors: ['transparent']
+  //   },
+  //   xaxis: {
+  //     categories: years,
+  //   },
+  //   yaxis: {
+  //   },
+  //   fill: { colors: ["#2ca87f", "#A0D683"]},
+  //   colors: ["#2ca87f", "#A0D683;"],
+  //   stroke: { show: !0, width: 3, colors: ["transparent"] },
+  //     title: {
+  //       text: "Target Vs Performance",
+  //       align: 'left',
+  //       margin: 15,
+  //       offsetX: 0,
+  //       offsetY: 0,
+  //       floating: false,
+  //       style: {
+  //         fontSize:  '14px',
+  //         fontWeight:  'bold',
+  //         color:  '#263238'
+  //       },
+  //   },
+  //   tooltip: {
+  //     y: {
+  //       formatter: function (val) {
+  //         return  val 
+  //       }
+  //     }
+  //   }
+  //   };
+
+  var chart = new ApexCharts(document.querySelector("#indicator-key-performance-chart"), options);
+  chart.render();
+}
+const modalIndicatorAnnualPlan = (data, year) => {
+
+  let type = $("#dataType").val() // identify whether it is year or quarter
+  let typeValue = $("#dataTypeLists").val()
+
+  let table = data.map((item) => {
+    let changePercentage = item?.previous_year_performance_data ? Math.round(item?.previous_year_performance_data[0] * 100) / 100 : null
+    let changeInAbsolute = item?.previous_year_performance_data ? Math.round(item?.previous_year_performance_data[1] * 100) / 100 : null
+
+
+
+
+    let direction = changePercentage > 1 ? 'fa-arrow-up' : changePercentage >= 0 && changePercentage == 0 ? 'fa-arrow-right' : 'fa-arrow-down'
+    let directionColor = changePercentage > 1 ? 'text-success' : changePercentage >= 0 && changePercentage == 0 ? 'text-dark' : 'text-danger'
+
+    return `
+      <tr  class="${item.year == year ? 'table-success' : ''}">
+        <td>${type == 'year' ? item?.year : item?.quarter}</td>
+        <td>${item?.annual_target || item?.quarter_target || 'None'}</td>
+        <td>${item.annual_performance || item.quarter_performance || 'None'}</td>
+        <td class="fw-bold" style="color: ${item.scorecard || 'red'}" >${item.score || 'None'}</td>
+        <td class="${item.annual_performance || item.quarter_performance ? directionColor : 'text-danger'} fw-bold"> <i class="fas ${item.annual_performance || item.quarter_performance ? direction : 'fa-arrow-down'} fa-sm "></i>${changePercentage}</td>
+        <td class="${item.annual_performance || item.quarter_performance ? directionColor : 'text-danger'} fw-bold">${changeInAbsolute}%</td>
+      </tr>
+    `
+  })
+  $("#table-title").html(type == 'year' ? 'Annual Plan' : 'Quarter Plan ' + typeValue.split('-')[0])
+  $("#table-year-type").html(type == 'year' ? 'Year' : 'Quarter')
+  $("#modalAnnualPlanTable").html(table)
+}
+const indicatorModal = (title, data) => {
+  let type = $("#dataType").val()
+  let typeValue = $("#dataTypeLists").val()
+
+  $('#indicatorModalLabel').html(title)
+  $('#kpi-unit').html(data.kpi_measurement_units || 'None')
+  $('#kpi-char').html(data.kpi_characteristics)
+  $('#kpi-weight').html(data.kpi_weight || 'None')
+  $('#kpi-kra').html(data.keyResultArea > 5 ? data.keyResultArea.slice(0, 5) : data.keyResultArea)
+  $('#kpi-ministry').html(data?.responsible_ministries?.code || 'None')
+  let yearValueUtilCurrent = data.annual_indicators.filter((year) => year.year <= typeValue)
+
+  data.annual_indicators.sort((a, b) => {
+
+    function splitNumberAndText(input) {
+      const match = input.match(/^(\d+)(\D+)$/);
+      if (match) {
+        const [numberPart, textPart] = match.slice(1, 3);
+        return [numberPart, textPart];
+      } else {
+        return { error: "Input format is incorrect" };
+      }
+    }
+
+
+    if (a.quarter && b.quarter) {
+      const numberPartA = splitNumberAndText(a.quarter);
+      const numberPartB = splitNumberAndText(b.quarter);
+
+      if (Number(numberPartA[0]) < Number(numberPartB[0])) {
+
+        return -1
+      }
+      return 1
+
+    } else {
+      if (a.year < b.year) {
+        return -1
+      }
+      return 1
+    }
+    return -1
+  })
+
+
+
+  let years = yearValueUtilCurrent.map((year) => year.year)
+  let quarter = data.annual_indicators.map((item) => item.quarter)
+
+  let performance = yearValueUtilCurrent.map((performance) => performance.annual_performance || 0)
+  let performanceQuarter = data.annual_indicators.map((item) => item.quarter_performance || 0)
+
+  let target = yearValueUtilCurrent.map((target) => target.annual_target || 0)
+  let targetQuarter = data.annual_indicators.map((item) => item.quarter_target || 0)
+
+  chartProgressVsPerformance(type == 'year' ? years : quarter, type == 'year' ? target : targetQuarter, type == 'year' ? performance : performanceQuarter) //modal chart
+  modalIndicatorAnnualPlan(data.annual_indicators, typeValue)
 }
 const main = async () => {
   await filterDataOption();
@@ -770,15 +921,9 @@ $(document).on("click", "[name='ministry-card']", async function () {
   let type = $("#dataType").val();
   let typeValue = $("#dataTypeLists").val();
 
+  typeValue = 2016
   //check is year or quarter
-  let url = `/api/ministry/ministry_with_policy_area/${ministry_id}?${
-    type == "year"
-      ? "?year=" + typeValue
-      : "?year=" +
-        typeValue.split("-")[0] +
-        "&quarter=" +
-        typeValue.split("-")[1]
-  }`;
+  let url = `/api/ministry/ministry_with_policy_area/${ministry_id}?${type == "year" ? "?year=" + typeValue : "?year=" + typeValue.split("-")[0] + "&quarter=" + typeValue.split("-")[1]}`;
 
   let data = await fetchData(url);
 
@@ -791,22 +936,44 @@ $(document).on("click", "[name='ministry-card']", async function () {
   );
 });
 
-
-
 $(document).on("click", "[name='goal-card']", async function () {
-    const goal_id = $(this).data("goal");
-    const ministry_id = $(this).data("ministryid");
-    const color = $(this).data("color");
-    let score = $(this).data("score")
-    let scoreColor = $(this).data("scoreColor")
+  const goal_id = $(this).data("goal");
+  const ministry_id = $(this).data("ministryid");
+  const color = $(this).data("color");
+  let score = $(this).data("score")
+  let scoreColor = $(this).data("scoreColor")
 
-    selectedGoalCard(goal_id , ministry_id ,color, score, scoreColor);
-    $("html, body").animate(
-      {
-        scrollTop: $("#goalWithKraList").offset().top,
-      },
-      500
-    );
-  });
+  selectedGoalCard(goal_id, ministry_id, color, score, scoreColor);
+  $("html, body").animate(
+    {
+      scrollTop: $("#goalWithKraList").offset().top,
+    },
+    500
+  );
+});
+
+$(document).on('click', "[name='indicator-btn']", async function () {
+  const indicatorId = $(this).data('indicatorId')
+  const indicatorName = $(this).data('indicatorName')
+  const goal = $(this).data('goal')
+
+  let type = $("#dataType").val()
+  let typeValue = $("#dataTypeLists").val()
+  let data = await fetchData(`/api/ministry/indicator/${indicatorId}/${type == 'year' ? '?year=' + typeValue : '?year=' + typeValue.split('-')[0] + '&quarter=' + typeValue.split('-')[1]}`)
+
+
+
+  $('#kpi-goal').html(goal || 'None')
+  indicatorModal(indicatorName, data)
+
+
+})
+
+$(document).on('change', '#showIndicator', async function () {
+  let value = $('#showIndicator').prop('checked')
+  value ? $("[name='indicator-lists']").removeClass('d-none') : $("[name='indicator-lists']").addClass('d-none')
+  $("[name='kra-lists']").toggleClass('mt-3 col-6', !value);
+
+})
 
 main();
