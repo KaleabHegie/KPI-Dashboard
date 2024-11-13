@@ -2,147 +2,15 @@
 {% include "head.html" %}
 {% load static %}
 
-
-<style>
- @import url("https://fonts.googleapis.com/css?family=Oswald:300,400,500,700");
-@import url("https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800");
-.gr-1 {
-  background: linear-gradient(170deg, #01E4F8 0%, #1D3EDE 100%);
-}
-
-.gr-2 {
-  background: linear-gradient(170deg, #B4EC51 0%, #429321 100%);
-}
-
-.gr-3 {
-  background: linear-gradient(170deg, #C86DD7 0%, #3023AE 100%);
-}
-.gr-4 {
-  background: linear-gradient(170deg, #FFE000 0%, #799F0C 100%);
-}
-
-.gr-5 {
-  background: linear-gradient(170deg, #00F260 0%, #0575E6 100%);
-}
-.gr-6 {
-  background: linear-gradient(170deg, #4E54C8 0%, #8F94FB 100%);
-}
-* {
-  transition: 0.5s;
-}
-
-.h-100 {
-  height: 100vh !important;
-}
-
-.align-middle {
-  position: relative;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-.column {
-  margin-top: 3rem;
-  padding-left: 1rem;
-}
-.column:hover {
-  padding-left: 0;
-}
-.column:hover .card .txt {
-  margin-left: 1rem;
-}
-.column:hover .card .txt h1, .column:hover .card .txt p {
-  color: white;
-  opacity: 1;
-}
-.column:hover a {
-  color: white;
-}
-.column:hover a:after {
-  width: 10%;
-}
-
-.card {
-  height: 220px;
-  margin: 0;
-  padding: 1.7rem 1.2rem;
-  border: none;
-  border-radius: 0;
-  color: black;
-  letter-spacing: 0.05rem;
-  font-family: "Oswald", sans-serif;
-  box-shadow: 0 0 21px rgba(0, 0, 0, 0.27);
-}
-.card .txt {
-  margin-left: -1rem;
-  z-index: 1;
-}
-.card .txt h4 {
-  font-size: 1.5rem;
-  font-weight: 300;
-  text-transform: uppercase;
-  color: white;
-  
-}
-.card .txt p {
-  font-size: 0.7rem;
-  font-family: "Open Sans", sans-serif;
-  letter-spacing: 0rem;
-  margin-top: 33px;
-  opacity: 0;
-  color: white;
-}
-.card a {
-  z-index: 3;
-  font-size: 0.7rem;
-  color: black;
-  margin-left: 1rem;
-  position: relative;
-  bottom: -0.5rem;
-  text-transform: uppercase;
-}
-.card a:after {
-  content: "";
-  display: inline-block;
-  height: 0.5em;
-  width: 0;
-  margin-right: -100%;
-  margin-left: 10px;
-  border-top: 1px solid white;
-  transition: 0.5s;
-}
-.card .ico-card {
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  width: 80%;
-  height: 100%;
-  overflow: hidden;
-}
-.card i {
-  position: relative;
-  right: -50%;
-  top: 60%;
-  font-size: 12rem;
-  line-height: 0;
-  opacity: 0.2;
-  color: white;
-  z-index: 0;
-}
-</style>
+{% include 'PolicyAndMinistries/include/head.html' %}
 <body class="hold-transition sidebar-mini layout-fixed">
 <div class="wrapper">
 
   <!-- Preloader -->
- 
-  
   {% include "navbar.html" %}
 
 
   {% include "sidebar.html" %}
-
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
@@ -151,13 +19,258 @@
         <div class="row mb-2">
           <div class="col-sm-6">
             <h1 class="m-0">Dashboard</h1>
-          </div><!-- /.col -->
-          <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active">Dashboard v1</li>
-            </ol>
-          </div><!-- /.col -->
+          </div>
+          <!-- /.col -->
+           <div class="pc-container">
+        <div class="pc-content container-sm">            
+            <!-- [ Main Content ] start -->
+            <div class="">
+                <div class="card-body pc-component">
+                    {% include 'PolicyAndMinistries/include/navbar.html' %}
+                        <!--dashboard info-->
+                        
+                       <div class="row" id="dashboardInfo"></div>
+           
+                       <div class="row justify-content-end p-3">
+                           <!--Filter Year and Quarter-->
+                           <div class="col-md-2  form-floating mt-2">
+           
+           
+                               <select class="form-select" id="dataType" aria-label="Floating label select example">
+                                   <option selected value="year">Yearly</option>
+                                   <option value="quarter">Quarterly</option>
+                               </select>
+                               <label for="dataType">Select data type</label>
+           
+           
+                           </div>
+           
+           
+                           <div class="col-md-2  form-floating mt-2">
+                               <select class="form-select" id="dataTypeLists" aria-label="Floating label select example">
+                                   <option value="volvo">2015 - Q1</option>
+                                   <option value="saab">2015 - Q2</option>
+                                   <option value="saab">2015 - Q3</option>
+                                   <option value="saab">2015 - Q4</option>
+                               </select>
+                               <label for="dataTypeLists">Select time</label>
+                           </div>
+                       </div>
+           
+                       <div class="page-header-title mt-3 mb-3">
+                           <h2 class="mb-0" id="selectedDataValue"></h2>
+                       </div>
+           
+           
+                       <!--Policy Area cards-->
+                       <div class="row" id="policyAreaCardLists"></div>
+           
+           
+                       <!--Scroll-->
+                       <div class="" id="scroll"></div>
+           
+                       <!--Policy Area Dashboard count number-->
+                       <div class="row justify-content-center gap-4" id="policyAreaDashboard" style="margin-top: 100px;"> </div>
+           
+           
+                       <!--selected policy area with goal-->
+                       <div class="row mb-5" id="policyAreaMainCard"></div>
+       
+           
+                       <div id="scrollIndicator" class="mt-5 mb-5 p-1"></div>
+           
+           
+                       <!--Dashboard-->
+                       <div class="row justify-content-center gap-4 pt-5">
+                           <!--Pie Chart-->
+                           {% comment %} <div class="col-md-4 text-center ">
+                               <div class="row justify-content-center">
+                                   <div id="piechart"></div>
+                               </div>
+                           </div> {% endcomment %}
+
+                           <!--Ministry Shares per policy area-->
+                           <div class="col-md-6 text-center">
+                               <div id="ministrySharesPyramid"></div>
+                           </div>
+           
+                           <!--Overall Performance Analysis-->
+                           <div class="col-12 text-center">
+                               <h5 class="text-start" id="overallPerformanceAnalysisTitle">Overall Performance Analysis</h5>
+                               <div class="row" id="overAllPerformanceAnalysis" ></div>
+                           </div>
+           
+                       </div>
+           
+           
+           
+                       <div  class="mt-5">
+                           <h5 class="text-center" id="goalPerformanceAnalysisName"></h5>
+                           <div class="row  justify-content-center" id="performanceAnalysis"></div>
+                       </div>
+                       
+                       <!--selected goal with KRA + KPI -->
+                       <div class="container-fluid mb-5 pb-5" id="goalWithKraList"></div>
+                </div>
+            </div>
+        </div>
+
+        <!--Indicator Detail Modal-->
+    <div class="modal fade" id="indicatorModal" tabindex="-1" aria-labelledby="indicatorModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="indicatorModalLabel">Modal title</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+
+
+                        <div class="col-xl-7">
+                            <div class="simplebar-content" style="padding: 20px;">
+                                <div class="card">
+                                    <div class="table-body card-body pt-0">
+                                        <div class="table-responsive">
+                                            <table class="table table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Basic Info</th>
+                                                        <th class="text-end"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="kpi-info-table">
+                                                    <tr>
+                                                        <td>
+                                                            <div class="d-flex align-items-center text-muted">
+                                                                <span class="text-truncate w-100">KPI Meas..
+                                                                    units</span>
+                                                            </div>
+                                                        </td>
+                                                        <td class="text-end">
+                                                            <span id="kpi-unit"
+                                                                class="badge bg-light-success">Team</span>
+                                                        </td>
+                                                    </tr>
+
+                                                    <tr>
+                                                        <td>
+                                                            <div class="d-flex align-items-center text-muted">
+                                                                <span class="text-truncate w-100">kPI Char</span>
+                                                            </div>
+                                                        </td>
+                                                        <td class="text-end">
+                                                            <span id="kpi-char"
+                                                                class="badge bg-light-success">Team</span>
+                                                        </td>
+                                                    </tr>
+
+
+                                                    <tr>
+                                                        <td>
+                                                            <div class="d-flex align-items-center text-muted">
+                                                                <span class="text-truncate w-100">kPI Wight</span>
+                                                            </div>
+                                                        </td>
+                                                        <td class="text-end">
+                                                            <span id="kpi-weight"
+                                                                class="badge bg-light-success">Team</span>
+                                                        </td>
+                                                    </tr>
+
+                                                    <tr>
+                                                        <td>
+                                                            <div class="d-flex align-items-center text-muted">
+                                                                <span class="text-truncate w-100">KRA</span>
+                                                            </div>
+                                                        </td>
+                                                        <td class="text-end">
+                                                            <span id="kpi-kra"
+                                                                class="badge bg-light-success">Team</span>
+                                                        </td>
+                                                    </tr>
+
+                                                    <tr>
+                                                        <td>
+                                                            <div class="d-flex align-items-center text-muted">
+                                                                <span class="text-truncate w-100">Goal</span>
+                                                            </div>
+                                                        </td>
+                                                        <td class="text-end">
+                                                            <span id="kpi-goal"
+                                                                class="badge bg-light-success">Team</span>
+                                                        </td>
+                                                    </tr>
+
+                                                    <tr>
+                                                        <td>
+                                                            <div class="d-flex align-items-center text-muted">
+                                                                <span class="text-truncate w-100">Ministry</span>
+                                                            </div>
+                                                        </td>
+                                                        <td class="text-end">
+                                                            <span id="kpi-ministry"
+                                                                class="badge bg-light-success">Team</span>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--Chart Target Vs Performance-->
+                        <div class="col-xl-5 card" id="indicator-key-performance-chart">
+                        </div>
+
+
+                        <!--Table relation-->
+
+                        <div class="col-12">
+                            <div class="table-reponsive">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 id="table-title" >Annual Plan</h5>
+                                    </div>
+                                    <div class="card-body table-border-style">
+                                        <div class="table-responsive">
+                                            <table class="table table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th id="table-year-type">Year</th>
+                                                        <th>Plan</th>
+                                                        <th>Perf</th>
+                                                        <th>Score</th>
+                                                        <th>Chg in abs (number) from Pr Year</th>
+                                                        <th>Chg in abs (percent) from Pr Year</th>
+                                                    </tr>
+                                                </thead>
+
+                                                <tbody id="modalAnnualPlanTable">
+                                                </tbody>
+
+
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+
+
+    </div>
+          <!-- /.col -->
         </div><!-- /.row -->
       </div><!-- /.container-fluid -->
     </div>
@@ -170,101 +283,9 @@
       
 
         <div class="row ">
-
-          <div class="col-lg-3 col-6">
-            <!-- small box -->
-            <div class="small-box bg-danger">
-              <div class="inner">
-                <h3>{{policy_area_count}}</h3>
-
-                <p>Number of Policy Areas</p>
-              </div>
-              <div class="icon">
-                <i class="fas fa-briefcase"></i>
-              </div>
-              <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-            </div>
-          </div>
+        </div>
 
 
-
-          <div class="col-lg-3 col-6">
-              <!-- small box -->
-              <div class="small-box bg-info">
-                  <div class="inner">
-                      <h3>{{ goal_count }}</h3>
-                      <p>Total Goals</p>
-                  </div>
-                  <div class="icon">
-                      <i class="fas fa-bullseye"></i> <!-- Icon for Goals -->
-                  </div>
-                  <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-              </div>
-          </div>
-          <!-- ./col -->
-          <div class="col-lg-3 col-6">
-              <!-- small box -->
-              <div class="small-box bg-success">
-                  <div class="inner">
-                      <h3>{{ kra_count }}</h3>
-                      <p>Total KRAs</p>
-                  </div>
-                  <div class="icon">
-                      <i class="fas fa-briefcase"></i> <!-- Icon for KRAs -->
-                  </div>
-                  <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-              </div>
-          </div>
-          
-          <!-- ./col -->
-          <div class="col-lg-3 col-6">
-              <!-- small box -->
-              <div class="small-box bg-warning">
-                  <div class="inner">
-                      <h3>{{ indicator_count }}</h3>
-                      <p>Total Indicators</p>
-                  </div>
-                  <div class="icon">
-                      <i class="fas fa-chart-line"></i> <!-- Icon for Indicators -->
-                  </div>
-                  <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-              </div>
-          </div>
-          <!-- ./col -->
-          
-
-         
-              <div class="col-12 ">
-               
-                  <h1 class="m-0">Policy Areas</h1>
-            
-            
-              </div><!-- /.row -->
-           
-          
-
-          {% for policy in policy_area %}
-          <div class="col-md-6 col-lg-3 column">
-            <div class="card {{ policy_colors|get_item:policy.id}}">
-              <div class="txt">
-                <h4>{{policy}}
-                   </h4>
-                <p>{{policy}}</p>
-              </div>
-              <a href="#">more</a>
-            <div class="ico-card">
-              {{ policy.icon.as_html  }}
-           
-            </div>
-            </div>
-          </div>
-          {% endfor %}
-
-
-
-       
-
-      </div>
       <div class="container h-100">
         <div class="row align-middle">
         
@@ -272,12 +293,6 @@
 
 
     </div>
-
-
-
-      
-
-      
 
       <!-- /.container-fluid -->
     </section>
@@ -290,14 +305,11 @@
 
 </div>
 
-
-  <!-- Control Sidebar -->
-
-  <!-- /.control-sidebar -->
-
-<!-- ./wrapper -->
-
 <!-- jQuery -->
 {% include 'footer.html' %}
+
+{% include "PolicyAndMinistries/include/script.html" %}
+<script src="{% static 'dashoboard_assets/assets//js//pages//policyArea.js' %}"></script>
+
 </body>
 </html>

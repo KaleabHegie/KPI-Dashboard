@@ -1360,54 +1360,7 @@ def is_ajax(request):
 @login_required
 @mopd_user_required
 def dashboard_mopd(request):
-    policy_area = PolicyArea.objects.all()
-    policy_area_count = PolicyArea.objects.count()
-    goal_count = StrategicGoal.objects.count()
-    kra_count = KeyResultArea.objects.count()
-    indicator_count = Indicator.objects.count()
-    ministry_count = ResponsibleMinistry.objects.count()
-    policy_colors = {   
-        1: 'bg-info',
-        2: 'bg-secondary',
-        3: 'bg-success',
-        4: 'bg-info',
-        5: 'bg-warning',
-        6: 'bg-info',
-        7: 'bg-dark',
-        8: 'bg-warning',
-        9: 'bg-info',
-        10: 'bg-secondary',
-        11: 'bg-info',
-        12: 'bg-secondary',
-        13: 'bg-success',
-        14: 'bg-info',
-        15: 'bg-warning',
-        16: 'bg-info',
-        17: 'bg-warning',
-        18: 'bg-dark',
-        19: 'bg-info',
-        20: 'bg-success',
-        21: 'bg-warning',
-        22: 'bg-secondary',
-        23: 'bg-success',
-        24: 'bg-warning',
-        # Add more policies and corresponding colors as needed
-    }
-
-    context = {
-        'goal_count': goal_count,
-        'kra_count': kra_count,
-        'indicator_count': indicator_count,
-        'ministry_count': ministry_count,
-        'policy_area_count':policy_area_count,
-        'policy_area':policy_area,
-        'policy_colors':policy_colors
-    }
-
-    return render(request, 'dashboard_mopd.html', context)
-
-
-
+    return render(request, 'dashboard_mopd.html')
 
 def mopd_policy_area(request):
 
