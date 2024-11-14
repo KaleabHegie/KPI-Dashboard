@@ -327,7 +327,7 @@ def policy_area_ministry(request):
 def export_ministry1(request):
     u_sector = UserSector.objects.get(user=request.user)
 
-    policy_area_count = get_policy_areas_by_ministry(u_sector.user_sector.id).first()
+    policy_area_count = get_policy_areas_by_ministry(u_sector.user_sector.id).all().count()
     goal_count = get_strategic_goals_with_cache(u_sector.user_sector.id)[0].count()
     kra_count = get_strategic_goals_with_cache(u_sector.user_sector.id)[1].count()
     indicator_count = Indicator.objects.filter(
