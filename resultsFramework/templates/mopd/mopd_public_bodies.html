@@ -3,174 +3,175 @@
 {% load static %}
 
 {% include 'PolicyAndMinistries/include/head.html' %}
+
 <body class="hold-transition sidebar-mini layout-fixed">
-<div class="wrapper">
-  <!-- Preloader -->
- {% include "navbar.html" %}
-  {% include "sidebar.html" %}
-  <!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper">
-    <!-- Content Header (Page header) -->
-    <div class="content-header">
-      <div class="container-fluid">
-        
-        <div class="row">
-          <div class="col-sm-6">
-            <h1 class="m-0">Public Bodies</h1>
-          </div>
-          <!-- /.col -->
-              <div class="pc-container">
-               <div class="pc-content container-sm">
+    <div class="wrapper">
+        <!-- Preloader -->
+        {% include "navbar.html" %}
+        {% include "sidebar.html" %}
 
-            <div class="row justify-content-center gap-4 " id="dashboardInfo"></div>
-            <div class="container-sm">
-                <div class="row justify-content-end p-3">
-                    <!--Filter Year and Quarter-->
-                    <div class="col-md-2  form-floating mt-2">
-
-
-                        <select class="form-select" id="dataType" aria-label="Floating label select example">
-                            <option selected value="year">Yearly</option>
-                            <option value="quarter">Quarterly</option>
-                        </select>
-                        <label for="dataType">Select data type</label>
-
-
-                    </div>
-
-
-                    <div class="col-md-2  form-floating mt-2">
-                        <select class="form-select" id="dataTypeLists" aria-label="Floating label select example">
-
-                        </select>
-                        <label for="dataTypeLists">Select time</label>
-                    </div>
-                </div>
-            </div>
-            <h2 class="ms-3 text-bold" id="year"></h2>
-            <div class="row m-0" id="ministryCardLists"></div>
-            <div class="row m-0 justify-content-center">
-                <div class="col" id="ministryIndicatorShare"></div>
-            </div>
-            
-            <div class="row m-0" id="performanceAnalysis"></div>
-            <div class="row m-0" id="ministryKPIPerformance"></div>
-            <div class="row m-0" id="ministryKra"></div>
-            <div class="row m-0 justify-content-center" id="ministryDashboard"></div>
-            <div class="row m-0" id="policyAreaMainCard"></div>
-            <div class="row m-0 justify-content-center" id="goalShare" ></div>
-            <div class="row mt-5" id="kpiStatus"></div>
-            <div class="row m-0" id="goalWithKraList"></div>
-        </div>
-
-    </div>
-
-
-    <!--Indicator Detail Modal-->
-    <div class="modal fade" id="indicatorModal" tabindex="-1" aria-labelledby="indicatorModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="indicatorModalLabel">Modal title</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+            <!-- Content Header (Page header) -->
+            <div class="content-header">
+                <div class="container-fluid">
                     <div class="row">
+                        <div class="col-sm-6">
+                            <h1 class="m-0">Public Bodies</h1>
+                        </div>
+                        <!-- /.col -->
+
+                        <div class="pc-container">
+                            <div class="pc-content container-sm">
+                                <div class="row justify-content-center gap-4 " id="dashboardInfo"></div>
+
+                                 <div class="container-sm">
+
+                                    <div class="row justify-content-end p-3">
+                                        <!--Filter Year and Quarter-->
+                                        <div class="col-md-2  form-floating mt-2">
+
+                                        <select class="form-select" id="dataType" aria-label="Floating label select example">
+                                            <option selected value="year">Yearly</option>
+                                            <option value="quarter">Quarterly</option>
+                                        </select>
+                                        
+                                        <label for="dataType">Select data type</label>
+                                    </div>
 
 
-                        <div class="col-xl-7">
-                            <div class="simplebar-content" style="padding: 20px;">
-                                <div class="card">
-                                    <div class="table-body card-body pt-0">
-                                        <div class="table-responsive">
-                                            <table class="table table-hover">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Basic Info</th>
-                                                        <th class="text-end"></th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody id="kpi-info-table">
-                                                    <tr>
-                                                        <td>
-                                                            <div class="d-flex align-items-center text-muted">
-                                                                <span class="text-truncate w-100">KPI Meas..
-                                                                    units</span>
-                                                            </div>
-                                                        </td>
-                                                        <td class="text-end">
-                                                            <span id="kpi-unit"
-                                                                class="badge bg-light-success">Team</span>
-                                                        </td>
-                                                    </tr>
-
-                                                    <tr>
-                                                        <td>
-                                                            <div class="d-flex align-items-center text-muted">
-                                                                <span class="text-truncate w-100">kPI Char</span>
-                                                            </div>
-                                                        </td>
-                                                        <td class="text-end">
-                                                            <span id="kpi-char"
-                                                                class="badge bg-light-success">Team</span>
-                                                        </td>
-                                                    </tr>
-
-
-                                                    <tr>
-                                                        <td>
-                                                            <div class="d-flex align-items-center text-muted">
-                                                                <span class="text-truncate w-100">kPI Wight</span>
-                                                            </div>
-                                                        </td>
-                                                        <td class="text-end">
-                                                            <span id="kpi-weight"
-                                                                class="badge bg-light-success">Team</span>
-                                                        </td>
-                                                    </tr>
-
-                                                    <tr>
-                                                        <td>
-                                                            <div class="d-flex align-items-center text-muted">
-                                                                <span class="text-truncate w-100">KRA</span>
-                                                            </div>
-                                                        </td>
-                                                        <td class="text-end">
-                                                            <span id="kpi-kra"
-                                                                class="badge bg-light-success">Team</span>
-                                                        </td>
-                                                    </tr>
-
-                                                    <tr>
-                                                        <td>
-                                                            <div class="d-flex align-items-center text-muted">
-                                                                <span class="text-truncate w-100">Goal</span>
-                                                            </div>
-                                                        </td>
-                                                        <td class="text-end">
-                                                            <span id="kpi-goal"
-                                                                class="badge bg-light-success">Team</span>
-                                                        </td>
-                                                    </tr>
-
-                                                    <tr>
-                                                        <td>
-                                                            <div class="d-flex align-items-center text-muted">
-                                                                <span class="text-truncate w-100">Ministry</span>
-                                                            </div>
-                                                        </td>
-                                                        <td class="text-end">
-                                                            <span id="kpi-ministry"
-                                                                class="badge bg-light-success">Team</span>
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
+                                    <div class="col-md-2  form-floating mt-2">
+                                        <select class="form-select" id="dataTypeLists" aria-label="Floating label select example"></select>
+                                        <label for="dataTypeLists">Select time</label>
                                     </div>
                                 </div>
                             </div>
+                            
+                            <h2 class="ms-3 text-bold" id="year"></h2>
+                            <div class="row m-0" id="ministryCardLists"></div>
+                            
+                             <div class="row m-0 justify-content-center">
+                                <div class="col" id="ministryIndicatorShare"></div>
+                            </div>
+            
+                            <div class="row m-0" id="performanceAnalysis"></div>
+                            <div class="row m-0" id="ministryKPIPerformance"></div>
+                            <div class="row m-0" id="ministryKra"></div>
+                            <div class="row m-0 justify-content-center" id="ministryDashboard"></div>
+                            <div class="row m-0" id="policyAreaMainCard"></div>
+                            <div class="row m-0 justify-content-center" id="goalShare" ></div>
+                            <div class="row mt-5" id="kpiStatus"></div>
+                            <div class="row m-0" id="goalWithKraList"></div>
+                        
                         </div>
+                    </div>
+
+
+                    <div class="modal fade" id="indicatorModal" tabindex="-1" aria-labelledby="indicatorModalLabel" aria-hidden="true">
+                <!--Indicator Detail Modal-->
+                <div class="modal-dialog modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="indicatorModalLabel">Modal title</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-xl-7">
+                                    <div class="simplebar-content" style="padding: 20px;">
+                                        <div class="card">
+                                            <div class="table-body card-body pt-0">
+                                                <div class="table-responsive">
+                                                    <table class="table table-hover">
+
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Basic Info</th>
+                                                                <th class="text-end"></th>
+                                                            </tr>
+                                                        </thead>
+
+                                                        <tbody id="kpi-info-table">
+                                                            <tr>
+                                                                <td>
+                                                                    <div class="d-flex align-items-center text-muted">
+                                                                        <span class="text-truncate w-100">KPI Meas..
+                                                                            units</span>
+                                                                    </div>
+                                                                </td>
+                                                                <td class="text-end">
+                                                                    <span id="kpi-unit"
+                                                                        class="badge bg-light-success">Team</span>
+                                                                </td>
+                                                            </tr>
+    
+                                                            <tr>
+                                                                <td>
+                                                                    <div class="d-flex align-items-center text-muted">
+                                                                        <span class="text-truncate w-100">kPI Char</span>
+                                                                    </div>
+                                                                </td>
+                                                                <td class="text-end">
+                                                                    <span id="kpi-char"
+                                                                        class="badge bg-light-success">Team</span>
+                                                                </td>
+                                                            </tr>
+    
+    
+                                                            <tr>
+                                                                <td>
+                                                                    <div class="d-flex align-items-center text-muted">
+                                                                        <span class="text-truncate w-100">kPI Wight</span>
+                                                                    </div>
+                                                                </td>
+                                                                <td class="text-end">
+                                                                    <span id="kpi-weight"
+                                                                        class="badge bg-light-success">Team</span>
+                                                                </td>
+                                                            </tr>
+        
+                                                            <tr>
+                                                                <td>
+                                                                    <div class="d-flex align-items-center text-muted">
+                                                                        <span class="text-truncate w-100">KRA</span>
+                                                                    </div>
+                                                                </td>
+                                                                <td class="text-end">
+                                                                    <span id="kpi-kra"
+                                                                        class="badge bg-light-success">Team</span>
+                                                                </td>
+                                                            </tr>
+        
+                                                            <tr>
+                                                                <td>
+                                                                    <div class="d-flex align-items-center text-muted">
+                                                                        <span class="text-truncate w-100">Goal</span>
+                                                                    </div>
+                                                                </td>
+                                                                <td class="text-end">
+                                                                    <span id="kpi-goal"
+                                                                        class="badge bg-light-success">Team</span>
+                                                                </td>
+                                                            </tr>
+    
+                                                            <tr>
+                                                                <td>
+                                                                    <div class="d-flex align-items-center text-muted">
+                                                                        <span class="text-truncate w-100">Ministry</span>
+                                                                    </div>
+                                                                </td>
+                                                                <td class="text-end">
+                                                                    <span id="kpi-ministry"
+                                                                        class="badge bg-light-success">Team</span>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
 
                         <!--Chart Target Vs Performance-->
                         <div class="col-xl-5 card" id="indicator-key-performance-chart">
@@ -216,44 +217,7 @@
             </div>
         </div>
     </div>
-
-        </div>
-
-          <!-- /.col -->
-        </div>
-        <!-- /.row -->
-      </div><!-- /.container-fluid -->
-    </div>
-    <!-- /.content-header -->
-
-    <!-- Main content -->
-    <section class="content">
-      <div class="container-fluid">
-        <!-- Small boxes (Stat box) -->
-      
-
-        <div class="row ">
-        </div>
-
-
-      <div class="container h-100">
-        <div class="row align-middle">
-        
-      </div>
-
-
-    </div>
-
-      <!-- /.container-fluid -->
-    </section>
-    <!-- /.content -->
-  </div>
-  <!-- /.content-wrapper -->
-<div>
-
-
-
-</div>
+</body>
 
 <!-- jQuery -->
 {% include 'footer.html' %}
@@ -268,5 +232,5 @@
 {% include "PolicyAndMinistries/include/script.html" %}
 <script src="{% static 'dashoboard_assets/assets//js//pages//ministries.js' %}"></script>
 
-</body>
+
 </html>
