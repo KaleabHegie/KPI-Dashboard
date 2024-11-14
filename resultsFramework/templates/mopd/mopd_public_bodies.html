@@ -5,24 +5,22 @@
 {% include 'PolicyAndMinistries/include/head.html' %}
 <body class="hold-transition sidebar-mini layout-fixed">
 <div class="wrapper">
-
   <!-- Preloader -->
-
-
+ {% include "navbar.html" %}
   {% include "sidebar.html" %}
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
     <div class="content-header">
       <div class="container-fluid">
+        
         <div class="row">
           <div class="col-sm-6">
             <h1 class="m-0">Public Bodies</h1>
           </div>
           <!-- /.col -->
               <div class="pc-container">
-        <div class="pc-content container-sm">
-            {% include 'PolicyAndMinistries/include/navbar.html' %}
+               <div class="pc-content container-sm">
 
             <div class="row justify-content-center gap-4 " id="dashboardInfo"></div>
             <div class="container-sm">
@@ -259,6 +257,13 @@
 
 <!-- jQuery -->
 {% include 'footer.html' %}
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/highcharts-more.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+
+
 
 {% include "PolicyAndMinistries/include/script.html" %}
 <script src="{% static 'dashoboard_assets/assets//js//pages//ministries.js' %}"></script>
