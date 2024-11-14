@@ -4,6 +4,7 @@
 <!DOCTYPE html>
 <html lang="en">
   {% include "head.html" %}
+  {% include 'PolicyAndMinistries/include/head.html' %}
   {% csrf_token %}
   <link rel="stylesheet" href="{% static  'plugins/select2/css/select2.min.css' %}" >
   <link rel="stylesheet" href="{% static  'plugins/select2/css/select2-bootstrap4.min.css' %}" >
@@ -25,19 +26,24 @@
       {% include "navbar.html" %}
       {% include "sidebar.html" %}
       <div class="content-wrapper">
+
+       
+
+    <div class="pc-container">
+        <div class="pc-content container-sm">
             <div class="p-3">
                 <h2 class="text-info p-2"> Affiliated Organizations </h2>
             <div class="container-sm">
                 <div class="row justify-content-end p-3">
                     <!--Filter Year and Quarter-->
-                    <div class="col-md-2  form-floating mt-2">
+                    <div class="col-md-2  form-floating">
                         <select class="form-select" id="dataType" aria-label="Floating label select example">
                             <option selected value="year">Yearly</option>
                             <option value="quarter">Quarterly</option>
                         </select>
                         <label for="dataType">Select data type</label>
                     </div>
-                    <div class="col-md-2  form-floating mt-2">
+                    <div class="col-md-2  form-floating">
                         <select class="form-select" id="dataTypeLists" aria-label="Floating label select example">
 
                         </select>
@@ -45,21 +51,12 @@
                     </div>
                 </div>
             </div>
-            <div class="row m-4" id="ministryCardLists"></div>
+            <div class="row m-0" id="ministryCardLists"></div>
             <div class="row m-0" id="policyAreaMainCard"></div>
             <div class="row m-0" id="goalWithKraList"></div>
             </div>
         </div>
-
-
-
-
-
-
-
-
-
-         <!--Indicator Detail Modal-->
+              <!--Indicator Detail Modal-->
     <div class="modal fade" id="indicatorModal" tabindex="-1" aria-labelledby="indicatorModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
@@ -209,6 +206,19 @@
             </div>
         </div>
     </div>
+</div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+   
       {% include "footer.html" %}
     
       <script src="https://code.highcharts.com/highcharts.js"></script>
@@ -224,7 +234,7 @@
       <script src="{% static 'plugins/select2/js/select2.full.min.js' %}"></script>
 
       <script src="{% static "admin/js/affiliated.js" %}"></script>
-    
+
     
   </body>
 </html>

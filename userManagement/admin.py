@@ -3,13 +3,13 @@ from import_export.admin import ImportExportModelAdmin
 from import_export import resources, fields
 # Register your models here.
 from django.contrib.auth.admin import UserAdmin
-from .models import ResponsibleMinistry,Account,UserSector
+from .models import ResponsibleMinistry,Account,UserSector,ContactInfo
 import tablib
 
 
 #import Export 
 
-
+admin.site.register(ContactInfo)
 
 class ResponsibleMinistryResource(resources.ModelResource):
      class Meta:

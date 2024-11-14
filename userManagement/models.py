@@ -261,3 +261,14 @@ class UserSector(models.Model):
     user_sector = models.ForeignKey(
         ResponsibleMinistry, on_delete=models.CASCADE)
     
+
+
+
+contact_type = (('phone', 'Phone'), ('email', 'Email'))
+class ContactInfo(models.Model):
+    contact_type = models.CharField(choices=contact_type, max_length=50) 
+    contact = models.CharField(max_length=50)
+    ministry = models.ForeignKey(ResponsibleMinistry, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.contact

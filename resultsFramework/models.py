@@ -715,6 +715,9 @@ class QuarterProgress(models.Model):
 
     score = models.FloatField(blank=True, null=True,)
     scorecard = ColorField(default='#FF0000',blank=True, null=True)
+    justification = models.TextField(blank=True, null=True)
+    validation_comment = models.TextField(blank=True, null=True)
+
     def __str__(self):
         if self.indicator:
             return self.indicator.kpi_name_eng+" - "+str(self.year)
@@ -789,6 +792,8 @@ class AnnualPlan(models.Model):
 
     score = models.FloatField(blank=True, null=True,)
     scorecard = ColorField(default='#FF0000',blank=True, null=True)
+    justification = models.TextField(blank=True, null=True)
+    validation_comment = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return str(self.year)

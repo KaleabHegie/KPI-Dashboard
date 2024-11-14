@@ -9,7 +9,7 @@ from .models import *
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
 from decimal import Decimal
-from userManagement.models import ResponsibleMinistry, UserSector
+from userManagement.models import ResponsibleMinistry, UserSector , ContactInfo , Account
 from userManagement.decorators import *
 from django.db.models import Q
 from django.views.decorators.http import require_POST
@@ -175,6 +175,8 @@ def get_strategic_goals_with_cache(ministry_id, filterGoal=None):
 
 
     return [strategic_goals, kra]
+
+
 
 
 def get_policy_areas_by_ministry(ministry_id):
@@ -446,9 +448,16 @@ def mdip_ministry(request):
 @login_required
 def ministry_profile(request):
     u_sector = UserSector.objects.get(user=request.user)
+    user = Account.objects.get(id=request.user.id)
     ministry = ResponsibleMinistry.objects.get(id=u_sector.user_sector.id)
+    emails = ContactInfo.objects.filter(contact_type = 'email',ministry = ministry)
+    phones = ContactInfo.objects.filter(contact_type = 'phone',ministry = ministry)
     context = {
-        'ministry' : ministry
+        "user" : user,
+        'ministry' : ministry,
+        "emails" : emails,
+        "phones" : phones
+
     }
     return render(request, 'ministry/ministry_profile.html' , context)
 
@@ -484,8 +493,6 @@ def affiliated_ministries(request):
     return render(request, 'ministry/affiliated_ministries.html' , context)
 
 
-
-
 @login_required
 @api_view(['GET'])
 def affiliated_ministries_list(request):
@@ -498,6 +505,43 @@ def affiliated_ministries_list(request):
         return Response(serializer.data)
 
 
+
+
+@login_required
+def above_threshold(request):
+    u_sector = UserSector.objects.get(user=request.user)
+    main_ministry = ResponsibleMinistry.objects.filter(id=u_sector.user_sector.id)
+    affiliated_ministries = ResponsibleMinistry.objects.filter(affiliated_to=u_sector.user_sector)
+    ministries = list(main_ministry) + list(affiliated_ministries)
+    annual_plans_lookup = {}
+    years = Year.objects.filter(mdip=True)
+
+
+
+    annual_plans = AnnualPlan.objects.select_related(
+    'indicator', 'sub_indicator', 'year').filter(
+    year__visible=True,
+    indicator__responsible_ministries__in=ministries)
+
+    selected_selected_policies = request.GET.getlist('selected_selected_policies[]')
+    if selected_selected_policies:
+        strategic_goals = get_strategic_goals_with_cache(u_sector.user_sector.id, selected_ministries)[0]
+    else:
+        strategic_goals = get_strategic_goals_with_cache(u_sector.user_sector.id)[0]
+
+
+
+    for plan in annual_plans:
+        if plan.indicator_id not in annual_plans_lookup:
+            annual_plans_lookup[plan.indicator_id] = {}
+        annual_plans_lookup[plan.indicator_id][plan.year_id] = plan
+    context = {
+        'strategic_goals': strategic_goals,
+        'years': years,
+        'annual_plans_lookup': annual_plans_lookup,
+        'ministries' : ministries
+    }
+    return render(request, 'ministry/above_threshold.html' , context)
 
 
 def export_quarter_plan_temp(request):

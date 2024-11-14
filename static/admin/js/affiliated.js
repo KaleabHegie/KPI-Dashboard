@@ -39,6 +39,25 @@ const colorList = [
   "cyan",
 ];
 
+
+const preLoading = (divId, size, width)=>{
+  let spinner = `
+  <div class="col-md-3 col-xl-${width} ">
+      <div class="card social-widget-card">
+          <div class="card-body d-flex justify-content-between align-items-center p-2">
+              <div class="bg-body  d-flex flex-column justify-content-center align-items-center text-primary m-3 rounded" style="height:100px; width: 100%;">
+                  <div class="spinner-grow" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+  `.repeat(size)
+
+  $("#"+divId).html(`<div class="row">${spinner}</div>`)
+}
+
 const fetchData = async (url) => {
   let response = await axios.get(url);
   try {
@@ -256,7 +275,6 @@ const chartGauge2 = (id, percent) => {
 const ministryCard = async () => {
   let type = $("#dataType").val();
   let typeValue = $("#dataTypeLists").val();
-  typeValue = 2016;
   let url = `/affiliated_ministries_list/${type == "year"
       ? "?year=" + typeValue
       : "?year=" +
@@ -264,6 +282,7 @@ const ministryCard = async () => {
       "&quarter=" +
       typeValue.split("-")[1]
     }`;
+  preLoading('ministryCardLists' , 8 , 3)
   let data = await fetchData(url);
   $("#ministryCardLists").html(``);
   const card = data.map((ministry, index) => {
@@ -307,7 +326,7 @@ const goalListCard = async (ministry_id, id, color, policy_area_name) => {
   let type = $("#dataType").val();
   let typeValue = $("#dataTypeLists").val();
 
-  typeValue = 2016;
+  
 
   //check is year or quarter
   let url = `/api/ministry/policy_area_with_goal/${id}?ministry_id=${ministry_id}${type == "year"
@@ -409,8 +428,7 @@ const selectedMinistryCard = async (
 ) => {
   let type = $("#dataType").val();
   let typeValue = $("#dataTypeLists").val();
-  typeValue = 2016
-
+  
   //check is year or quarter
 
   let url = `/api/ministry/dashboard_ministries/${ministry_id}${type == "year" ? "?year=" + typeValue : "?year=" + typeValue.split("-")[0] + "&quarter=" + typeValue.split("-")[1]}`;
@@ -585,8 +603,7 @@ const selectedGoalCard = async (goal_id, ministry_id, color, score, scoreColor) 
   let type = $("#dataType").val()
   let typeValue = $("#dataTypeLists").val()
 
-  typeValue = 2016
-
+  
   //check is year or quarter
   let url = `/api/ministry/goal_with_kra/${goal_id}?ministry_id=${ministry_id}${type == 'year' ? '&year=' + typeValue : '&year=' + typeValue.split('-')[0] + '&quarter=' + typeValue.split('-')[1]}`
   let goal = await fetchData(url)
@@ -921,8 +938,7 @@ $(document).on("click", "[name='ministry-card']", async function () {
   let type = $("#dataType").val();
   let typeValue = $("#dataTypeLists").val();
 
-  typeValue = 2016
-  //check is year or quarter
+    //check is year or quarter
   let url = `/api/ministry/ministry_with_policy_area/${ministry_id}?${type == "year" ? "?year=" + typeValue : "?year=" + typeValue.split("-")[0] + "&quarter=" + typeValue.split("-")[1]}`;
 
   let data = await fetchData(url);
@@ -975,5 +991,39 @@ $(document).on('change', '#showIndicator', async function () {
   $("[name='kra-lists']").toggleClass('mt-3 col-6', !value);
 
 })
+
+
+
+$(document).on('change' , '#dataTypeLists', () =>{
+  $("#selectedDataValue").html($("#dataTypeLists").val())
+
+    $("#ministryCardLists").html('')
+    $("#ministryDashboard").html('')
+    $("#policyAreaMainCard").html('')
+    $("#kpiStatus").html('')
+    $("#goalWithKraList").html('')
+    $("#year").html($("#dataTypeLists").val())
+  
+   
+    ministryCard();
+})
+
+
+$(document).on('change' , '#dataType', () =>{
+  $("#selectedDataValue").html($("#dataType").val())
+
+    $("#ministryCardLists").html('')
+    $("#ministryDashboard").html('')
+    $("#policyAreaMainCard").html('')
+    $("#kpiStatus").html('')
+    $("#goalWithKraList").html('')
+    $("#year").html($("#dataTypeLists").val())
+  
+   
+    ministryCard();
+    
+})
+
+
 
 main();
