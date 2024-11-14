@@ -14,6 +14,7 @@ from django.db.models import Avg, Sum
 from fontawesome_5.fields import IconField
 from django.core.cache import cache
 from django.conf import settings
+from auditlog.registry import auditlog
 # Create your models here.
 CACHE_TIMEOUT = getattr(settings, 'CACHE_TIMEOUT', 300)
 
@@ -1028,8 +1029,6 @@ class DashboardSetting(models.Model):
       ordering = ['rank']
 
 
-
-
 class SDG(models.Model):
     code = models.IntegerField( unique=True)
     title = models.CharField(max_length=100)
@@ -1048,3 +1047,21 @@ class AgendaGoals(models.Model):
 
     def __str__(self):
         return self.title
+
+
+
+
+
+## Registration OF AUDIT LOG
+auditlog.register(ScoreCardRange)
+auditlog.register(Year)
+auditlog.register(Quarter)
+auditlog.register(Month)
+auditlog.register(NationalPlan)
+auditlog.register(PolicyArea)
+auditlog.register(StrategicGoal)
+auditlog.register(KeyResultArea)
+auditlog.register(Indicator)
+auditlog.register(QuarterProgress)
+auditlog.register(AnnualPlan)
+auditlog.register(MonthProgress)
