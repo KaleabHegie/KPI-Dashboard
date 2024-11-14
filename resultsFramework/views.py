@@ -1,5 +1,6 @@
 # Import your models
 import random  # Import the random module
+from django.db.models import F
 from comment.models import Comment
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.shortcuts import get_object_or_404, redirect, render
@@ -215,7 +216,7 @@ def get_policy_areas_by_ministry(ministry_id):
 
 
 
-def get_performance(goal, period ,year_filter ,performance, policies):
+def get_performance(period ,year_filter ,performance_filter, policies):
     """
     Calculate the  performance metrics for a given goal.
 
@@ -229,52 +230,20 @@ def get_performance(goal, period ,year_filter ,performance, policies):
     year = Year.objects.all().values_list('year_amh', flat=True) if year_filter == 'all' else [year_filter]
 
     if quarter and year:
-        # Calculate total targets and good performance for the specific quarter and year
-        total_target = goal.kra_goal.filter(
-            Q(indicators__quarter_indicators__quarter_target__isnull=False),
-            Q(indicators__quarter_indicators__year__year_amh__in=year),
-            Q(indicators__quarter_indicators__quarter__quarter_eng=quarter),
-        ).aggregate(total=Count('indicators__quarter_indicators'))['total']
-
-        performance = goal.kra_goal.filter(
-            indicators__quarter_indicators__quarter_target__isnull=False,
-            indicators__quarter_indicators__year__year_amh__in=year,
-            indicators__quarter_indicators__quarter__quarter_eng=quarter,
-            indicators__quarter_indicators__quarter_performance__gte=0.7 * F('indicators__quarter_indicators__quarter_target')
-        )
-
-        
-        return performance
-
+        pass
     else:
-        # Calculate total targets and good performance for the entire year
-        # total_target = goal.kra_goal.filter(
-        #     Q(indicators__annual_indicators__annual_target__isnull=False),
-        #     Q(indicators__annual_indicators__year__year_amh__in=year),
-        # ).aggregate(total=Count('indicators__annual_indicators'))['total']
-
-        # kra_goal__indicators__annual_indicators__annual_target__isnull=False,
-        #     kra_goal__indicators__annual_indicators__year__year_amh__in=year,
-        #     kra_goal__indicators__annual_indicators__annual_performance__gte=0.7 * F('indicators__annual_indicators__annual_target')
-
-        from django.db.models import F
-        
-        performance = StrategicGoal.objects.filter(
-    policy_area_id__in=policies  # Filter StrategicGoal by policy_area_id
-).prefetch_related(
-    'kra_goal__indicators'  # Prefetch related indicators for each kra_goal
-).filter(
-    kra_goal__indicators__annual_indicators__annual_target__isnull=False,
-    kra_goal__indicators__annual_indicators__year__year_amh__in=year,
-    kra_goal__indicators__annual_indicators__annual_performance__gte=0.7 * F('kra_goal__indicators__annual_indicators__annual_target') 
-).distinct()
-
-
-
-
-
-       
-        return performance
+        if performance_filter == 'good':     
+            performance = StrategicGoal.objects.filter(
+                policy_area_id__in=policies  # Filter StrategicGoal by policy_area_id
+                ).prefetch_related(
+                    'kra_goal__indicators'  # Prefetch related indicators for each kra_goal
+                    ).filter(
+                        kra_goal__indicators__annual_indicators__annual_target__isnull=False,
+                        kra_goal__indicators__annual_indicators__year__year_amh__in=year,
+                        kra_goal__indicators__annual_indicators__annual_performance__gte=0.7 * F('kra_goal__indicators__annual_indicators__annual_target') 
+                        ).distinct()
+            
+            return performance
     
 @login_required
 @sector_user_required
@@ -421,7 +390,7 @@ def export_ministry1(request):
 
     
     if filter_period and filter_period and filter_performance:
-        strategic_goals = get_performance(strategic_goals, filter_period, filter_year, filter_performance, policies)
+        strategic_goals = get_performance(filter_period, filter_year, filter_performance, policies)
 
 
 
