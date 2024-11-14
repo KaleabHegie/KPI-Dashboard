@@ -241,15 +241,16 @@
                           </div>
                       </div>
 
-                     
+                      <form action="" method="get">
                       <div class="card-body row p-0 mt-3">
                           <div class="col-md-12 p-2 m-1 row justify-content-center">
                             <!--form start here-->
+                           
 
                               <div class="col-md-4">
                                 <!--Time period -->
                                 <label for="dataType">Select Time Period</label>
-                                <select class="form-select" id="dataType" aria-label="Floating label select example">
+                                <select class="form-select" name="filter-period" aria-label="Floating label select example">
                                   <option selected="" value="year">Yearly</option>
                                   <option value="quarter">Quarterly</option>
                                 </select>
@@ -258,25 +259,25 @@
                               <div class="col-md-4">
                                 <!--Year -->
                                 <label for="dataType">Select Year</label>
-                                <select class="form-select" id="dataType" aria-label="Floating label select example">
+                                <select class="form-select" name="filter-year" aria-label="Floating label select example">
                                   <option selected="" value="all">All</option>
                                   <option value="2014">2014</option>
                                   <option value="2015">2015</option>
+                                  <option value="2016">2016</option>
                                 </select>
                               </div>
 
                               <div class="col-md-4">
                                 <!--Time period -->
                                 <label for="dataType">Select Performance</label>
-                                <select class="form-select" id="dataType" aria-label="Floating label select example">
+                                <select class="form-select" name="filter-performance" aria-label="Floating label select example">
                                   <option selected="" value="year">All</option>
                                   <option value="good">Good</option>
                                   <option value="average">Average</option>
                                   <option value="poor">Poor</option>
                                 </select>
                               </div>
-                               
-           
+                            
         
                           </div>
                          
@@ -340,7 +341,7 @@
                                                         
                                                         {% endif %}
                                                     {% else %}
-                                                    <button type="button" title="Anuual Performance" class="btn  d-block rounded btn-info btn-xs performance-button" >N/A </button>
+                                                    <button type="button" title="Anuual Performance" class="btn  d-block rounded w-100 btn-info btn-xs performance-button" >N/A </button>
                                                     {% endif %}
                                                 {% endwith %}
                                             </td>

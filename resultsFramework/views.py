@@ -215,7 +215,66 @@ def get_policy_areas_by_ministry(ministry_id):
 
 
 
-    
+def get_performance(goal, period ,year_filter ,performance, policies):
+    """
+    Calculate the  performance metrics for a given goal.
+
+    Args:
+        goal (StrategicGoal): The strategic goal object for which the performance is calculated.
+
+    Returns:
+        dict: A dictionary containing the performance count and percentage.
+    """
+    quarter = None
+    year = Year.objects.all().values_list('year_amh', flat=True) if year_filter == 'all' else [year_filter]
+
+    if quarter and year:
+        # Calculate total targets and good performance for the specific quarter and year
+        total_target = goal.kra_goal.filter(
+            Q(indicators__quarter_indicators__quarter_target__isnull=False),
+            Q(indicators__quarter_indicators__year__year_amh__in=year),
+            Q(indicators__quarter_indicators__quarter__quarter_eng=quarter),
+        ).aggregate(total=Count('indicators__quarter_indicators'))['total']
+
+        performance = goal.kra_goal.filter(
+            indicators__quarter_indicators__quarter_target__isnull=False,
+            indicators__quarter_indicators__year__year_amh__in=year,
+            indicators__quarter_indicators__quarter__quarter_eng=quarter,
+            indicators__quarter_indicators__quarter_performance__gte=0.7 * F('indicators__quarter_indicators__quarter_target')
+        )
+
+        
+        return performance
+
+    else:
+        # Calculate total targets and good performance for the entire year
+        # total_target = goal.kra_goal.filter(
+        #     Q(indicators__annual_indicators__annual_target__isnull=False),
+        #     Q(indicators__annual_indicators__year__year_amh__in=year),
+        # ).aggregate(total=Count('indicators__annual_indicators'))['total']
+
+        # kra_goal__indicators__annual_indicators__annual_target__isnull=False,
+        #     kra_goal__indicators__annual_indicators__year__year_amh__in=year,
+        #     kra_goal__indicators__annual_indicators__annual_performance__gte=0.7 * F('indicators__annual_indicators__annual_target')
+
+        from django.db.models import F
+        
+        performance = StrategicGoal.objects.filter(
+    policy_area_id__in=policies  # Filter StrategicGoal by policy_area_id
+).prefetch_related(
+    'kra_goal__indicators'  # Prefetch related indicators for each kra_goal
+).filter(
+    kra_goal__indicators__annual_indicators__annual_target__isnull=False,
+    kra_goal__indicators__annual_indicators__year__year_amh__in=year,
+    kra_goal__indicators__annual_indicators__annual_performance__gte=0.7 * F('kra_goal__indicators__annual_indicators__annual_target') 
+).distinct()
+
+
+
+
+
+       
+        return performance
     
 @login_required
 @sector_user_required
@@ -339,6 +398,14 @@ def export_ministry1(request):
     # Get the policy IDs from the request (assuming it's passed as GET parameters)
     selected_policies = request.GET.getlist('selected_policies[]')
 
+    #custom filter 
+    filter_period = request.GET.get('filter-period')
+    filter_year = request.GET.get('filter-year')
+    filter_performance = request.GET.get('filter-performance')
+
+    
+    
+
     # Fetch all policies for the dropdown
     policies = get_policy_areas_by_ministry(u_sector.user_sector.id )
     # Fetch strategic goals with related KeyResultAreas and Indicators
@@ -351,6 +418,13 @@ def export_ministry1(request):
         strategic_goals = StrategicGoal.objects.prefetch_related(
             'kra_goal__indicators'
         ).filter(policy_area_id__in=policies)
+
+    
+    if filter_period and filter_period and filter_performance:
+        strategic_goals = get_performance(strategic_goals, filter_period, filter_year, filter_performance, policies)
+
+
+
 
 
     # Fetch all visible years for the annual plans
