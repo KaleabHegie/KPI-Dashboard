@@ -1,6 +1,7 @@
 {% load custom_filters %}
 {% load static %}
 
+
 <!DOCTYPE html>
 <html lang="en">
   {% include "head.html" %}
@@ -12,14 +13,17 @@
   <link rel="stylesheet" href="  https://cdn.datatables.net/rowgroup/1.5.0/css/rowGroup.dataTables.css">
   <link rel="stylesheet" href="https://cdn.datatables.net/buttons/3.1.2/css/buttons.dataTables.css">
 
+  
+
 
   <style>
+    
     .group-header {
         background-color: #094504; /* Light gray background */
         font-weight: bold;
     }
 
-    .group-header-1 {
+    .bg-green-500 {
         background-color: #5f915a; 
         color: #ffffff;/* Light blue background for first group */
     }
@@ -29,46 +33,38 @@
     }
 
     table.fixedHeader-floating,
-table.fixedHeader-locked {
-  position: relative !important;
-  background-color: var(--dt-html-background);
-  background-color: var(--dt-html-background);
-}
-
-@media print {
-  table.fixedHeader-floating {
-    display: none;
-  }
-}
-
+    table.fixedHeader-locked {
+      position: relative !important;
+      background-color: var(--dt-html-background);
+    }
+    
+    @media print {
+      table.fixedHeader-floating {
+        display: none;
+      }
+    }
 
 
+    /* .styled-table thead tr {
+        background-color: #009879;
+        color: #ffffff;
+        text-align: left;
+    }
+     */
+    
 
 
-/* .styled-table thead tr {
-    background-color: #009879;
-    color: #ffffff;
-    text-align: left;
-}
- */
+    /* 
+    th {
+      border-top: 1px solid #000000;
+      border-bottom: 1px solid #000000;
+      border-right: 1px solid #000000;
+    }
+     
+    th:first-child {
+      border-left: 1px solid #000000;
+    } */
 
-
-
-/* 
-th {
-  border-top: 1px solid #000000;
-  border-bottom: 1px solid #000000;
-  border-right: 1px solid #000000;
-}
- 
-th:first-child {
-  border-left: 1px solid #000000;
-} */
-
-
-</style>
-
-<style>
     /* Custom CSS to darken the outside border of the DataTables table */
     table.dataTable {
         border: 0.5px solid #5f915a; 
@@ -81,11 +77,6 @@ th:first-child {
     table.dataTable tbody td {
         border: 1px solid #ccc; /* Optional: Customize inner cell borders if needed */
     }
-</style>
-
-
-
-  <style>
 
     .select2-container--default .select2-selection--multiple .select2-selection__choice {
       background-color: #007bff;
@@ -93,7 +84,7 @@ th:first-child {
       color: #fff;
       padding: 0 10px;
       margin-top: .31rem;
-  }
+    }
 
 
     .indicator {
@@ -118,84 +109,82 @@ th:first-child {
 
   <body class="hold-transition sidebar-mini">
     <div class="wrapper">
-    
       {% include "navbar.html" %}
       {% include "sidebar.html" %}
       <div class="content-wrapper">
         <section class="content">
           <div class="container-fluid my-4">
+            <div class="row">
 
-    <div class="row">
-
-      <div class="col-lg-3 col-6">
-        <!-- small box -->
-        <div class="small-box bg-danger">
-          <div class="inner">
-            <h3>{{policy_area_count}}</h3>
-
-            <p>Number of Policy Areas</p>
-          </div>
-          <div class="icon">
-            <i class="fas fa-briefcase"></i>
-          </div>
-          <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-        </div>
-      </div>
-
-
-
-      <div class="col-lg-3 col-6">
-          <!-- small box -->
-          <div class="small-box bg-info">
-              <div class="inner">
-                  <h3>{{ goal_count }}</h3>
-                  <p>Total Goals</p>
+              <div class="col-lg-3 col-6">
+                 <!-- small box -->
+                <div class="small-box bg-danger">
+                  <div class="inner">
+                    <h3>{{policy_area_count}}</h3>
+        
+                    <p>Number of Policy Areas</p>
+                  </div>
+                  <div class="icon">
+                    <i class="fas fa-briefcase"></i>
+                  </div>
+                  <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
               </div>
-              <div class="icon">
-                  <i class="fas fa-bullseye"></i> <!-- Icon for Goals -->
+              
+              
+              <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-info">
+                    <div class="inner">
+                        <h3>{{ goal_count }}</h3>
+                        <p>Total Goals</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-bullseye"></i> 
+                    </div>
+                    <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                </div>              
               </div>
-              <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-          </div>
-      </div>
-      <!-- ./col -->
-      <div class="col-lg-3 col-6">
-          <!-- small box -->
-          <div class="small-box bg-success">
-              <div class="inner">
-                  <h3>{{ kra_count }}</h3>
-                  <p>Total KRAs</p>
+
+
+              <!-- ./col -->
+              <div class="col-lg-3 col-6">
+                  <!-- small box -->
+                  <div class="small-box bg-success">
+                      <div class="inner">
+                          <h3>{{ kra_count }}</h3>
+                          <p>Total KRAs</p>
+                      </div>
+                      <div class="icon">
+                          <i class="fas fa-briefcase"></i> <!-- Icon for KRAs -->
+                      </div>
+                      <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                  </div>
               </div>
-              <div class="icon">
-                  <i class="fas fa-briefcase"></i> <!-- Icon for KRAs -->
-              </div>
-              <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-          </div>
-      </div>
       
-      <!-- ./col -->
-      <div class="col-lg-3 col-6">
-          <!-- small box -->
-          <div class="small-box bg-warning">
-              <div class="inner">
-                  <h3>{{ indicator_count }}</h3>
-                  <p>Total Indicators</p>
+              <!-- ./col -->
+              <div class="col-lg-3 col-6">
+                  <!-- small box -->
+                  <div class="small-box bg-warning">
+                      <div class="inner">
+                          <h3>{{ indicator_count }}</h3>
+                          <p>Total Indicators</p>
+                      </div>
+                      <div class="icon">
+                          <i class="fas fa-chart-line"></i> <!-- Icon for Indicators -->
+                      </div>
+                      <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                  </div>
               </div>
-              <div class="icon">
-                  <i class="fas fa-chart-line"></i> <!-- Icon for Indicators -->
-              </div>
-              <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-          </div>
-      </div>
-
-
-    </div>
-
-       <div class="row">
+            </div>
+            
+            <div class="row">
               <div class="col-12">
                   <div class="card ">
 
-                    
-                      <div class="card-header group-header-1">
+                    <form id="filterForm" method="get">
+
+                      <div class="card-header bg-green-500">
                           <h3 class="card-title">Filter</h3>
                           <div class="card-tools">
                             <button type="button" class="btn btn-tool" data-card-widget="collapse">
@@ -208,7 +197,7 @@ th:first-child {
                       <div class="card-body row p-0 mt-3">
                           <div class="col-md-12">
 
-                              <form id="filterForm" method="get">
+                              
                               
                                 <div class="form-group m-3">
                                     <label>Filter Policy Area</label>
@@ -226,33 +215,96 @@ th:first-child {
 
                       
                       <div class="col-md-3 my-2">
-                        <button type="submit" id="submitButton" class="btn group-header-1
+                        <button type="submit" id="submitButton" class="btn bg-green-500
                         
-                         btn-block"><i class="fa fa-database"></i> Filter</button>
-                    </div>
+                         "><i class="fa fa-database"></i> Filter</button>
+                      </div>
+
                     </form>
+
                   </div>
               </div>
-          </div>
-          
+            </div>
 
+            <!-- Custom Filter -->
+             <div class="row">
+              <div class="col-12">
+                  <div class="card ">
+                    <form id="filterForm" method="get">
 
+                      <div class="card-header bg-green-500">
+                          <h3 class="card-title">Custom Filter</h3>
+                          <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                              <i class="fas fa-minus"></i>
+                            </button>
+                          </div>
+                      </div>
+
+                     
+                      <div class="card-body row p-0 mt-3">
+                          <div class="col-md-12 p-2 m-1 row justify-content-center">
+                            <!--form start here-->
+
+                              <div class="col-md-4">
+                                <!--Time period -->
+                                <label for="dataType">Select Time Period</label>
+                                <select class="form-select" id="dataType" aria-label="Floating label select example">
+                                  <option selected="" value="year">Yearly</option>
+                                  <option value="quarter">Quarterly</option>
+                                </select>
+                              </div>
+
+                              <div class="col-md-4">
+                                <!--Year -->
+                                <label for="dataType">Select Year</label>
+                                <select class="form-select" id="dataType" aria-label="Floating label select example">
+                                  <option selected="" value="all">All</option>
+                                  <option value="2014">2014</option>
+                                  <option value="2015">2015</option>
+                                </select>
+                              </div>
+
+                              <div class="col-md-4">
+                                <!--Time period -->
+                                <label for="dataType">Select Performance</label>
+                                <select class="form-select" id="dataType" aria-label="Floating label select example">
+                                  <option selected="" value="year">All</option>
+                                  <option value="good">Good</option>
+                                  <option value="average">Average</option>
+                                  <option value="poor">Poor</option>
+                                </select>
+                              </div>
+                               
+           
         
-          
+                          </div>
+                         
+                      </div>
 
+                      
+                      <div class="col-md-3 my-2">
+                        <button type="submit" id="submitButton" class="btn bg-green-500 ">
+                          <i class="fa fa-database"></i> Filter
+                        </button>
+                      </div>
+
+                    </form>
+
+                  </div>
+              </div>
+            </div>
+            
+          
             <div class="row">
             
               <div class="col-12">
                 <div class="card">
                   <div class="card-header">
                     <h3 class="card-title">Development Plan</h3>
-                  
                   </div>
-                  <div class="card-body ">
-
-                  
-                  
-                  <table id="example" class="table-responsive table table-hover table-sm">
+                  <div class="card-body table-responsive">
+                  <table id="example" class=" table-responsive table table-hover table-sm">
                     <thead>
                         <tr>
                             <th>Goal</th>
@@ -260,8 +312,6 @@ th:first-child {
                             <th>Indicator</th>
                             {% for year in years %}
                                 <th>{{ year.year_amh }}</th>
-
-                               
                             {% endfor %}
                         </tr>
                     </thead>
@@ -278,19 +328,19 @@ th:first-child {
                                                 {% with annual_plans_lookup|get_item:indicator.id|get_item:year.id as plan %}
                                                     {% if plan %}
                                                         {% if plan.annual_target %}
-                                                            <button type="button" title="Annual Target" class="btn btn-block bg-gradient-success btn-xs">{{ plan.annual_target }}</button>
-                                                            {% if plan.annual_performance %}
-                                                         <button type="button" title="Anuual Performance" class="btn btn-block bg-gradient-info btn-xs performance-button" > {{ plan.annual_performance }} </button>
-                                                      
+                                                        
+                                                            <button type="button" title="Annual Target" class="btn d-block w-100 rounded my-1 btn-success btn-xs">{{ plan.annual_target }}</button>
+                                                           {% if plan.annual_performance %}
+                                                            <button type="button" title="Anuual Performance" class="btn d-block w-100 rounded  btn-info btn-xs performance-button" > {{ plan.annual_performance }} </button>
                                                         {% endif %}
+
                                                         {% else %}
                                                            
-
-                                                        <button type="button" title="Anuual Performance" class="btn btn-block bg-gradient-info btn-xs performance-button" >N/A </button>
+                                                        <button type="button" title="Anuual Performance" class="btn d-block rounded btn-info w-100 btn-xs performance-button" >N/A </button>
                                                         
                                                         {% endif %}
                                                     {% else %}
-                                                    <button type="button" title="Anuual Performance" class="btn btn-block bg-gradient-info btn-xs performance-button" >N/A </button>
+                                                    <button type="button" title="Anuual Performance" class="btn  d-block rounded btn-info btn-xs performance-button" >N/A </button>
                                                     {% endif %}
                                                 {% endwith %}
                                             </td>
@@ -301,18 +351,16 @@ th:first-child {
                             {% endfor %}
                         {% endfor %}
                     </tbody>
-                </table>
- </div>
-</div>
-</div>
-                 
+                  </table>
+                </div>
               </div>
-
-
             </div>
           </div>
+
         </section>
       </div>
+    <div/>
+
 
       {% include "footer.html" %}
     
@@ -323,17 +371,19 @@ th:first-child {
       <script src="https://cdn.datatables.net/fixedheader/4.0.1/js/fixedHeader.dataTables.js"></script>
 
       <script src="https://cdn.datatables.net/buttons/3.0.2/js/dataTables.buttons.js"></script>
-    <script src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.dataTables.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
-    <script src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.html5.min.js"></script>
+      <script src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.dataTables.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+      <script src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.html5.min.js"></script>
 
       <script src="{% static 'plugins/select2/js/select2.full.min.js' %}"></script>
-       <script>
+      <script>
         $(document).ready(function() {
+
             var table = $('#example').DataTable({
                 dom: 'Bfrtip',
+                lengthMenu: [[ 50, 100, -1], [ 50, 100, "All"]] ,
                 buttons: [
                     'copyHtml5', 'excelHtml5', 'csvHtml5', 'pdfHtml5',
                     
@@ -341,7 +391,7 @@ th:first-child {
                 rowGroup: {
                     dataSrc: [0, 1], // Group by Goal Name (1st column) and KRA Name (2nd column)
                     startRender: function (rows, group, level) {
-                        var className = level === 0 ? 'group-header-1' : 'group-header-2';
+                        var className = level === 0 ? 'bg-green-500' : 'group-header-2';
                         return $('<tr/>')
                             .append('<td colspan="10" class="group-header ' + className + '">' + group + '</td>');
                     }
@@ -381,32 +431,28 @@ th:first-child {
             }
 
             function exportDataAsExcel(data) {
-    var workbook = XLSX.utils.book_new();
-    var worksheetData = [];
-    
-    data.forEach(function(row) {
-        if (row.isGroup) {
-            var prefix = row.level === 0 ? 'Goal: ' : 'KRA: ';
-            worksheetData.push([prefix + row.groupText]);
-        } else {
-            worksheetData.push(row);
-        }
-    });
-
-    var worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
-    XLSX.writeFile(workbook, 'data.xlsx');
-}
+              var workbook = XLSX.utils.book_new();
+              var worksheetData = [];
+              
+              data.forEach(function(row) {
+                  if (row.isGroup) {
+                      var prefix = row.level === 0 ? 'Goal: ' : 'KRA: ';
+                      worksheetData.push([prefix + row.groupText]);
+                  } else {
+                      worksheetData.push(row);
+                  }
+              });
+          
+              var worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+              XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+              XLSX.writeFile(workbook, 'data.xlsx');
+            }
 
         });
-    </script>
-        
- 
-    <script> 
+
 
         $(document).ready(function () {
             $('#multiSelect').select2();
-          
               // Function to show the loading animation
             function showLoadingAnimation() {
                 $('#loading-animation').show();
@@ -416,25 +462,8 @@ th:first-child {
             function hideLoadingAnimation() {
                 $('#loading-animation').hide();
             }
-
-
-
-            
           });
-
-
-          // JavaScript for AJAX-based pagination
-
-
-
-
-          
-          
-    </script>
-        
-
-
-    
-    </div>
+      </script>
+      
   </body>
 </html>

@@ -29,6 +29,7 @@ from userManagement.admin import handle_uploaded_responsible_ministry_file, conf
 from rest_framework.decorators import api_view
 from .serializers import *
 from .resource import *
+from auditlog.models import LogEntry
 from rest_framework.response import Response
 from .admin import (
     YearResource,
@@ -328,7 +329,7 @@ def policy_area_ministry(request):
 def export_ministry1(request):
     u_sector = UserSector.objects.get(user=request.user)
 
-    policy_area_count = get_policy_areas_by_ministry(u_sector.user_sector.id).first()
+    policy_area_count = get_policy_areas_by_ministry(u_sector.user_sector.id).all().count()
     goal_count = get_strategic_goals_with_cache(u_sector.user_sector.id)[0].count()
     kra_count = get_strategic_goals_with_cache(u_sector.user_sector.id)[1].count()
     indicator_count = Indicator.objects.filter(
@@ -1469,9 +1470,15 @@ def is_ajax(request):
 def dashboard_mopd(request):
     return render(request, 'dashboard_mopd.html')
 
+@login_required
+@mopd_user_required
 def mopd_policy_area(request):
     return render(request, 'mopd/mopd_policy_area.html')
 
+@login_required
+@mopd_user_required
+def mopd_public_bodies(request):
+    return render(request, 'mopd/mopd_public_bodies.html')
 
 
 
@@ -3861,3 +3868,16 @@ def search3(request):
 @is_pm_required
 def ministry_index3(request):
     return render(request, 'PolicyAndMinistries/ministries_index.html')
+
+
+
+
+##############################
+#          Audit            #
+#############################
+
+@login_required
+@mopd_user_required
+def audit_log_list(request):
+    auditlog_entries = LogEntry.objects.select_related('content_type', 'actor')[:1500]
+    return render(request, 'audit.html', {'auditlog_entries': auditlog_entries})
