@@ -5,6 +5,7 @@
     <span class="brand-text font-weight-light">DPMEs</span>
   </a>
   <div class="sidebar">
+
     <div class="user-panel mt-3 pb-3 mb-3 d-flex">
       <div class="image">
         <img
@@ -15,14 +16,18 @@
       </div>
 
       {% if request.user.is_mopd %}
+
       <div class="info">
         <a href="{% url 'dashboard_mopd_url' %}" class="d-block">MoPD</a>
       </div>
+
       {% elif request.user.is_sector %}
       <div class="info">
         <a href="{% url 'ministry' %}" class="d-block">MoPD</a>
       </div>
+
       {% endif %}
+
     </div>
 
     <div class="form-inline">
@@ -40,6 +45,7 @@
         </div>
       </div>
     </div>
+
     <nav class="mt-2">
       <ul
         class="nav nav-pills nav-sidebar flex-column"
@@ -69,8 +75,6 @@
             <p>MDIP</p>
           </a>
         </li>
-
-       
 
         <li class="nav-item">
           <a href="#" class="nav-link">
@@ -135,7 +139,6 @@
           </a>
         </li>
 
-
         <li class="nav-item">
           <a href="{% url 'mopd_mdip_url' %}" class="nav-link">
             <i class="nav-icon fas fa-tasks"></i>
@@ -145,8 +148,6 @@
             </p>
           </a>
         </li>
-
-
 
         <li class="nav-item">
           <a href="{% url 'mopd_result_matrix' %}" class="nav-link">
@@ -158,14 +159,11 @@
           </a>
         </li>
 
-
         {% endif %} 
         
+
         {% if request.user.is_mopd %}
         <li class="nav-header">Data Management</li>
-
-        
-
 
         <li class="nav-item">
           <a href="" class="nav-link">
@@ -192,9 +190,6 @@
             </li>
           </ul>
         </li>
-
-
-
 
         <li class="nav-item">
           <a href="" class="nav-link">
@@ -245,6 +240,7 @@
             <p>Export and Reporting</p>
           </a>
         </li> {% endcomment %}
+
         {% comment %} <li class="nav-header">Master Report</li>
         <li class="nav-item">
           <a href="{% url 'view_mopd_report' %}" class="nav-link">
@@ -272,7 +268,9 @@
         </li> {% endcomment %}
 
         {% endif %}
-        {% if request.user.is_mopd_admin %}
+
+        {% comment %} {% if request.user.is_mopd_admin %}
+
         <li class="nav-header">Data Management</li>
 
         <li class="nav-item">
@@ -333,15 +331,25 @@
         </li>
        
 
+        {% endif %} {% endcomment %}
+
+        <!--AUDIT FOR MOPD - ADMIN -->
+        {% if request.user.is_mopd_admin %}
+
+        <li class="nav-header">Other</li>
+         <li class="nav-item">
+          <a href="{% url 'audit' %}" class="nav-link">
+            <i class="nav-icon fas fa-tasks"></i>
+            <p>Audit</p>
+          </a>
+        </li>
+
+
         {% endif %}
-        
-        
         
         
         {% if request.user.is_sector %}
         <li class="nav-header">Data Management</li>
-
-        
 
         <li class="nav-item">
           <a href="#" class="nav-link">
@@ -368,6 +376,7 @@
             </li>
           </ul>
         </li>
+
         <li class="nav-item">
           <a href="{% url 'export_ministry_url' %}" class="nav-link">
             <i class="nav-icon fas fa-tasks
@@ -424,6 +433,8 @@
         </li> -->
 
         {% endif %}
+
+
       </ul>
     </nav>
   </div>

@@ -186,6 +186,7 @@ urlpatterns = [
     path('search/', search3, name='search'),
 
    ##AUDIT 
+   path('audit/', audit_log_list, name="audit"),
 
 
 

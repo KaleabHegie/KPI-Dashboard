@@ -29,6 +29,7 @@ from userManagement.admin import handle_uploaded_responsible_ministry_file, conf
 from rest_framework.decorators import api_view
 from .serializers import *
 from .resource import *
+from auditlog.models import LogEntry
 from rest_framework.response import Response
 from .admin import (
     YearResource,
@@ -3827,3 +3828,12 @@ def ministry_index3(request):
 
 
 
+##############################
+#          Audit            #
+#############################
+
+@login_required
+@mopd_user_required
+def audit_log_list(request):
+    auditlog_entries = LogEntry.objects.select_related('content_type', 'actor')[:1500]
+    return render(request, 'audit.html', {'auditlog_entries': auditlog_entries})
