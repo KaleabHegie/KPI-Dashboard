@@ -1,6 +1,7 @@
 {% load custom_filters %}
 {% load static %}
 
+
 <!DOCTYPE html>
 <html lang="en">
   {% include "head.html" %}
@@ -12,14 +13,17 @@
   <link rel="stylesheet" href="  https://cdn.datatables.net/rowgroup/1.5.0/css/rowGroup.dataTables.css">
   <link rel="stylesheet" href="https://cdn.datatables.net/buttons/3.1.2/css/buttons.dataTables.css">
 
+  
+
 
   <style>
+    
     .group-header {
         background-color: #094504; /* Light gray background */
         font-weight: bold;
     }
 
-    .group-header-1 {
+    .bg-green-500 {
         background-color: #5f915a; 
         color: #ffffff;/* Light blue background for first group */
     }
@@ -180,7 +184,7 @@
 
                     <form id="filterForm" method="get">
 
-                      <div class="card-header group-header-1">
+                      <div class="card-header bg-green-500">
                           <h3 class="card-title">Filter</h3>
                           <div class="card-tools">
                             <button type="button" class="btn btn-tool" data-card-widget="collapse">
@@ -211,9 +215,9 @@
 
                       
                       <div class="col-md-3 my-2">
-                        <button type="submit" id="submitButton" class="btn group-header-1
+                        <button type="submit" id="submitButton" class="btn bg-green-500
                         
-                         btn-block"><i class="fa fa-database"></i> Filter</button>
+                         "><i class="fa fa-database"></i> Filter</button>
                       </div>
 
                     </form>
@@ -221,6 +225,54 @@
                   </div>
               </div>
             </div>
+
+            <!-- Custom Filter -->
+             <div class="row">
+              <div class="col-12">
+                  <div class="card ">
+                    <form id="filterForm" method="get">
+
+                      <div class="card-header bg-green-500">
+                          <h3 class="card-title">Custom Fileter</h3>
+                          <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                              <i class="fas fa-minus"></i>
+                            </button>
+                          </div>
+                      </div>
+
+                     
+                      <div class="card-body row p-0 mt-3">
+                          <div class="col-md-12">
+                            <!--form start here-->
+                            <div class="col-md-2  form-floating mt-2">
+           
+           
+                               <select class="form-select" id="dataType" aria-label="Floating label select example">
+                                   <option selected="" value="year">Yearly</option>
+                                   <option value="quarter">Quarterly</option>
+                               </select>
+                               <label for="dataType">Select data type</label>
+           
+           
+                           </div>
+                          </div>
+                         
+                      </div>
+
+                      
+                      <div class="col-md-3 my-2">
+                        <button type="submit" id="submitButton" class="btn bg-green-500 ">
+                          <i class="fa fa-database"></i> Filter
+                        </button>
+                      </div>
+
+                    </form>
+
+                  </div>
+              </div>
+            </div>
+            
           
             <div class="row">
             
@@ -229,8 +281,8 @@
                   <div class="card-header">
                     <h3 class="card-title">Development Plan</h3>
                   </div>
-                  <div class="card-body ">
-                  <table id="example" class="table-responsive table table-hover table-sm">
+                  <div class="card-body table-responsive">
+                  <table id="example" class=" table-responsive table table-hover table-sm">
                     <thead>
                         <tr>
                             <th>Goal</th>
@@ -238,8 +290,6 @@
                             <th>Indicator</th>
                             {% for year in years %}
                                 <th>{{ year.year_amh }}</th>
-
-                               
                             {% endfor %}
                         </tr>
                     </thead>
@@ -256,19 +306,19 @@
                                                 {% with annual_plans_lookup|get_item:indicator.id|get_item:year.id as plan %}
                                                     {% if plan %}
                                                         {% if plan.annual_target %}
-                                                            <button type="button" title="Annual Target" class="btn btn-block bg-gradient-success btn-xs">{{ plan.annual_target }}</button>
-                                                            {% if plan.annual_performance %}
-                                                         <button type="button" title="Anuual Performance" class="btn btn-block bg-gradient-info btn-xs performance-button" > {{ plan.annual_performance }} </button>
-                                                      
+                                                        
+                                                            <button type="button" title="Annual Target" class="btn d-block w-100 rounded my-1 btn-success btn-xs">{{ plan.annual_target }}</button>
+                                                           {% if plan.annual_performance %}
+                                                            <button type="button" title="Anuual Performance" class="btn d-block w-100 rounded  btn-info btn-xs performance-button" > {{ plan.annual_performance }} </button>
                                                         {% endif %}
+
                                                         {% else %}
                                                            
-
-                                                        <button type="button" title="Anuual Performance" class="btn btn-block bg-gradient-info btn-xs performance-button" >N/A </button>
+                                                        <button type="button" title="Anuual Performance" class="btn d-block rounded btn-info w-100 btn-xs performance-button" >N/A </button>
                                                         
                                                         {% endif %}
                                                     {% else %}
-                                                    <button type="button" title="Anuual Performance" class="btn btn-block bg-gradient-info btn-xs performance-button" >N/A </button>
+                                                    <button type="button" title="Anuual Performance" class="btn  d-block rounded btn-info btn-xs performance-button" >N/A </button>
                                                     {% endif %}
                                                 {% endwith %}
                                             </td>
@@ -311,6 +361,7 @@
 
             var table = $('#example').DataTable({
                 dom: 'Bfrtip',
+                lengthMenu: [[ 50, 100, -1], [ 50, 100, "All"]] ,
                 buttons: [
                     'copyHtml5', 'excelHtml5', 'csvHtml5', 'pdfHtml5',
                     
@@ -318,7 +369,7 @@
                 rowGroup: {
                     dataSrc: [0, 1], // Group by Goal Name (1st column) and KRA Name (2nd column)
                     startRender: function (rows, group, level) {
-                        var className = level === 0 ? 'group-header-1' : 'group-header-2';
+                        var className = level === 0 ? 'bg-green-500' : 'group-header-2';
                         return $('<tr/>')
                             .append('<td colspan="10" class="group-header ' + className + '">' + group + '</td>');
                     }
