@@ -180,11 +180,13 @@ urlpatterns = [
     path('api/ministry/ministry_kra_serializer/<str:ministry_id>/',MinistryDashboard.ministry_kra_serializer),
     path('api/ministry/ministry_indicator_performance/<str:ministry_id>/',MinistryDashboard.ministry_indicator_performance),
 
-    
-     path('min/', ministry_index3, name='ministry_index'),
+    path('min/', ministry_index3, name='ministry_index'),
     path('pm/', policy_area3, name='policy_area'),
     path('info/',info3, name="info"),
     path('search/', search3, name='search'),
+
+   ##AUDIT 
+
 
 
         

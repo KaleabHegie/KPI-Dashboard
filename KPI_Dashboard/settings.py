@@ -55,9 +55,11 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'comment',
+    'auditlog'
 ]
 
 MIDDLEWARE = [
+    'auditlog.middleware.AuditlogMiddleware' # middleware for audit log
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

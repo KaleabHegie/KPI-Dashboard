@@ -3823,3 +3823,7 @@ def search3(request):
 @is_pm_required
 def ministry_index3(request):
     return render(request, 'PolicyAndMinistries/ministries_index.html')
+
+
+
+

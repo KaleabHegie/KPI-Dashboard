@@ -29,6 +29,7 @@ daphne==4.1.0
 defusedxml==0.7.1
 diff-match-patch==20230430
 Django==4.2.13
+django-auditlog==3.0.0
 django-bleach==3.1.0
 django-celery==3.3.1
 django-ckeditor==6.7.0
