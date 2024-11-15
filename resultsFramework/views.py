@@ -409,16 +409,26 @@ def export_ministry1(request):
     filter_period = request.GET.get('filter-period')
     filter_year = request.GET.get('filter-year')
     filter_performance = request.GET.get('filter-performance')
+    filter_quarter = request.GET.get('filter-quarter')
+
+    
 
      # Fetch all visible years for the annual plans
     years = Year.objects.filter(mdip=True)
     quarters = Quarter.objects.filter()
 
-    if filter_year:
-        years = Year.objects.filter(mdip=True) if filter_year == 'all' else Year.objects.filter(year_amh=filter_year, mdip=True)
+    if filter_year and filter_period == 'year':
+        years = Year.objects.filter(year_amh=filter_year, mdip=True)
+    
+    if filter_quarter and filter_period == 'quarter':
+        quarter_with_year = filter_quarter.split('-')
+        quarter_rank = quarter_with_year[1].split('q')[1]
 
-    
-    
+        quarters =  Quarter.objects.filter(rank=quarter_rank)
+        filter_year = quarter_with_year[0]
+
+        years = Year.objects.filter(year_amh=filter_year, mdip=True)
+
 
     # Fetch all policies for the dropdown
     policies = get_policy_areas_by_ministry(u_sector.user_sector.id )
