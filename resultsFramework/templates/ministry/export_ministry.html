@@ -319,38 +319,62 @@
                     <tbody>
                         {% for goal in strategic_goals %}
                             {% for kra in goal.kra_goal.all %}
-                                {% for indicator in kra.indicators.all %}
-                                    <tr>
-                                        <td>{{ goal.goal_name_eng }}</td>
-                                        <td>{{ kra.activity_name_eng }}</td>
-                                        <td>{{ indicator.kpi_name_eng }}  <a href="{% url 'indicator_detail' indicator.id %}"> <i class="fas fa-eye"></i> </a></td>
-                                        {% for year in years %}
-                                            <td>
-                                                {% with annual_plans_lookup|get_item:indicator.id|get_item:year.id as plan %}
-                                                    {% if plan %}
-                                                        {% if plan.annual_target %}
-                                                        
-                                                            <button type="button" title="Annual Target" class="btn d-block w-100 rounded my-1 btn-success btn-xs">{{ plan.annual_target }}</button>
-                                                           {% if plan.annual_performance %}
-                                                            <button type="button" title="Anuual Performance" class="btn d-block w-100 rounded  btn-info btn-xs performance-button" > {{ plan.annual_performance }} </button>
-                                                        {% endif %}
-
-                                                        {% else %}
-                                                           
-                                                        <button type="button" title="Anuual Performance" class="btn d-block rounded btn-info w-100 btn-xs performance-button" >N/A </button>
-                                                        
-                                                        {% endif %}
-                                                    {% else %}
-                                                    <button type="button" title="Anuual Performance" class="btn  d-block rounded w-100 btn-info btn-xs performance-button" >N/A </button>
-                                                    {% endif %}
-                                                {% endwith %}
-                                            </td>
-                                         
-                                        {% endfor %}
-                                    </tr>
-                                {% endfor %}
+                              {% for indicator in kra.indicators.all %}
+                                <tr>
+                                  <!-- Display goal, KRA, and indicator details -->
+                                  <td>{{ goal.goal_name_eng }}</td>
+                                  <td>{{ kra.activity_name_eng }}</td>
+                                  <td>
+                                    {{ indicator.kpi_name_eng }}
+                                    <a href="{% url 'indicator_detail' indicator.id %}">
+                                      <i class="fas fa-eye"></i>
+                                    </a>
+                                  </td>
+                                
+                                  <!-- Iterate over years -->
+                                  {% for year in years %}
+                                    <td>
+                                      {% with annual_plans_lookup|get_item:indicator.id|get_item:year.id as plan %}
+                                        {% if plan %}
+                                        {% if plan.annual_target %}
+                                          <button type="button" title="Annual Target" class="btn m-1 d-block w-100 rounded my-1 btn-success btn-xs">
+                                              <!-- Display Annual Target -->
+                                              {{ plan.annual_target }}
+                                            </button>
+                                          {% else %}
+                                            <button type="button" title="Annual Target" class="btn m-1 d-block w-100 rounded btn-warning btn-xs">
+                                              None
+                                            </button>
+                                          {% endif %}
+                                      
+                                          <!-- Display Annual Performance -->
+                                          {% if plan.annual_performance %}
+                                            <button type="button" title="Annual Performance"
+                                              class="btn m-1 d-block w-100 rounded btn-info btn-xs performance-button">
+                                              {{ plan.annual_performance }}
+                                            </button>
+                                          {% else %}
+                                            <button type="button" title="Annual Performance"
+                                              class="btn m-1 d-block w-100 rounded btn-danger btn-xs performance-button">
+                                              None
+                                            </button>
+                                          {% endif %}
+                                        
+                                        {% else %}
+                                          <!-- When no plan exists -->
+                                          <button type="button" title="No Plan Available" class="btn m-1 d-block w-100 rounded btn-secondary btn-xs">
+                                            N/A
+                                          </button>
+                                        {% endif %}
+                                        
+                                      {% endwith %}
+                                    </td>
+                                  {% endfor %}
+                                </tr>
+                              {% endfor %}
                             {% endfor %}
                         {% endfor %}
+
                     </tbody>
                   </table>
                 </div>

@@ -164,3 +164,10 @@ class ResponsibleMinistrySerializer(serializers.ModelSerializer):
         model = ResponsibleMinistry
         fields = ['responsible_ministry_eng', 'ministry_goal']
 
+
+
+###################
+class GoalSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = StrategicGoal
+        fields =  '__all__'    

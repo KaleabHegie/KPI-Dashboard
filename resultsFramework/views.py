@@ -1,6 +1,6 @@
 # Import your models
 import random  # Import the random module
-from django.db.models import F
+from django.db.models import F, Q, OuterRef, Subquery
 from comment.models import Comment
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.shortcuts import get_object_or_404, redirect, render
@@ -22,7 +22,6 @@ from django.db.models import Min,Prefetch
 from django.core.cache import cache
 from django.conf import settings
 import datetime
-from django.db.models import F
 from celery import shared_task
 from userManagement.admin import ResponsibleMinistryResource
 from .forms import ImportFileForm
@@ -227,23 +226,27 @@ def get_performance(period ,year_filter ,performance_filter, policies):
         dict: A dictionary containing the performance count and percentage.
     """
     quarter = None
-    year = Year.objects.all().values_list('year_amh', flat=True) if year_filter == 'all' else [year_filter]
+    year = Year.objects.all().values_list('year_amh', flat=True) if year_filter == 'all' else year_filter
 
     if quarter and year:
         pass
     else:
+        performance = None
         if performance_filter == 'good':     
-            performance = StrategicGoal.objects.filter(
-                policy_area_id__in=policies  # Filter StrategicGoal by policy_area_id
-                ).prefetch_related(
-                    'kra_goal__indicators'  # Prefetch related indicators for each kra_goal
-                    ).filter(
-                        kra_goal__indicators__annual_indicators__annual_target__isnull=False,
-                        kra_goal__indicators__annual_indicators__year__year_amh__in=year,
-                        kra_goal__indicators__annual_indicators__annual_performance__gte=0.7 * F('kra_goal__indicators__annual_indicators__annual_target') 
-                        ).distinct()
+            performance = StrategicGoal.objects.prefetch_related(
+            Prefetch('kra_goal__indicators',
+            queryset=Indicator.objects.filter(
+                annual_indicators__annual_target__isnull=False,
+                annual_indicators__annual_performance__isnull=False,
+                annual_indicators__year__year_amh = 2016,
+                annual_indicators__annual_performance__gte=0.7 * F('annual_indicators__annual_target')
+                ))
+        ).filter(policy_area_id__in=policies)
+        
+        return performance
             
-            return performance
+
+
     
 @login_required
 @sector_user_required
@@ -372,6 +375,12 @@ def export_ministry1(request):
     filter_year = request.GET.get('filter-year')
     filter_performance = request.GET.get('filter-performance')
 
+     # Fetch all visible years for the annual plans
+    years = Year.objects.filter(mdip=True)
+
+    if filter_year:
+        years = Year.objects.filter(mdip=True) if filter_year == 'all' else Year.objects.filter(year_amh=filter_year, mdip=True)
+
     
     
 
@@ -392,13 +401,7 @@ def export_ministry1(request):
     if filter_period and filter_period and filter_performance:
         strategic_goals = get_performance(filter_period, filter_year, filter_performance, policies)
 
-
-
-
-
-    # Fetch all visible years for the annual plans
-    years = Year.objects.filter(mdip=True)
-
+        
     # Fetch all annual plans with related indicators and sub-indicators
     annual_plans = AnnualPlan.objects.select_related(
         'indicator', 'sub_indicator', 'year'
