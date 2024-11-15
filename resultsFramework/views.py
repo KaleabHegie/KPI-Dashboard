@@ -225,7 +225,7 @@ def get_performance(period ,year_filter,performance_filter, policies, quarter_fi
     """
     quarter = None
     year = year_filter
-    quarter = quarter_filter[0].quarter_eng
+    quarter = quarter_filter[0].quarter_eng if quarter_filter else None
 
 
 
@@ -502,7 +502,7 @@ def export_ministry1(request):
             filter_year, 
             filter_performance, 
             selected_policies if selected_policies else policies,
-            quarters if quarters[0] else None
+            quarters if filter_period == 'quarter' else None
             )
 
         
@@ -551,6 +551,7 @@ def export_ministry1(request):
         'filter_period' : filter_period or 'year',
         'filter_year' : filter_year or None,
         'filter_performance' : filter_performance or None,
+        'filter_quarter' : filter_quarter or None,
         'col_span_size' : years.count() if filter_year == 'year' else (4 * years.count()) + years.count() + 1 , 
         
     }

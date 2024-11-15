@@ -203,10 +203,10 @@
                                 <select name="filter-quarter" class="form-select" id="quarters">
                                   {% for year in year_option_list %}
                                   <optgroup label="{{year.year_amh}}">
-                                    <option value="{{year.year_amh}}-q1">{{year.year_amh}} - Q1</option>
-                                    <option value="{{year.year_amh}}-q2">{{year.year_amh}} - Q2</option>
-                                    <option value="{{year.year_amh}}-q3">{{year.year_amh}} - Q3</option>
-                                    <option value="{{year.year_amh}}-q4">{{year.year_amh}} - Q4</option>
+                                    <option {% if year.year_amh|stringformat:"s"|add:"-q1" == filter_quarter|stringformat:"s" %}selected{% endif %} value="{{year.year_amh}}-q1">{{year.year_amh}} - Q1</option>
+                                    <option {% if year.year_amh|stringformat:"s"|add:"-q2" == filter_quarter|stringformat:"s" %}selected{% endif %} value="{{year.year_amh}}-q2">{{year.year_amh}} - Q2</option>
+                                    <option {% if year.year_amh|stringformat:"s"|add:"-q3" == filter_quarter|stringformat:"s" %}selected{% endif %} value="{{year.year_amh}}-q3">{{year.year_amh}} - Q3</option>
+                                    <option {% if year.year_amh|stringformat:"s"|add:"-q4" == filter_quarter|stringformat:"s" %}selected{% endif %} value="{{year.year_amh}}-q4">{{year.year_amh}} - Q4</option>
                                   </optgroup>
                                   {% endfor %}
                                 </select>
