@@ -222,17 +222,18 @@ def get_performance(period ,year_filter ,performance_filter, policies):
     Args:
         goal (StrategicGoal): The strategic goal object for which the performance is calculated.
 
-    Returns:
-        dict: A dictionary containing the performance count and percentage.
     """
     quarter = None
     year = year_filter
+
+    print(period)
 
     if quarter and year:
         pass
     else:
         performance = None
-        if performance_filter == 'good':     
+
+        if performance_filter == 'good':  
             performance = StrategicGoal.objects.prefetch_related(
                 Prefetch('kra_goal__indicators',
                         queryset=Indicator.objects.filter(
@@ -434,7 +435,9 @@ def export_ministry1(request):
 
     
     if filter_period and filter_year and filter_performance and filter_performance != 'all' :
-        strategic_goals = get_performance(filter_period, filter_year, filter_performance, selected_policies if strategic_goals else policies)
+        strategic_goals = get_performance(filter_period, filter_year, filter_performance, selected_policies if selected_policies else policies)
+
+        
 
 
     # Fetch all annual plans with related indicators and sub-indicators
