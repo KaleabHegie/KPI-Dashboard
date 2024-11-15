@@ -226,7 +226,7 @@ def get_performance(period ,year_filter ,performance_filter, policies):
         dict: A dictionary containing the performance count and percentage.
     """
     quarter = None
-    year = Year.objects.all().values_list('year_amh', flat=True) if year_filter == 'all' else year_filter
+    year = year_filter
 
     if quarter and year:
         pass
@@ -234,14 +234,48 @@ def get_performance(period ,year_filter ,performance_filter, policies):
         performance = None
         if performance_filter == 'good':     
             performance = StrategicGoal.objects.prefetch_related(
-            Prefetch('kra_goal__indicators',
-            queryset=Indicator.objects.filter(
-                annual_indicators__annual_target__isnull=False,
-                annual_indicators__annual_performance__isnull=False,
-                annual_indicators__year__year_amh = 2016,
-                annual_indicators__annual_performance__gte=0.7 * F('annual_indicators__annual_target')
-                ))
-        ).filter(policy_area_id__in=policies)
+                Prefetch('kra_goal__indicators',
+                        queryset=Indicator.objects.filter(
+                            annual_indicators__annual_performance__isnull=False,
+                            annual_indicators__annual_target__isnull=False,
+                            annual_indicators__year__year_amh = year,
+                            annual_indicators__annual_performance__gte=0.7 * F('annual_indicators__annual_target')
+                            ))
+                            ).filter(policy_area_id__in=policies)
+        
+        elif performance_filter == 'average':     
+            performance = StrategicGoal.objects.prefetch_related(
+                Prefetch('kra_goal__indicators',
+                        queryset=Indicator.objects.filter(
+                            annual_indicators__annual_performance__isnull=False,
+                            annual_indicators__annual_target__isnull=False,
+                            annual_indicators__year__year_amh = year,
+                            annual_indicators__annual_performance__lt=0.7 * F('annual_indicators__annual_target'),
+                            annual_indicators__annual_performance__gte=0.5 * F('annual_indicators__annual_target')
+                            ))
+                            ).filter(policy_area_id__in=policies)
+        
+        elif performance_filter == 'poor':     
+            performance = StrategicGoal.objects.prefetch_related(
+                Prefetch('kra_goal__indicators',
+                        queryset=Indicator.objects.filter(
+                            annual_indicators__annual_performance__isnull=False,
+                            annual_indicators__annual_target__isnull=False,
+                            annual_indicators__year__year_amh = year,
+                            annual_indicators__annual_performance__lt=0.5 * F('annual_indicators__annual_target')
+                            ))
+                            ).filter(policy_area_id__in=policies)
+        
+        elif performance_filter == 'no-data':     
+            performance = StrategicGoal.objects.prefetch_related(
+                Prefetch('kra_goal__indicators',
+                        queryset=Indicator.objects.filter(
+                            annual_indicators__annual_performance__isnull=True,
+                            annual_indicators__annual_target__isnull=False,
+                            annual_indicators__year__year_amh = year,
+                            ))
+                            ).filter(policy_area_id__in=policies)
+        
         
         return performance
             
@@ -398,10 +432,10 @@ def export_ministry1(request):
         ).filter(policy_area_id__in=policies)
 
     
-    if filter_period and filter_period and filter_performance:
+    if filter_period and filter_year and filter_performance and filter_performance != 'all' :
         strategic_goals = get_performance(filter_period, filter_year, filter_performance, policies)
 
-        
+
     # Fetch all annual plans with related indicators and sub-indicators
     annual_plans = AnnualPlan.objects.select_related(
         'indicator', 'sub_indicator', 'year'
@@ -427,6 +461,13 @@ def export_ministry1(request):
         'indicator_count': indicator_count,
         
         'policy_area_count':policy_area_count,
+        'year_option_list' : Year.objects.filter(mdip=True),
+
+        ###return instance of custom filter
+        'filter_period' : filter_period or None,
+        'filter_year' : filter_year or None,
+        'filter_performance' : filter_performance or None
+
         
     }
 
@@ -824,8 +865,6 @@ def update_quarter_plan(request):
         kpi_status = request.POST.get('kpi_status')
         
         # Validate the required fields
-        print(quarter_plan_id)
-        print('zzzzzzzzzzzzzzzzzzzzzzzzz')
         if not (quarter_plan_id and target and quarter and year and kpi_id and kpi_status):
             
             return JsonResponse({'success': True, 'error_message': 'Missing required parameters.'})
@@ -833,7 +872,6 @@ def update_quarter_plan(request):
         target = float(target)  # Ensure target is a float
         kpi_id = int(kpi_id)  # Ensure kpi_id is an integer
         quarter_plan_id = int(quarter_plan_id)
-        print(target)
   
         
         if kpi_status == 'no':
@@ -1313,7 +1351,6 @@ def quarter_save_batch_performance_data(request):
 
             # Loop through the data and create/update AnnualPlan objects
             for quarter_plan_id, performance in performance_data.items():
-                print(quarter_plan_id)
                 try:
 
                     quarter_plan = QuarterProgress.objects.get(
@@ -1414,7 +1451,6 @@ def update_quarter_plan_performance(request):
 def update_annual_plan_performance(request):
     # Retrieve data from the AJAX request
     annual_plan_id = request.POST.get('annual_plan_id')
-    print(annual_plan_id)
     new_performance = request.POST.get('performance')
 
     # Check if the annual_plan_id is valid
@@ -2415,7 +2451,7 @@ def get_chart_data(request, id=0):
 
     chart_categories = [2015, 2016, 2017, 2018]
     measurement = kpi_data.first().kpi_measurement_units
-    print(measurement)
+
 
     # Extract annual_target and annual_performance using a list comprehension
     chart_target_data = [
@@ -3521,7 +3557,7 @@ def indicator_lists(request, id):
      
         krax = KeyResultAreaSerializer1(kra, many=True, context={'year': 2016, 'quarter':'9 month'})
   
-        print(krax.data)
+
         ministries = ResponsibleMinistry.objects.filter(ministry_is_visable = True).annotate(goal_count=Count('ministry_goal')).select_related()
    
         serializer = MinistrySerializers(ministries, many=True,context={'year': 2016, 'quarter':'9 month'})

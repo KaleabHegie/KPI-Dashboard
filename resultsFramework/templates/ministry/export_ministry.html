@@ -251,8 +251,8 @@
                                 <!--Time period -->
                                 <label for="dataType">Select Time Period</label>
                                 <select class="form-select" name="filter-period" aria-label="Floating label select example">
-                                  <option selected="" value="year">Yearly</option>
-                                  <option value="quarter">Quarterly</option>
+                                  <option {% if filter_period|stringformat:"s" == 'year' %}selected{% endif %} value="year">Yearly</option>
+                                  <option {% if filter_period|stringformat:"s" == 'quarter' %}selected{% endif %}  value="quarter">Quarterly</option>
                                 </select>
                               </div>
 
@@ -260,10 +260,12 @@
                                 <!--Year -->
                                 <label for="dataType">Select Year</label>
                                 <select class="form-select" name="filter-year" aria-label="Floating label select example">
-                                  <option selected="" value="all">All</option>
-                                  <option value="2014">2014</option>
-                                  <option value="2015">2015</option>
-                                  <option value="2016">2016</option>
+                                  {% for year in year_option_list %}
+                                  <option 
+                                    {% if year.year_amh|stringformat:"s" == filter_year|stringformat:"s" %}selected{% endif %}
+
+                                    value="{{year.year_amh}}">{{year.year_amh}} </option>
+                                  {% endfor %}
                                 </select>
                               </div>
 
@@ -271,10 +273,11 @@
                                 <!--Time period -->
                                 <label for="dataType">Select Performance</label>
                                 <select class="form-select" name="filter-performance" aria-label="Floating label select example">
-                                  <option selected="" value="all">All</option>
-                                  <option value="good">Good</option>
-                                  <option value="average">Average</option>
-                                  <option value="poor">Poor</option>
+                                  <option {% if filter_performance|stringformat:"s" == 'all' %}selected{% endif %} value="all">All</option>
+                                  <option {% if filter_performance|stringformat:"s" == 'good' %}selected{% endif %} value="good">Good</option>
+                                  <option {% if filter_performance|stringformat:"s" == 'average' %}selected{% endif %} value="average">Average</option>
+                                  <option {% if filter_performance|stringformat:"s" == 'poor' %}selected{% endif %} value="poor">Poor</option>
+                                  <option {% if filter_performance|stringformat:"s" == 'no-data' %}selected{% endif %} value="no-data">No data</option>
                                 </select>
                               </div>
                             
@@ -366,7 +369,7 @@
                                             N/A
                                           </button>
                                         {% endif %}
-                                        
+
                                       {% endwith %}
                                     </td>
                                   {% endfor %}
