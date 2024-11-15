@@ -411,6 +411,7 @@ def export_ministry1(request):
 
      # Fetch all visible years for the annual plans
     years = Year.objects.filter(mdip=True)
+    quarters = Quarter.objects.filter()
 
     if filter_year:
         years = Year.objects.filter(mdip=True) if filter_year == 'all' else Year.objects.filter(year_amh=filter_year, mdip=True)
@@ -433,7 +434,7 @@ def export_ministry1(request):
 
     
     if filter_period and filter_year and filter_performance and filter_performance != 'all' :
-        strategic_goals = get_performance(filter_period, filter_year, filter_performance, policies)
+        strategic_goals = get_performance(filter_period, filter_year, filter_performance, selected_policies if strategic_goals else policies)
 
 
     # Fetch all annual plans with related indicators and sub-indicators
@@ -448,12 +449,24 @@ def export_ministry1(request):
             annual_plans_lookup[plan.indicator_id] = {}
         annual_plans_lookup[plan.indicator_id][plan.year_id] = plan
 
+    quarter_progress = QuarterProgress.objects.select_related('indicator', 'quarter', 'year').filter(year__quarter_view=True, indicator__responsible_ministries=u_sector.user_sector)
+
+    quarter_progress_lookup = {}
+    for progress in quarter_progress:
+        if progress.indicator_id not in quarter_progress_lookup:
+            quarter_progress_lookup[progress.indicator_id] = {}
+        if progress.year_id not in quarter_progress_lookup[progress.indicator_id]:
+            quarter_progress_lookup[progress.indicator_id][progress.year_id] = {}
+        quarter_progress_lookup[progress.indicator_id][progress.year_id][progress.quarter_id] = progress
+
    
     context = {
         
         'strategic_goals': strategic_goals,
         'years': years,
+        'quarters': quarters,
         'annual_plans_lookup': annual_plans_lookup,
+        'quarter_progress_lookup' : quarter_progress_lookup,
       
         'policies': policies,    # Pass the policies to the context for the dropdown
         'goal_count': goal_count,
@@ -466,7 +479,8 @@ def export_ministry1(request):
         ###return instance of custom filter
         'filter_period' : filter_period or None,
         'filter_year' : filter_year or None,
-        'filter_performance' : filter_performance or None
+        'filter_performance' : filter_performance or None,
+      
 
         
     }

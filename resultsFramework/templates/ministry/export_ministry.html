@@ -316,6 +316,9 @@
                             <th>Indicator</th>
                             {% for year in years %}
                                 <th>{{ year.year_amh }}</th>
+                                {% for quarter in quarters%}
+                                <th>{{ quarter.quarter_amharic }}</th>
+                                {% endfor %}
                             {% endfor %}
                         </tr>
                     </thead>
@@ -372,6 +375,48 @@
 
                                       {% endwith %}
                                     </td>
+
+                                    {% for quarter in quarters%}
+                                    
+                                      <td>
+                                      {% with quarter_progress_lookup|get_item:indicator.id|get_item:year.id|get_item:quarter.id as quarters_data %}
+                                      
+                                        {% if quarters_data %}
+                                        {% if quarters_data.quarter_target %}
+                                          <button type="button" title="Quarter Target" class="btn m-1 d-block w-100 rounded my-1 btn-success btn-xs">
+                                              <!-- Display Quarter Target -->
+                                              {{ quarters_data.quarter_target }}
+                                            </button>
+                                          {% else %}
+                                            <button type="button" title="Quarter Target" class="btn m-1 d-block w-100 rounded btn-warning btn-xs">
+                                              None
+                                            </button>
+                                          {% endif %}
+                                      
+                                          <!-- Display Quarter Performance -->
+                                          {% if quarters_data.quarter_performance %}
+                                            <button type="button" title="Quarter Performance"
+                                              class="btn m-1 d-block w-100 rounded btn-info btn-xs performance-button">
+                                              {{ quarters_data.quarter_performance }}
+                                            </button>
+                                          {% else %}
+                                            <button type="button" title="Quarter Performance"
+                                              class="btn m-1 d-block w-100 rounded btn-danger btn-xs performance-button">
+                                              None
+                                            </button>
+                                          {% endif %}
+                                        
+                                        {% else %}
+                                          <!-- When no plan exists -->
+                                          <button type="button" title="No Plan Available" class="btn m-1 d-block w-100 rounded btn-secondary btn-xs">
+                                            N/A
+                                          </button>
+                                        {% endif %}
+
+                                      {% endwith %}
+                                    </td>
+                     
+                                    {% endfor %}
                                   {% endfor %}
                                 </tr>
                               {% endfor %}
@@ -421,7 +466,7 @@
                     startRender: function (rows, group, level) {
                         var className = level === 0 ? 'bg-green-500' : 'group-header-2';
                         return $('<tr/>')
-                            .append('<td colspan="10" class="group-header ' + className + '">' + group + '</td>');
+                            .append('<td colspan="20" class="group-header ' + className + '">' + group + '</td>');
                     }
                 },
                 responsive: true,
