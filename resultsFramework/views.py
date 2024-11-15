@@ -215,7 +215,7 @@ def get_policy_areas_by_ministry(ministry_id):
 
 
 
-def get_performance(period ,year_filter ,performance_filter, policies):
+def get_performance(period ,year_filter,performance_filter, policies, quarter_filter = None ):
     """
     Calculate the  performance metrics for a given goal.
 
@@ -225,11 +225,63 @@ def get_performance(period ,year_filter ,performance_filter, policies):
     """
     quarter = None
     year = year_filter
+    quarter = quarter_filter[0].quarter_eng
 
-    print(period)
+
+
 
     if quarter and year:
-        pass
+        performance = None
+        if performance_filter == 'good':  
+            performance = StrategicGoal.objects.prefetch_related(
+                Prefetch('kra_goal__indicators',
+                        queryset=Indicator.objects.filter(
+                            quarter_indicators__quarter_performance__isnull=False,
+                            quarter_indicators__quarter_target__isnull=False,
+                            quarter_indicators__year__year_amh = year,
+                            quarter_indicators__quarter__quarter_eng = quarter,
+                            quarter_indicators__quarter_performance__gte=0.7 * F('quarter_indicators__quarter_target')
+                            ))
+                            ).filter(policy_area_id__in=policies)
+        
+        elif performance_filter == 'average':     
+            performance = StrategicGoal.objects.prefetch_related(
+                Prefetch('kra_goal__indicators',
+                        queryset=Indicator.objects.filter(
+                            quarter_indicators__quarter_performance__isnull=False,
+                            quarter_indicators__quarter_target__isnull=False,
+                            quarter_indicators__year__year_amh = year,
+                            quarter_indicators__quarter__quarter_eng = quarter,
+                            quarter_indicators__quarter_performance__lt=0.7 * F('quarter_indicators__quarter_target'),
+                            quarter_indicators__quarter_performance__gte=0.5 * F('quarter_indicators__quarter_target')
+                            ))
+                            ).filter(policy_area_id__in=policies)
+        
+        elif performance_filter == 'poor':     
+            performance = StrategicGoal.objects.prefetch_related(
+                Prefetch('kra_goal__indicators',
+                        queryset=Indicator.objects.filter(
+                            quarter_indicators__quarter_performance__isnull=False,
+                            quarter_indicators__quarter_target__isnull=False,
+                            quarter_indicators__year__year_amh = year,
+                            quarter_indicators__quarter__quarter_eng = quarter,
+                            quarter_indicators__quarter_performance__lt=0.5 * F('quarter_indicators__quarter_target')
+                            ))
+                            ).filter(policy_area_id__in=policies)
+        
+        elif performance_filter == 'no-data':     
+            performance = StrategicGoal.objects.prefetch_related(
+                Prefetch('kra_goal__indicators',
+                        queryset=Indicator.objects.filter(
+                            quarter_indicators__quarter_performance__isnull=True,
+                            quarter_indicators__quarter_target__isnull=False,
+                            quarter_indicators__quarter__quarter_eng = quarter,
+                            quarter_indicators__year__year_amh = year,
+                            ))
+                            ).filter(policy_area_id__in=policies)
+        
+        
+        return performance
     else:
         performance = None
 
@@ -443,9 +495,15 @@ def export_ministry1(request):
             'kra_goal__indicators'
         ).filter(policy_area_id__in=policies)
 
-    
+
     if filter_period and filter_year and filter_performance and filter_performance != 'all' :
-        strategic_goals = get_performance(filter_period, filter_year, filter_performance, selected_policies if selected_policies else policies)
+        strategic_goals = get_performance(
+            filter_period, 
+            filter_year, 
+            filter_performance, 
+            selected_policies if selected_policies else policies,
+            quarters if quarters[0] else None
+            )
 
         
 
