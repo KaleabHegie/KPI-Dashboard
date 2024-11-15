@@ -477,12 +477,10 @@ def export_ministry1(request):
         'year_option_list' : Year.objects.filter(mdip=True),
 
         ###return instance of custom filter
-        'filter_period' : filter_period or None,
+        'filter_period' : filter_period or 'year',
         'filter_year' : filter_year or None,
         'filter_performance' : filter_performance or None,
-
-      
-
+        'col_span_size' : years.count() if filter_year == 'year' else (4 * years.count()) + years.count() + 1 , 
         
     }
 

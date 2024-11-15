@@ -32,77 +32,6 @@
         background-color: #b4e3a6; /* Light yellow background for second group #DFDFDF */
     }
 
-    table.fixedHeader-floating,
-    table.fixedHeader-locked {
-      position: relative !important;
-      background-color: var(--dt-html-background);
-    }
-    
-    @media print {
-      table.fixedHeader-floating {
-        display: none;
-      }
-    }
-
-
-    /* .styled-table thead tr {
-        background-color: #009879;
-        color: #ffffff;
-        text-align: left;
-    }
-     */
-    
-
-
-    /* 
-    th {
-      border-top: 1px solid #000000;
-      border-bottom: 1px solid #000000;
-      border-right: 1px solid #000000;
-    }
-     
-    th:first-child {
-      border-left: 1px solid #000000;
-    } */
-
-    /* Custom CSS to darken the outside border of the DataTables table */
-    table.dataTable {
-        border: 0.5px solid #5f915a; 
-        /* Darken the outer border */
-    }
-    table.dataTable thead th,
-    table.dataTable tfoot th {
-        border-bottom: 1px solid #5f915a; /* Darken the header and footer borders */
-    }
-    table.dataTable tbody td {
-        border: 1px solid #ccc; /* Optional: Customize inner cell borders if needed */
-    }
-
-    .select2-container--default .select2-selection--multiple .select2-selection__choice {
-      background-color: #007bff;
-      border-color: #006fe6;
-      color: #fff;
-      padding: 0 10px;
-      margin-top: .31rem;
-    }
-
-
-    .indicator {
-      font-weight: bold;
-    }
-
-    .sub-indicator {
-      padding-left: 24px;
-    }
-
-    .expandable-table-caret {
-      cursor: pointer;
-    }
-
-
-    td {
-      text-align: left;
-    }
   </style>
 
 
@@ -308,18 +237,18 @@
                     <h3 class="card-title">Development Plan</h3>
                   </div>
                   <div class="card-body table-responsive">
-                  <table id="example" class=" table-responsive table table-hover table-sm">
+                  <table id="example"   class=" table table-hover table-bordered table-sm" >
                     <thead>
                         <tr>
                             <th>Goal</th>
                             <th>KRA</th>
-                            <th>Indicator</th>
+                            <th  class="border">Indicator</th>
                             {% for year in years %}
-                                <th>{{ year.year_amh }}</th>
+                                <th class="border">{{ year.year_amh }}</th>
                                  {% if filter_period == 'quarter' %}
-                                 
+
                                 {% for quarter in quarters%}
-                                <th>{{ quarter.quarter_amharic }}</th>
+                                <th class="border">Q{{ forloop.counter }}</th>
                                 {% endfor %}
                                 {% endif %}
 
@@ -465,6 +394,7 @@
 
             var table = $('#example').DataTable({
                 dom: 'Bfrtip',
+                ordering: false,
                 lengthMenu: [[ 50, 100, -1], [ 50, 100, "All"]] ,
                 buttons: [
                     'copyHtml5', 'excelHtml5', 'csvHtml5', 'pdfHtml5',
@@ -475,14 +405,17 @@
                     startRender: function (rows, group, level) {
                         var className = level === 0 ? 'bg-green-500' : 'group-header-2';
                         return $('<tr/>')
-                            .append('<td colspan="20" class="group-header ' + className + '">' + group + '</td>');
+                            .append('<td colspan="{{col_span_size}}" class="group-header ' + className + '">' + group + '</td>');
                     }
                 },
-                responsive: true,
-                fixedHeader: true,
-                columnDefs: [
-                    { targets: [0, 1], visible: false } // Hide Goal Name and KRA Name columns from display
-                ],
+                 
+              columnDefs: [
+                { width: "80%", targets: 2 },
+                { targets: [0, 1], visible: false },
+              ],
+             
+
+                
                 drawCallback: function(settings) {
                     var api = this.api();
                     api.rows({page: 'current'}).nodes().each(function(row, i) {
@@ -530,7 +463,11 @@
               XLSX.writeFile(workbook, 'data.xlsx');
             }
 
+
+
         });
+       
+
 
 
         $(document).ready(function () {
