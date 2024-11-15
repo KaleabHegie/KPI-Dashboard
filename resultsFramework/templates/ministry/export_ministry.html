@@ -316,9 +316,13 @@
                             <th>Indicator</th>
                             {% for year in years %}
                                 <th>{{ year.year_amh }}</th>
+                                 {% if filter_period == 'quarter' %}
+                                 
                                 {% for quarter in quarters%}
                                 <th>{{ quarter.quarter_amharic }}</th>
                                 {% endfor %}
+                                {% endif %}
+
                             {% endfor %}
                         </tr>
                     </thead>
@@ -376,11 +380,12 @@
                                       {% endwith %}
                                     </td>
 
+                                    {% if filter_period == 'quarter' %}
                                     {% for quarter in quarters%}
                                     
                                       <td>
                                       {% with quarter_progress_lookup|get_item:indicator.id|get_item:year.id|get_item:quarter.id as quarters_data %}
-                                      
+
                                         {% if quarters_data %}
                                         {% if quarters_data.quarter_target %}
                                           <button type="button" title="Quarter Target" class="btn m-1 d-block w-100 rounded my-1 btn-success btn-xs">
@@ -414,9 +419,13 @@
                                         {% endif %}
 
                                       {% endwith %}
-                                    </td>
+
+                                      </td>
+                                  
                      
                                     {% endfor %}
+                                    {% endif %}
+
                                   {% endfor %}
                                 </tr>
                               {% endfor %}
