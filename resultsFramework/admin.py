@@ -58,7 +58,7 @@ from .utility import Quarter, Year, PerformanceEntryDate, QuarterPerformanceEntr
 
 @admin.register(PolicyArea)
 class PolicyAreaAdmin(ImportExportModelAdmin):
-    list_display = ('id','rank','policyAreaEng','icon',)
+    list_display = ('id','rank','policyAreaEng','code','icon',)
 
 
 
@@ -308,7 +308,7 @@ class StrategicGoalResource(resources.ModelResource):
     policy_area = fields.Field(
         column_name='policy_area',
         attribute='policy_area',
-        widget=ForeignKeyWidget(PolicyArea, field='id'),
+        widget=ForeignKeyWidget(PolicyArea, field='code'),
         saves_null_values = True,
         )
     national_plan = fields.Field(
@@ -321,16 +321,16 @@ class StrategicGoalResource(resources.ModelResource):
           model = StrategicGoal
           skip_unchanged = True
           report_skipped = True
-          fields = ('id','goal_name_eng', 'goal_name_amh', 'goal_weight', 'goal_is_shared','national_plan', 'policy_area','goal_is_visable')
-          ##exclude = ('id', 'composite_key')
-          #import_id_fields = ('goal_name_eng', 'goal_name_amh', 'goal_weight', 'goal_is_shared','national_plan', 'policy_area')
+          fields = ('code','goal_name_eng', 'goal_name_amh', 'goal_weight', 'goal_is_shared','national_plan', 'policy_area', 'policy_area__policyAreaEng','goal_is_visable')
+          exclude = ('id')
+          import_id_fields = ('code','goal_name_eng','national_plan', 'policy_area')
 
 
 class StrategicGoalAdmin(ImportExportModelAdmin):
-    list_display = ('goal_name_eng','policy_area', 'goal_is_visable','responsible_ministries')
+    list_display = ('goal_name_eng','code','policy_area', 'goal_is_visable','responsible_ministries',)
     
     # Fields to add to the search functionality
-    search_fields = ('goal_name_eng', 'goal_name_amh')
+    search_fields = ('goal_name_eng', 'goal_name_amh', 'code')
     
     # Fields to add to the filter functionality
     list_filter = ('goal_is_visable', 'policy_area')
@@ -363,23 +363,22 @@ class KeyResultAreaResource(resources.ModelResource):
     goal = fields.Field(
         column_name='goal',
         attribute='goal',
-        widget=ForeignKeyWidget(StrategicGoal, field='id'),
+        widget=ForeignKeyWidget(StrategicGoal, field='code'),
         saves_null_values = True,
         )
     class Meta:
           model = KeyResultArea
           skip_unchanged = True
           report_skipped = True
-          fields = ('id','activity_name_eng', 'activity_name_amh', 'activity_weight', 'activity_is_shared','goal')
-          ##exclude = ('id')
-          #import_id_fields = ('activity_name_eng',)
-          #export_order = ('id')
-
+          exclude = ('id')
+          fields = ('code','activity_name_eng', 'activity_name_amh', 'activity_weight', 'activity_is_shared', 'goal', 'goal__goal_name_eng', 'kra_is_visable')
+          import_id_fields = ('code','activity_name_eng','goal')
+          
 
 class KeyResultAreaAdmin(ImportExportModelAdmin):
-    list_display = ('activity_name_eng',  'goal',)
+    list_display = ('activity_name_eng', 'code', 'goal',)
     list_filter = ('goal',)
-    search_fields = ('activity_name_eng', 'goal__goal_name_eng')
+    search_fields = ('activity_name_eng', 'goal__goal_name_eng', 'code')
     list_editable = ( 'goal',
     )
     resource_classes = [KeyResultAreaResource]
@@ -411,29 +410,29 @@ class IndicatorResource(resources.ModelResource):
     responsible_ministries = fields.Field(
         column_name='responsible_ministries',
         attribute='responsible_ministries',
-        widget=ForeignKeyWidget(ResponsibleMinistry, field='id'),
+        widget=ForeignKeyWidget(ResponsibleMinistry, field='code'),
         saves_null_values = True,
         )
     keyResultArea = fields.Field(
         column_name='keyResultArea',
         attribute='keyResultArea',
-        widget=ForeignKeyWidget(KeyResultArea, field='id'),
+        widget=ForeignKeyWidget(KeyResultArea, field='code'),
         saves_null_values = True,
         )
     class Meta:
           model = Indicator
           skip_unchanged = True
           report_skipped = True
-          #fields = ('keyResultArea__goal__goal_name_eng','keyResultArea','kpi_name_eng', 'kpi_weight', 'responsible_ministries')
-        #   exclude = ('id')
-         # import_id_fields = ('kpi_name_eng','responsible_ministries')
+          fields = ('code','keyResultArea__goal__goal_name_eng','keyResultArea','kpi_name_eng', 'kpi_weight', 'responsible_ministries')
+          exclude = ('id')
+          import_id_fields = ('code','kpi_name_eng','responsible_ministries')
 
 
 class IndicatorAdmin(ImportExportModelAdmin):
     resource_classes = [IndicatorResource]
-    list_display = ('kpi_name_eng', 
+    list_display = ('kpi_name_eng', "code",
                     'kpi_characteristics','kpi_is_visable', 'responsible_ministries', 'keyResultArea','kpi_weight')
-    search_fields = ("kpi_name_eng",)
+    search_fields = ("kpi_name_eng","code")
     list_editable = ( 'kpi_characteristics','responsible_ministries','kpi_weight')
     list_filter = ('responsible_ministries', 'kpi_is_visable',"keyResultArea__goal__policy_area")
     autocomplete_fields = ['keyResultArea']
@@ -601,7 +600,7 @@ def handle_uploaded_kpiAggregation_file(file):
 
         #Return the data
         data_set = tablib.Dataset(*total_data, headers=['id','parent', 'kpi' , 'sub_kpi_name_eng', 'sub_kpi_name_amh', 'category'])
-        print(data_set)
+        
         result = resource.import_data(data_set, dry_run=True)
         return True,data_set, result
 
@@ -619,7 +618,7 @@ class AnnualPlanResource(resources.ModelResource):
     indicator = fields.Field(
         column_name='indicator',
         attribute='indicator',
-        widget=ForeignKeyWidget(Indicator, field='id'),
+        widget=ForeignKeyWidget(Indicator, field='code'),
         saves_null_values = True,
         )
     sub_indicator = fields.Field(
@@ -631,7 +630,7 @@ class AnnualPlanResource(resources.ModelResource):
     year = fields.Field(
         column_name='year',
         attribute='year',
-        widget=ForeignKeyWidget(Year, field='id'),
+        widget=ForeignKeyWidget(Year, field='year_amh'),
         saves_null_values = True,
         )
     class Meta:
@@ -640,8 +639,8 @@ class AnnualPlanResource(resources.ModelResource):
           report_skipped = True
           #import_id_fields = ('indicator',)
         #   exclude = ('id')
-          #fields = ('id','national_plan','indicator', 'sub_indicator',  'year','annual_performance')
-          export_order = ('id','national_plan','indicator', 'sub_indicator', 'year','annual_performance')
+          fields = ('id','national_plan','indicator__kpi_name_eng' ,'sub_indicator',  'year','annual_performance')
+          #export_order = ('id', 'national_plan','indicator', 'sub_indicator', 'year','annual_performance')
 
 
 class AnnualAdmin(ImportExportModelAdmin):

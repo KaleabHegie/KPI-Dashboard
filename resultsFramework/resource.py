@@ -24,7 +24,11 @@ class GoalResource(resources.ModelResource):
         widget=ForeignKeyWidget(ResponsibleMinistry, field='id'))
     class Meta:
         model = StrategicGoal
-        exclude = ('responsible_ministries')
+        skip_unchanged = True
+        report_skipped = True
+        exclude = ('id','responsible_ministries')
+        import_id_fields = ('code', 'activity_name_eng', 'activity_name_amh', 'activity_weight', 'activity_is_shared', 'goal', 'kra_is_visable' )
+
 
 
 
