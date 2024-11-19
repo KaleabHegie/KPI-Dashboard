@@ -308,7 +308,7 @@ class StrategicGoalResource(resources.ModelResource):
     policy_area = fields.Field(
         column_name='policy_area',
         attribute='policy_area',
-        widget=ForeignKeyWidget(PolicyArea, field='id'),
+        widget=ForeignKeyWidget(PolicyArea, field='code'),
         saves_null_values = True,
         )
     national_plan = fields.Field(
@@ -363,15 +363,15 @@ class KeyResultAreaResource(resources.ModelResource):
     goal = fields.Field(
         column_name='goal',
         attribute='goal',
-        widget=ForeignKeyWidget(StrategicGoal, field='id'),
+        widget=ForeignKeyWidget(StrategicGoal, field='code'),
         saves_null_values = True,
         )
     class Meta:
           model = KeyResultArea
           skip_unchanged = True
           report_skipped = True
-          fields = ('id','activity_name_eng', 'activity_name_amh', 'activity_weight', 'activity_is_shared','goal')
-          ##exclude = ('id')
+          fields = ('code','activity_name_eng', 'activity_name_amh', 'activity_weight', 'activity_is_shared','goal')
+          exclude = ('id')
           #import_id_fields = ('activity_name_eng',)
           #export_order = ('id')
 
