@@ -58,7 +58,7 @@ from .utility import Quarter, Year, PerformanceEntryDate, QuarterPerformanceEntr
 
 @admin.register(PolicyArea)
 class PolicyAreaAdmin(ImportExportModelAdmin):
-    list_display = ('id','rank','policyAreaEng','icon',)
+    list_display = ('id','rank','policyAreaEng','code','icon',)
 
 
 
@@ -327,7 +327,7 @@ class StrategicGoalResource(resources.ModelResource):
 
 
 class StrategicGoalAdmin(ImportExportModelAdmin):
-    list_display = ('goal_name_eng','policy_area', 'goal_is_visable','responsible_ministries')
+    list_display = ('goal_name_eng','code','policy_area', 'goal_is_visable','responsible_ministries',)
     
     # Fields to add to the search functionality
     search_fields = ('goal_name_eng', 'goal_name_amh')
