@@ -417,15 +417,15 @@ class IndicatorResource(resources.ModelResource):
     keyResultArea = fields.Field(
         column_name='keyResultArea',
         attribute='keyResultArea',
-        widget=ForeignKeyWidget(KeyResultArea, field='id'),
+        widget=ForeignKeyWidget(KeyResultArea, field='code'),
         saves_null_values = True,
         )
     class Meta:
           model = Indicator
           skip_unchanged = True
           report_skipped = True
-          #fields = ('keyResultArea__goal__goal_name_eng','keyResultArea','kpi_name_eng', 'kpi_weight', 'responsible_ministries')
-        #   exclude = ('id')
+          #fields = ('code','keyResultArea__goal__goal_name_eng','keyResultArea','kpi_name_eng', 'kpi_weight', 'responsible_ministries')
+          exclude = ('id')
          # import_id_fields = ('kpi_name_eng','responsible_ministries')
 
 
@@ -619,7 +619,7 @@ class AnnualPlanResource(resources.ModelResource):
     indicator = fields.Field(
         column_name='indicator',
         attribute='indicator',
-        widget=ForeignKeyWidget(Indicator, field='id'),
+        widget=ForeignKeyWidget(Indicator, field='code'),
         saves_null_values = True,
         )
     sub_indicator = fields.Field(
@@ -631,7 +631,7 @@ class AnnualPlanResource(resources.ModelResource):
     year = fields.Field(
         column_name='year',
         attribute='year',
-        widget=ForeignKeyWidget(Year, field='id'),
+        widget=ForeignKeyWidget(Year, field='year_amh'),
         saves_null_values = True,
         )
     class Meta:
@@ -641,7 +641,7 @@ class AnnualPlanResource(resources.ModelResource):
           #import_id_fields = ('indicator',)
         #   exclude = ('id')
           #fields = ('id','national_plan','indicator', 'sub_indicator',  'year','annual_performance')
-          export_order = ('id','national_plan','indicator', 'sub_indicator', 'year','annual_performance')
+          #export_order = ('id','national_plan','indicator', 'sub_indicator', 'year','annual_performance')
 
 
 class AnnualAdmin(ImportExportModelAdmin):
