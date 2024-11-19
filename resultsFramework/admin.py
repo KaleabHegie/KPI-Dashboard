@@ -321,7 +321,7 @@ class StrategicGoalResource(resources.ModelResource):
           model = StrategicGoal
           skip_unchanged = True
           report_skipped = True
-          fields = ('code','goal_name_eng', 'goal_name_amh', 'goal_weight', 'goal_is_shared','national_plan', 'policy_area','goal_is_visable')
+          fields = ('code','goal_name_eng', 'goal_name_amh', 'goal_weight', 'goal_is_shared','national_plan', 'policy_area', 'policy_area__policyAreaEng','goal_is_visable')
           exclude = ('id')
           import_id_fields = ('code','goal_name_eng','national_plan', 'policy_area')
 
@@ -371,6 +371,7 @@ class KeyResultAreaResource(resources.ModelResource):
           skip_unchanged = True
           report_skipped = True
           exclude = ('id')
+          fields = ('code','activity_name_eng', 'activity_name_amh', 'activity_weight', 'activity_is_shared', 'goal', 'goal__goal_name_eng', 'kra_is_visable')
           import_id_fields = ('code','activity_name_eng','goal')
           
 
@@ -422,7 +423,7 @@ class IndicatorResource(resources.ModelResource):
           model = Indicator
           skip_unchanged = True
           report_skipped = True
-          #fields = ('code','keyResultArea__goal__goal_name_eng','keyResultArea','kpi_name_eng', 'kpi_weight', 'responsible_ministries')
+          fields = ('code','keyResultArea__goal__goal_name_eng','keyResultArea','kpi_name_eng', 'kpi_weight', 'responsible_ministries')
           exclude = ('id')
           import_id_fields = ('code','kpi_name_eng','responsible_ministries')
 
