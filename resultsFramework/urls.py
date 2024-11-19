@@ -27,7 +27,8 @@ urlpatterns = [
     path('year_quarter_list/' , year_quarter_list  ),
     path('affiliated_ministries/', affiliated_ministries, name='affiliated_ministries'),
     path('affiliated_ministries_list/', affiliated_ministries_list, name='affiliated_ministries_list'),
-    path('above_threshold/' , above_threshold , name='above_threshold'),
+    path('threshold/' , threshold , name='threshold'),
+    path('performance_verification/' , performance_verification , name='performance_verification'),
 
     path('dashboard/', ministry_dashboard, name="ministry"),
     path('policy_area_ministry/', policy_area_ministry, name='policy_area_ministry_url'),

@@ -795,6 +795,7 @@ class AnnualPlan(models.Model):
     scorecard = ColorField(default='#FF0000',blank=True, null=True)
     justification = models.TextField(blank=True, null=True)
     validation_comment = models.TextField(blank=True, null=True)
+    validated = models.BooleanField(default=False)
 
     def __str__(self):
         return str(self.year)

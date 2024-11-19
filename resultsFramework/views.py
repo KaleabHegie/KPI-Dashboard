@@ -333,7 +333,136 @@ def get_performance(period ,year_filter,performance_filter, policies, quarter_fi
         return performance
             
 
+def get_performance_ministry(ministry , period ,year_filter,performance_filter , policies, quarter_filter = None ):
+    """
+    Calculate the  performance metrics for a given goal.
 
+    Args:
+        goal (StrategicGoal): The strategic goal object for which the performance is calculated.
+
+    """
+    quarter = None
+    year = year_filter
+    quarter = quarter_filter[0].quarter_eng if quarter_filter else None
+    
+    if quarter and year:
+        performance = None
+        if performance_filter == 'above_threshold':  
+            performance = StrategicGoal.objects.prefetch_related(
+                Prefetch('kra_goal__indicators',
+                        queryset=Indicator.objects.filter(
+                            responsible_ministries__responsible_ministry_eng = ministry,
+                            quarter_indicators__quarter_performance__isnull=False,
+                            quarter_indicators__quarter_target__isnull=False,
+                            quarter_indicators__year__year_amh = year,
+                            quarter_indicators__quarter__quarter_eng = quarter,
+                            quarter_indicators__quarter_performance__gte=F('quarter_indicators__quarter_target')
+                            ))
+                            ).filter(policy_area_id__in=policies)
+        
+        elif performance_filter == 'below_threshold':     
+            performance = StrategicGoal.objects.prefetch_related(
+                Prefetch('kra_goal__indicators',
+                        queryset=Indicator.objects.filter(
+                            responsible_ministries__responsible_ministry_eng = ministry,
+                            quarter_indicators__quarter_performance__isnull=False,
+                            quarter_indicators__quarter_target__isnull=False,
+                            quarter_indicators__year__year_amh = year,
+                            quarter_indicators__quarter__quarter_eng = quarter,
+                           quarter_indicators__quarter_performance__lt=0.5 * F('quarter_indicators__quarter_target')
+                            ))
+                            ).filter(policy_area_id__in=policies)
+        elif performance_filter == 'no-data':     
+            performance = StrategicGoal.objects.prefetch_related(
+                Prefetch('kra_goal__indicators',
+                        queryset=Indicator.objects.filter(
+                            responsible_ministries__responsible_ministry_eng = ministry,
+                            quarter_indicators__quarter_performance__isnull=True,
+                            quarter_indicators__quarter_target__isnull=False,
+                            quarter_indicators__quarter__quarter_eng = quarter,
+                            quarter_indicators__year__year_amh = year,
+                            ))
+                            ).filter(policy_area_id__in=policies)
+        
+        
+        return performance
+    else:
+        performance = None
+
+        if performance_filter == 'above_threshold':  
+            performance = StrategicGoal.objects.prefetch_related(
+                Prefetch('kra_goal__indicators',
+                        queryset=Indicator.objects.filter(
+                            responsible_ministries__responsible_ministry_eng = ministry,
+                            annual_indicators__annual_performance__isnull=False,
+                            annual_indicators__annual_target__isnull=False,
+                            annual_indicators__year__year_amh = year,
+                            annual_indicators__annual_performance__gte=F('annual_indicators__annual_target')
+                            ))
+                            ).filter(policy_area_id__in=policies)
+        
+        elif performance_filter == 'below_threshold':     
+            performance = StrategicGoal.objects.prefetch_related(
+                Prefetch('kra_goal__indicators',
+                        queryset=Indicator.objects.filter(
+                            responsible_ministries__responsible_ministry_eng = ministry,
+                            annual_indicators__annual_performance__isnull=False,
+                            annual_indicators__annual_target__isnull=False,
+                            annual_indicators__year__year_amh = year,
+                            annual_indicators__annual_performance__lt=0.5 * F('annual_indicators__annual_target'),
+                            ))
+                            ).filter(policy_area_id__in=policies)
+          
+        elif performance_filter == 'no-data':     
+            performance = StrategicGoal.objects.prefetch_related(
+                Prefetch('kra_goal__indicators',
+                        queryset=Indicator.objects.filter( 
+                            responsible_ministries__responsible_ministry_eng = ministry,
+                            annual_indicators__annual_performance__isnull=True,
+                            annual_indicators__annual_target__isnull=False,
+                            annual_indicators__year__year_amh = year,
+                            ))
+                            ).filter(policy_area_id__in=policies)
+        
+        
+        return performance
+            
+def get_performance_ministry_verification(ministry , period ,year_filter , policies, quarter_filter = None ):
+    """
+    Calculate the  performance metrics for a given goal.
+
+    Args:
+        goal (StrategicGoal): The strategic goal object for which the performance is calculated.
+
+    """
+    quarter = None
+    year = year_filter
+    quarter = quarter_filter[0].quarter_eng if quarter_filter else None
+    
+    if quarter and year:
+        performance = None
+        performance = StrategicGoal.objects.prefetch_related(
+                Prefetch('kra_goal__indicators',
+                        queryset=Indicator.objects.filter(
+                            responsible_ministries__responsible_ministry_eng = ministry,
+                            quarter_indicators__quarter_target__isnull=False,
+                            quarter_indicators__year__year_amh = year,
+                            quarter_indicators__quarter__quarter_eng = quarter,
+                            ))
+                            ).filter(policy_area_id__in=policies)  
+        return performance
+    else:
+        performance = None 
+        performance = StrategicGoal.objects.prefetch_related(
+                Prefetch('kra_goal__indicators',
+                        queryset=Indicator.objects.filter(
+                            responsible_ministries__responsible_ministry_eng = ministry,
+                            annual_indicators__annual_target__isnull=False,
+                            annual_indicators__year__year_amh = year,
+                            ))
+                            ).filter(policy_area_id__in=policies)
+        return performance
+      
     
 @login_required
 @sector_user_required
@@ -680,41 +809,287 @@ def affiliated_ministries_list(request):
 
 
 
+
+
 @login_required
-def above_threshold(request):
+@sector_user_required
+def threshold(request):
     u_sector = UserSector.objects.get(user=request.user)
     main_ministry = ResponsibleMinistry.objects.filter(id=u_sector.user_sector.id)
     affiliated_ministries = ResponsibleMinistry.objects.filter(affiliated_to=u_sector.user_sector)
     ministries = list(main_ministry) + list(affiliated_ministries)
-    annual_plans_lookup = {}
+    
+
+    policy_area_count = get_policy_areas_by_ministry(u_sector.user_sector.id).all().count()
+    goal_count = get_strategic_goals_with_cache(u_sector.user_sector.id)[0].count()
+    kra_count = get_strategic_goals_with_cache(u_sector.user_sector.id)[1].count()
+    indicator_count = Indicator.objects.filter(
+        responsible_ministries_id=u_sector.user_sector.id).count()
+
+
+    # Get the policy IDs from the request (assuming it's passed as GET parameters)
+    selected_policies = request.GET.getlist('selected_policies[]')
+
+   
+
+    #custom filter 
+    filter_period = request.GET.get('filter-period')
+    filter_year = request.GET.get('filter-year')
+    filter_performance = request.GET.get('filter-performance')
+    filter_quarter = request.GET.get('filter-quarter')
+
+    ministry = request.GET.get('selected_ministry')
+
+    
+
+     # Fetch all visible years for the annual plans
     years = Year.objects.filter(mdip=True)
+    quarters = Quarter.objects.filter()
+
+    if filter_year and filter_period == 'year':
+        years = Year.objects.filter(year_amh=filter_year, mdip=True)
+    
+    if filter_quarter and filter_period == 'quarter':
+        quarter_with_year = filter_quarter.split('-')
+        quarter_rank = quarter_with_year[1].split('q')[1]
+
+        quarters =  Quarter.objects.filter(rank=quarter_rank)
+        filter_year = quarter_with_year[0]
+
+        years = Year.objects.filter(year_amh=filter_year, mdip=True)
 
 
+    # Fetch all policies for the dropdown
+ 
+    if ministry != None:
+        m_id = ResponsibleMinistry.objects.get(responsible_ministry_eng=ministry).id
+    else :
+        m_id = u_sector.user_sector.id
+    policies = get_policy_areas_by_ministry(m_id)
+    # Fetch strategic goals with related KeyResultAreas and Indicators
 
-    annual_plans = AnnualPlan.objects.select_related(
-    'indicator', 'sub_indicator', 'year').filter(
-    year__visible=True,
-    indicator__responsible_ministries__in=ministries)
-
-    selected_selected_policies = request.GET.getlist('selected_selected_policies[]')
-    if selected_selected_policies:
-        strategic_goals = get_strategic_goals_with_cache(u_sector.user_sector.id, selected_ministries)[0]
+    if selected_policies:
+        strategic_goals = StrategicGoal.objects.prefetch_related(
+            'kra_goal__indicators'
+        ).filter(policy_area_id__in=selected_policies)
     else:
-        strategic_goals = get_strategic_goals_with_cache(u_sector.user_sector.id)[0]
+        strategic_goals = StrategicGoal.objects.prefetch_related(
+            'kra_goal__indicators'
+        ).filter(policy_area_id__in=policies)
 
 
 
+    if filter_period and filter_year and filter_performance and filter_performance != 'all' :
+        strategic_goals = get_performance_ministry(
+            ministry,
+            filter_period, 
+            filter_year, 
+            filter_performance, 
+            selected_policies if selected_policies else policies,
+            quarters if filter_period == 'quarter' else None
+            )
+
+        
+
+
+    # Fetch all annual plans with related indicators and sub-indicators
+    annual_plans = AnnualPlan.objects.select_related(
+        'indicator', 'sub_indicator', 'year'
+    ).filter(year__visible=True)
+
+    # Create a lookup dictionary for annual plans
+    annual_plans_lookup = {}
     for plan in annual_plans:
         if plan.indicator_id not in annual_plans_lookup:
             annual_plans_lookup[plan.indicator_id] = {}
         annual_plans_lookup[plan.indicator_id][plan.year_id] = plan
+
+    quarter_progress = QuarterProgress.objects.select_related('indicator', 'quarter', 'year').filter(year__quarter_view=True, indicator__responsible_ministries=u_sector.user_sector)
+
+    quarter_progress_lookup = {}
+    for progress in quarter_progress:
+        if progress.indicator_id not in quarter_progress_lookup:
+            quarter_progress_lookup[progress.indicator_id] = {}
+        if progress.year_id not in quarter_progress_lookup[progress.indicator_id]:
+            quarter_progress_lookup[progress.indicator_id][progress.year_id] = {}
+        quarter_progress_lookup[progress.indicator_id][progress.year_id][progress.quarter_id] = progress
+
+   
     context = {
+        'ministries' : ministries,
+        
         'strategic_goals': strategic_goals,
         'years': years,
+        'quarters': quarters,
         'annual_plans_lookup': annual_plans_lookup,
-        'ministries' : ministries
+        'quarter_progress_lookup' : quarter_progress_lookup,
+      
+        'policies': policies,    # Pass the policies to the context for the dropdown
+        'goal_count': goal_count,
+        'kra_count': kra_count,
+        'indicator_count': indicator_count,
+        
+        'policy_area_count':policy_area_count,
+        'year_option_list' : Year.objects.filter(mdip=True),
+
+        ###return instance of custom filter
+        'filter_period' : filter_period or 'year',
+        'filter_year' : filter_year or None,
+        'filter_performance' : filter_performance or None,
+        'filter_quarter' : filter_quarter or None,
+        'col_span_size' : years.count() if filter_year == 'year' else (4 * years.count()) + years.count() + 1 , 
+        
     }
-    return render(request, 'ministry/above_threshold.html' , context)
+
+
+    return render(request, 'ministry/threshold.html', context)
+
+
+
+
+
+
+@login_required
+@sector_user_required
+def performance_verification(request):
+    u_sector = UserSector.objects.get(user=request.user)
+    main_ministry = ResponsibleMinistry.objects.filter(id=u_sector.user_sector.id)
+    affiliated_ministries = ResponsibleMinistry.objects.filter(affiliated_to=u_sector.user_sector)
+    ministries = list(main_ministry) + list(affiliated_ministries)
+    
+
+    policy_area_count = get_policy_areas_by_ministry(u_sector.user_sector.id).all().count()
+    goal_count = get_strategic_goals_with_cache(u_sector.user_sector.id)[0].count()
+    kra_count = get_strategic_goals_with_cache(u_sector.user_sector.id)[1].count()
+    indicator_count = Indicator.objects.filter(
+        responsible_ministries_id=u_sector.user_sector.id).count()
+
+
+    # Get the policy IDs from the request (assuming it's passed as GET parameters)
+    selected_policies = request.GET.getlist('selected_policies[]')
+
+   
+
+    #custom filter 
+    filter_period = request.GET.get('filter-period')
+    filter_year = request.GET.get('filter-year')
+    filter_quarter = request.GET.get('filter-quarter')
+
+    ministry = request.GET.get('selected_ministry')
+   
+
+
+    if filter_year == None:
+        filter_year = 2016
+        filter_period = 'year'
+
+
+     # Fetch all visible years for the annual plans
+    years = Year.objects.filter(mdip=True)
+    quarters = Quarter.objects.filter()
+
+    if filter_year and filter_period == 'year':
+        years = Year.objects.filter(year_amh=filter_year, mdip=True)
+    
+    if filter_quarter and filter_period == 'quarter':
+        quarter_with_year = filter_quarter.split('-')
+        quarter_rank = quarter_with_year[1].split('q')[1]
+
+        quarters =  Quarter.objects.filter(rank=quarter_rank)
+        filter_year = quarter_with_year[0]
+
+        years = Year.objects.filter(year_amh=filter_year, mdip=True)
+
+
+    # Fetch all policies for the dropdown
+    if ministry != None:
+        m_id = ResponsibleMinistry.objects.get(responsible_ministry_eng=ministry).id
+    else :
+        m_id = u_sector.user_sector.id
+
+ 
+    policies = get_policy_areas_by_ministry(m_id)
+
+    if selected_policies:
+        strategic_goals = StrategicGoal.objects.prefetch_related(
+            'kra_goal__indicators'
+        ).filter(policy_area_id__in=selected_policies)
+    else:
+        strategic_goals = StrategicGoal.objects.prefetch_related(
+            'kra_goal__indicators'
+        ).filter(policy_area_id__in=policies)
+
+
+
+    print(filter_period , filter_year)
+    if filter_period and filter_year :
+        strategic_goals = get_performance_ministry_verification(
+            ministry,
+            filter_period, 
+            filter_year, 
+            selected_policies if selected_policies else policies,
+            quarters if filter_period == 'quarter' else None
+            )
+    
+        
+
+
+    # Fetch all annual plans with related indicators and sub-indicators
+    annual_plans = AnnualPlan.objects.select_related(
+        'indicator', 'sub_indicator', 'year'
+    ).filter(year__visible=True)
+
+    # Create a lookup dictionary for annual plans
+    annual_plans_lookup = {}
+    for plan in annual_plans:
+        if plan.indicator_id not in annual_plans_lookup:
+            annual_plans_lookup[plan.indicator_id] = {}
+        annual_plans_lookup[plan.indicator_id][plan.year_id] = plan
+
+    quarter_progress = QuarterProgress.objects.select_related('indicator', 'quarter', 'year').filter(year__quarter_view=True, indicator__responsible_ministries=u_sector.user_sector)
+
+    quarter_progress_lookup = {}
+    for progress in quarter_progress:
+        if progress.indicator_id not in quarter_progress_lookup:
+            quarter_progress_lookup[progress.indicator_id] = {}
+        if progress.year_id not in quarter_progress_lookup[progress.indicator_id]:
+            quarter_progress_lookup[progress.indicator_id][progress.year_id] = {}
+        quarter_progress_lookup[progress.indicator_id][progress.year_id][progress.quarter_id] = progress
+
+    print(strategic_goals)        
+
+    context = {
+        'ministries' : ministries,
+        
+        'strategic_goals': strategic_goals,
+        'years': years,
+        'quarters': quarters,
+        'annual_plans_lookup': annual_plans_lookup,
+        'quarter_progress_lookup' : quarter_progress_lookup,
+      
+        'policies': policies,    # Pass the policies to the context for the dropdown
+        'goal_count': goal_count,
+        'kra_count': kra_count,
+        'indicator_count': indicator_count,
+        
+        'policy_area_count':policy_area_count,
+        'year_option_list' : Year.objects.filter(mdip=True),
+
+        ###return instance of custom filter
+        'filter_period' : filter_period or 'year',
+        'filter_year' : filter_year or None,
+        'filter_quarter' : filter_quarter or None,
+        'col_span_size' : years.count() if filter_year == 'year' else (4 * years.count()) + years.count() + 1 , 
+        
+    }
+
+
+    return render(request, 'ministry/performance_verification.html', context)
+
+
+
+
+
 
 
 def export_quarter_plan_temp(request):
@@ -3450,7 +3825,7 @@ def update_strategic_goal(request):
         goal.goal_weight = goal_weight
         goal.goal_is_shared = True if goal_is_shared == "true" else  False
         goal.national_plan = plan
-        goal.responsible_ministries = ministry
+        goal.responsible_ministries__responsible_ministry_eng = ministry
         goal.save()
         response = {'success' : True}
     except:
