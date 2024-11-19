@@ -330,7 +330,7 @@ class StrategicGoalAdmin(ImportExportModelAdmin):
     list_display = ('goal_name_eng','code','policy_area', 'goal_is_visable','responsible_ministries',)
     
     # Fields to add to the search functionality
-    search_fields = ('goal_name_eng', 'goal_name_amh')
+    search_fields = ('goal_name_eng', 'goal_name_amh', 'code')
     
     # Fields to add to the filter functionality
     list_filter = ('goal_is_visable', 'policy_area')
@@ -377,9 +377,9 @@ class KeyResultAreaResource(resources.ModelResource):
 
 
 class KeyResultAreaAdmin(ImportExportModelAdmin):
-    list_display = ('activity_name_eng',  'goal',)
+    list_display = ('activity_name_eng', 'code', 'goal',)
     list_filter = ('goal',)
-    search_fields = ('activity_name_eng', 'goal__goal_name_eng')
+    search_fields = ('activity_name_eng', 'goal__goal_name_eng', 'code')
     list_editable = ( 'goal',
     )
     resource_classes = [KeyResultAreaResource]

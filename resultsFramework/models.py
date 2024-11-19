@@ -105,27 +105,28 @@ class PolicyArea(models.Model):
     icon = IconField()
     rank = models.IntegerField(default=400)
     sdg = models.ManyToManyField("SDG",  blank=True, related_name='sdgs')
-    code = models.CharField(max_length=100, blank=True, null=True, unique=True, editable=False)
+    code = models.CharField(max_length=100, blank=True, null=True, unique=True)
 
     
     class Meta:
         ordering = ["id"]
 
     def save(self, *args, **kwargs):
-        if not self.code and self.policyAreaEng:
-            # Generate code from the first letter of each word in policyAreaEng
-            base_code = ''.join(word[0].upper() for word in self.policyAreaEng.split())
-            new_code = base_code
-            counter = 1
-            
-            # Ensure uniqueness
-            while PolicyArea.objects.filter(code=new_code).exists():
-                new_code = f"{base_code}{counter}"
+        if self.policyAreaEng: 
+            base_code = 'PA'
+            counter = 1  # Start with the first number
+    
+            # Generate a unique code
+            while True:
+                new_code = f"{base_code}{counter:02d}"  # Zero-padded to two digits
+                if not PolicyArea.objects.filter(code=new_code).exists():
+                    break
                 counter += 1
-            
+    
             self.code = new_code
-        
+    
         super().save(*args, **kwargs)
+
 
     def __str__(self):
         return self.policyAreaEng 
@@ -231,7 +232,7 @@ class StrategicGoal(models.Model):
 
     responsible_ministries = models.ForeignKey(
         "userManagement.ResponsibleMinistry", on_delete=models.SET_NULL, null=True, related_name="ministry_goal", blank=True)
-    code = models.CharField(max_length=100, blank=True, null=True, unique=True, editable=False)
+    code = models.CharField(max_length=100, blank=True, null=True, unique=True)
     goal_is_visable = models.BooleanField(default=False)
 
 
@@ -240,16 +241,16 @@ class StrategicGoal(models.Model):
     
     def save(self, *args, **kwargs):
         if self.goal_name_eng and self.policy_area:
-            # Generate code from the first letter of each word in goal_name_eng
-            base_code = ''.join(word[0].upper() for word in self.goal_name_eng.split())+ '-' + self.policy_area.code
-            new_code = base_code 
-            counter = 1
-            
-            # Ensure uniqueness
-            while StrategicGoal.objects.filter(code=new_code).exists():
-                new_code = f"{base_code}{counter}"
+            base_code = 'G'
+            counter = 1 
+
+            # Generate a unique code
+            while True:
+                new_code = f"{self.policy_area.code}-{base_code}{counter:02d}"  # Zero-padded to two digits
+                if not StrategicGoal.objects.filter(code=new_code).exists():
+                    break
                 counter += 1
-            
+    
             self.code = new_code
         
         super().save(*args, **kwargs)
@@ -356,8 +357,27 @@ class KeyResultArea(models.Model):
     goal = models.ForeignKey(StrategicGoal, related_name="kra_goal", verbose_name=(
         "Strategic Planning Goals"), on_delete=models.SET_NULL, null=True)
     kra_is_visable = models.BooleanField(default=False)
+    code = models.CharField(max_length=100, blank=True, null=True)
+
+
     def __str__(self):
         return self.activity_name_eng
+    
+    def save(self, *args, **kwargs):
+        if self.activity_name_eng and self.goal and self.goal.code:
+            base_code = 'KR'
+            counter = 1 
+
+            # Generate a unique code
+            while True:
+                new_code = f"{self.goal.code}-{base_code}{counter:02d}"  # Zero-padded to two digits
+                if not KeyResultArea.objects.filter(code=new_code).exists():
+                    break
+                counter += 1
+    
+            self.code = new_code
+        
+        super().save(*args, **kwargs)
 
 
 

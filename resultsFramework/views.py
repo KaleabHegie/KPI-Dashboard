@@ -1635,8 +1635,7 @@ def is_ajax(request):
 @login_required
 @mopd_user_required
 def dashboard_mopd(request):
-    for i in StrategicGoal.objects.all():
-        i.save()
+   
     return render(request, 'dashboard_mopd.html')
 
 @login_required
