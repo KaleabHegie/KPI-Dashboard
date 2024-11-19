@@ -321,9 +321,9 @@ class StrategicGoalResource(resources.ModelResource):
           model = StrategicGoal
           skip_unchanged = True
           report_skipped = True
-          fields = ('id','goal_name_eng', 'goal_name_amh', 'goal_weight', 'goal_is_shared','national_plan', 'policy_area','goal_is_visable')
-          ##exclude = ('id', 'composite_key')
-          #import_id_fields = ('goal_name_eng', 'goal_name_amh', 'goal_weight', 'goal_is_shared','national_plan', 'policy_area')
+          fields = ('code','goal_name_eng', 'goal_name_amh', 'goal_weight', 'goal_is_shared','national_plan', 'policy_area','goal_is_visable')
+          exclude = ('id')
+          import_id_fields = ('code','goal_name_eng', 'goal_name_amh', 'goal_weight', 'goal_is_shared','national_plan', 'policy_area', 'goal_is_visable')
 
 
 class StrategicGoalAdmin(ImportExportModelAdmin):
