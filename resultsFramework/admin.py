@@ -431,9 +431,9 @@ class IndicatorResource(resources.ModelResource):
 
 class IndicatorAdmin(ImportExportModelAdmin):
     resource_classes = [IndicatorResource]
-    list_display = ('kpi_name_eng', 
+    list_display = ('kpi_name_eng', "code",
                     'kpi_characteristics','kpi_is_visable', 'responsible_ministries', 'keyResultArea','kpi_weight')
-    search_fields = ("kpi_name_eng",)
+    search_fields = ("kpi_name_eng","code")
     list_editable = ( 'kpi_characteristics','responsible_ministries','kpi_weight')
     list_filter = ('responsible_ministries', 'kpi_is_visable',"keyResultArea__goal__policy_area")
     autocomplete_fields = ['keyResultArea']

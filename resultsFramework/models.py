@@ -357,7 +357,7 @@ class KeyResultArea(models.Model):
     goal = models.ForeignKey(StrategicGoal, related_name="kra_goal", verbose_name=(
         "Strategic Planning Goals"), on_delete=models.SET_NULL, null=True)
     kra_is_visable = models.BooleanField(default=False)
-    code = models.CharField(max_length=100, blank=True, null=True)
+    code = models.CharField(max_length=100, unique=True,blank=True, null=True)
 
 
     def __str__(self):
@@ -657,12 +657,29 @@ class Indicator(models.Model):
     # kpi = models.ForeignKey("Indicator", on_delete=models.SET_NULL, null=True)
     goal = models.ForeignKey(StrategicGoal, related_name="kra_goal_dashboard", verbose_name=(
         "goal dasboard"), on_delete=models.SET_NULL, null=True,blank=True)
+    code = models.CharField(max_length=100,blank=True,  null=True)
     kpi_is_visable = models.BooleanField(default=False, null=True, blank=True)
     def __str__(self):
         return self.kpi_name_eng
+    
+    def save(self, *args, **kwargs):
+        if self.kpi_name_eng and self.responsible_ministries and self.responsible_ministries.code and self.keyResultArea and self.keyResultArea.code:
+            base_code = 'IND'
+            counter = 1 
+
+            # Generate a unique code
+            while True:
+                new_code = f"{self.responsible_ministries.code}-{base_code}{counter:02d}"  # Zero-padded to two digits
+                if not Indicator.objects.filter(code=new_code).exists():
+                    break
+                counter += 1
+    
+            self.code = new_code
+        
+        super().save(*args, **kwargs)
 
     class Meta:
-        ordering = ["id"]
+        ordering = ["code"]
         verbose_name = "Key Performance Indicator"
         indexes = [
             models.Index(fields=['kpi_name_eng', 'kpi_measurement_units']),
