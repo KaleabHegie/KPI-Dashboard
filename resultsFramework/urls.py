@@ -29,6 +29,7 @@ urlpatterns = [
     path('affiliated_ministries_list/', affiliated_ministries_list, name='affiliated_ministries_list'),
     path('threshold/' , threshold , name='threshold'),
     path('performance_verification/' , performance_verification , name='performance_verification'),
+    path('validate-plans/', validate_plans, name='validate_plans'),
 
     path('dashboard/', ministry_dashboard, name="ministry"),
     path('policy_area_ministry/', policy_area_ministry, name='policy_area_ministry_url'),

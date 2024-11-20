@@ -267,6 +267,16 @@
                                 {% endfor %}
                                 {% endif %}
 
+                                <th>
+                                  <div class="form-check">
+                                    <input 
+                                      type="checkbox" 
+                                      id="validateAllCheckbox_{{ year.id }}" 
+                                      class="form-check-input validate-all-checkbox" 
+                                      data-year-id="{{ year.id }}">
+                                    <label class="form-check-label" for="validateAllCheckbox_{{ year.id }}">Validate All</label>
+                                  </div>
+                                </th>
                             {% endfor %}
                             
                         </tr>
@@ -318,21 +328,6 @@
                                           </button>
                                         {% endif %}
                                       </div>
-                                      <div class="col-lg-3">
-                                          {% if plan %}
-                                            <button type="button" 
-                                                    class="btn btn-sm" 
-                                                    data-bs-toggle="modal" 
-                                                    data-bs-target="#validationCommentModal_{{ indicator.id }}_{{ year.id }}">
-                                              {% if plan.validated %}
-                                                <i class="fas fa-check"></i> <!-- Font Awesome check icon -->
-                                              {% else %}
-                                                <i class="fas fa-times"></i> <!-- Font Awesome times (x) icon -->
-                                              {% endif %}
-                                            </button>
-                                          
-                                          {% endif %}
-                                      </div>
                                   </div> 
                                       
                                       <!-- Modal -->
@@ -354,20 +349,12 @@
           <!-- Validation Comment -->
           <div class="mb-3">
             <label for="validationCommentTextarea_{{ indicator.id }}_{{ year.id }}" class="form-label fw-bold">Validation Comment</label>
-            <textarea id="validationCommentTextarea_{{ indicator.id }}_{{ year.id }}" name="validation_comment" class="form-control" rows="4" placeholder="Enter validation comment here...">
-              {% if plan and plan.validation_comment %}{{ plan.validation_comment }}{% endif %}
-            </textarea>
-          </div>
-
-          <!-- Validated Checkbox -->
-          <div class="form-check form-switch mb-3">
-            <input class="form-check-input" type="checkbox" id="validatedCheckbox_{{ indicator.id }}_{{ year.id }}" name="validated" value="true" 
-              {% if plan and plan.validated %}checked{% endif %}>
-            <label class="form-check-label" for="validatedCheckbox_{{ indicator.id }}_{{ year.id }}">
-              Validated
-            </label>
-          </div>
-
+            <textarea id="validationCommentTextarea_{{ indicator.id }}_{{ year.id }}" 
+                      name="validation_comment" 
+                      class="form-control" 
+                      rows="4" 
+                      placeholder="Enter validation comment here...">{% if plan and plan.validation_comment %}{{ plan.validation_comment }}{% endif %}</textarea>
+        </div>
           <!-- Footer -->
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -379,11 +366,38 @@
   </div>
 </div>
 
-                                    {% endwith %}
+                                    
                                     
                                     <!-- Checkbox for Validation -->
                                    
                                   </td>
+                                  <td>
+                                    {% if plan %}
+                                    
+                                      <div class="form-check">
+                                        <input 
+                                          type="checkbox" 
+                                          class="form-check-input validate-checkbox" 
+                                          data-plan-id="{{ plan.id }}" 
+                                          data-year-id="{{ year.id }}" 
+                                          {% if plan.validated %}checked{% endif %}>
+                                      </div>
+                                      {% if plan and not plan.validated %}
+                                      <button 
+                                        type="button" 
+                                        class="btn btn-sm" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#validationCommentModal_{{ indicator.id }}_{{ year.id }}">
+                                        <i class="ml-5 fas fa-2x fa-times text-danger"></i>
+                                      </button>
+                                      {% else %}
+                                      <i class="ml-5 fas fa-2x fa-check text-success"></i>
+                                    {% endif %}
+                                    
+                                    
+                                    {% endif %}
+                                  </td>
+                                  {% endwith %}
                                   
                                  
 
@@ -440,7 +454,10 @@
                         {% endfor %}
 
                     </tbody>
+                    <button id="validateSelectedButton" class="btn btn-success float-right">Validate Selected</button>
                   </table>
+                  
+
                 </div>
               </div>
             </div>
@@ -593,4 +610,99 @@
       </script>
       
   </body>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      // Handle "Validate All" checkbox toggle
+      document.querySelectorAll(".validate-all-checkbox").forEach((checkbox) => {
+        checkbox.addEventListener("change", function () {
+          const yearId = this.dataset.yearId;
+          const validate = this.checked;
+  
+          // Collect all checkboxes for the specific year
+          const checkboxes = document.querySelectorAll(
+            `.validate-checkbox[data-year-id="${yearId}"]`
+          );
+  
+          // Update all checkboxes and icons in the UI
+          checkboxes.forEach((cb) => {
+            cb.checked = validate;
+  
+            const icon = cb.closest("td").querySelector("i");
+            if (validate) {
+              icon.classList.replace("fa-times", "fa-check");
+              icon.classList.replace("text-danger", "text-success");
+            } else {
+              icon.classList.replace("fa-check", "fa-times");
+              icon.classList.replace("text-success", "text-danger");
+            }
+          });
+        });
+      });
+  
+      // Sync individual row checkboxes with icons
+      document.querySelectorAll(".validate-checkbox").forEach((checkbox) => {
+        checkbox.addEventListener("change", function () {
+          const icon = this.closest("td").querySelector("i");
+          if (this.checked) {
+            icon.classList.replace("fa-times", "fa-check");
+            icon.classList.replace("text-danger", "text-success");
+          } else {
+            icon.classList.replace("fa-check", "fa-times");
+            icon.classList.replace("text-success", "text-danger");
+          }
+        });
+      });
+    });
+  </script>
+  <script>
+    document.getElementById("validateSelectedButton").addEventListener("click", function () {
+      // Collect all checkboxes
+      const allCheckboxes = document.querySelectorAll(".validate-checkbox");
+  
+      // Separate checked and unchecked checkboxes
+      const validatedPlanIds = Array.from(allCheckboxes)
+        .filter(cb => cb.checked)
+        .map(cb => cb.dataset.planId);
+  
+      const allPlanIds = Array.from(allCheckboxes).map(cb => cb.dataset.planId);
+  
+      // Send the data to the backend
+      fetch("{% url 'validate_plans' %}", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": "{{ csrf_token }}",  // Include CSRF token for security
+        },
+        body: JSON.stringify({ 
+          validated_plan_ids: validatedPlanIds,
+          all_plan_ids: allPlanIds
+        }),  // Send both validated and all plan IDs as JSON
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          // Update the UI to reflect the changes
+          allCheckboxes.forEach(cb => {
+            const icon = cb.closest("td").querySelector("i");
+            if (cb.checked) {
+              // Checked: Mark as validated
+              icon.classList.replace("fa-times", "fa-check");
+              icon.classList.replace("text-danger", "text-success");
+            } else {
+              // Unchecked: Mark as unvalidated
+              icon.classList.replace("fa-check", "fa-times");
+              icon.classList.replace("text-success", "text-danger");
+            }
+          });
+          alert("Plans have been updated successfully!");
+        } else {
+          alert("Failed to update plans: " + data.message);
+        }
+      })
+      .catch(error => console.error("Error:", error));
+    });
+  </script>
+  
+  
+  
 </html>

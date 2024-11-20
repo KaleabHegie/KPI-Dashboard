@@ -747,21 +747,53 @@ def mdip_ministry(request):
 
 ##### Profile ##########
 
+from django.shortcuts import redirect
+from django.contrib import messages
+
+
+
+
 @login_required
 def ministry_profile(request):
     u_sector = UserSector.objects.get(user=request.user)
     user = Account.objects.get(id=request.user.id)
     ministry = ResponsibleMinistry.objects.get(id=u_sector.user_sector.id)
-    emails = ContactInfo.objects.filter(contact_type = 'email',ministry = ministry)
-    phones = ContactInfo.objects.filter(contact_type = 'phone',ministry = ministry)
-    context = {
-        "user" : user,
-        'ministry' : ministry,
-        "emails" : emails,
-        "phones" : phones
+    emails = ContactInfo.objects.filter(contact_type='email', ministry=ministry)
+    phones = ContactInfo.objects.filter(contact_type='phone', ministry=ministry)
 
+
+    if request.method == 'POST':
+        # Update the Responsible Ministry details
+        ministry.responsible_ministry_eng = request.POST.get('responsible_ministry_eng')
+        ministry.responsible_ministry_amh = request.POST.get('responsible_ministry_amh')
+        ministry.code = request.POST.get('code')
+        ministry.save()
+
+        # Handle Emails
+        email_list = request.POST.getlist('emails[]')  # Get emails from the form
+        print(request.POST)
+        # Delete existing emails and save new ones
+        emails.delete()
+        for email in email_list:
+            ContactInfo.objects.create(contact_type='email', contact=email, ministry=ministry)
+
+        # Handle Phone Numbers
+        phone_list = request.POST.getlist('phones[]')  # Get phones from the form
+        # Delete existing phones and save new ones
+        phones.delete()
+        for phone in phone_list:
+            ContactInfo.objects.create(contact_type='phone', contact=phone, ministry=ministry)
+
+        return redirect('ministry_profile')  # Redirect back to the profile page after saving
+
+
+    context = {
+        "user": user,
+        'ministry': ministry,
+        "emails": emails,
+        "phones": phones,
     }
-    return render(request, 'ministry/ministry_profile.html' , context)
+    return render(request, 'ministry/ministry_profile.html', context)
 
 #### Affiliated Ministries #########################################
 
@@ -825,6 +857,21 @@ def threshold(request):
     kra_count = get_strategic_goals_with_cache(u_sector.user_sector.id)[1].count()
     indicator_count = Indicator.objects.filter(
         responsible_ministries_id=u_sector.user_sector.id).count()
+
+
+
+
+    if request.method == "POST":
+        plan_id = request.POST.get("plan_id")
+        justification = request.POST.get("justification")
+        if plan_id and justification:
+            plan = get_object_or_404(AnnualPlan, id=plan_id)
+            plan.justification = justification
+            plan.save()
+            messages.success(request, "Justification saved successfully!")
+        else:
+            messages.error(request, "Failed to save justification. Please try again.")
+
 
 
     # Get the policy IDs from the request (assuming it's passed as GET parameters)
@@ -957,6 +1004,19 @@ def performance_verification(request):
     affiliated_ministries = ResponsibleMinistry.objects.filter(affiliated_to=u_sector.user_sector)
     ministries = list(main_ministry) + list(affiliated_ministries)
     
+    if request.method == "POST":
+        plan_id = request.POST.get("plan_id")
+        validation_comment = request.POST.get("validation_comment")
+        validated = request.POST.get("validated") == "true"  # Convert checkbox to boolean
+
+        # Save the validation details
+        plan = get_object_or_404(AnnualPlan, id=plan_id)
+        plan.validation_comment = validation_comment
+        plan.validated = validated
+        plan.save()
+
+        # Redirect back to the same page (or customize the redirect destination)
+        return redirect('performance_verification')
 
     policy_area_count = get_policy_areas_by_ministry(u_sector.user_sector.id).all().count()
     goal_count = get_strategic_goals_with_cache(u_sector.user_sector.id)[0].count()
@@ -1056,8 +1116,7 @@ def performance_verification(request):
             quarter_progress_lookup[progress.indicator_id][progress.year_id] = {}
         quarter_progress_lookup[progress.indicator_id][progress.year_id][progress.quarter_id] = progress
 
-    print(strategic_goals)        
-
+   
     context = {
         'ministries' : ministries,
         
@@ -1088,7 +1147,24 @@ def performance_verification(request):
 
 
 
+def validate_plans(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)  # Parse JSON data from the request
+            validated_plan_ids = data.get("validated_plan_ids", [])  # IDs of plans to validate
+            all_plan_ids = data.get("all_plan_ids", [])  # IDs of all plans
 
+            # Validate checked plans
+            AnnualPlan.objects.filter(id__in=validated_plan_ids).update(validated=True)
+
+            # Unvalidate unchecked plans
+            unvalidated_plan_ids = list(set(all_plan_ids) - set(validated_plan_ids))
+            AnnualPlan.objects.filter(id__in=unvalidated_plan_ids).update(validated=False)
+
+            return JsonResponse({"success": True, "message": "Plans updated successfully."})
+        except Exception as e:
+            return JsonResponse({"success": False, "message": str(e)}, status=400)
+    return JsonResponse({"success": False, "message": "Invalid request."}, status=400)
 
 
 

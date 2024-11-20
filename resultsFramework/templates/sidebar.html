@@ -110,13 +110,44 @@
           </ul>
         </li>
 
-        <li class="nav-item">
-          <a href="{% url 'affiliated_ministries' %}" class="nav-link">
-            <i class="nav-icon fas fa-building"></i>
-            <p>Affiliated Organizations</p>
-          </a>
-        </li>
 
+
+
+
+        <li class="nav-item">
+          <a href="#" class="nav-link">
+            <i class="nav-icon fas fa-building"></i>
+            <p>
+              Affiliated Organization
+            </p>
+          </a>
+          <ul class="nav nav-treeview">
+            <li class="nav-item">
+              <a href="{% url 'affiliated_ministries' %}" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Visual</p>
+              </a>
+            </li>
+    
+
+
+            <li class="nav-item">
+              <a href="{% url 'performance_verification'  %}" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Performace Verification</p>
+              </a>
+            </li>
+
+            <!-- <li class="nav-item">
+              <a href="{% url 'ministry_kpi_kra_quarter' %}" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Quarter Progress</p>
+              </a>
+            </li> -->
+
+          </ul>
+        </li>
+        
         {% elif request.user.is_mopd %}
 
         <li class="nav-item">
@@ -352,29 +383,13 @@
         <li class="nav-header">Data Management</li>
 
         <li class="nav-item">
-          <a href="#" class="nav-link">
+          <a href="{% url "threshold" %}" class="nav-link">
             <i class="nav-icon fas fa-tachometer-alt"></i>
             <p>
               Performance Alerts
               <i class="fas fa-angle-left right"> </i>
             </p>
           </a>
-
-          <ul class="nav nav-treeview">
-            <li class="nav-item">
-              <a href="{% url "threshold" %}" class="nav-link">
-                <i class="far fa-circle nav-icon"></i>
-                <p>Above Thresholds</p>
-              </a>
-            </li>
-
-            <li class="nav-item">
-              <a href="" class="nav-link">
-                <i class="far fa-circle nav-icon"></i>
-                <p>Under Thresholds</p>
-              </a>
-            </li>
-          </ul>
         </li>
 
         <li class="nav-item">
