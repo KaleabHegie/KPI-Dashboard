@@ -108,7 +108,8 @@
             </div>
             
             <div class="row">
-              <div class="col-12">
+              <!--Policy Area Filter-->
+              <div class="col-md-6">
                   <div class="card ">
 
                     <form id="filterForm" method="get">
@@ -153,16 +154,77 @@
 
                   </div>
               </div>
+              <!--Custom Filter -->
+              <div class="col-md-6">
+                  <div class="card ">
+                    <form id="filterForm" method="get">
+
+                      <div class="card-header bg-green-500">
+                          <h3 class="card-title">Custom Filter</h3>
+                          <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                              <i class="fas fa-minus"></i>
+                            </button>
+                          </div>
+                      </div>
+
+                      <form action="" method="get">
+                      <div class="card-body row p-0 mt-3">
+                          <div class="col-md-12 p-2 m-1 row justify-content-center">
+                            <!--form start here-->
+                           
+
+                              <div class="col-md-4">
+                                <!--Time period -->
+                                <label for="dataType">Select Time Period</label>
+                                <select id="dataPeriod" class="form-select" name="filter-period" aria-label="Floating label select example">
+                                  <option {% if filter_period|stringformat:"s" == 'year' %}selected{% endif %} value="year">Yearly</option>
+                                  <option {% if filter_period|stringformat:"s" == 'quarter' %}selected{% endif %}  value="quarter">Quarterly</option>
+                                </select>
+                              </div>
+
+                              <div class="col-md-4">
+                                <!--Year -->
+                                <label for="years">Select Year</label>
+                                <select multiple id="years" class="form-select" name="filter-year" aria-label="Floating label select example">
+                                  {% for year in year_option_list %}
+                                  <option 
+                                    {% if year.year_amh|stringformat:"s" == filter_year|stringformat:"s" %}selected{% endif %}
+
+                                    value="{{year.year_amh}}">{{year.year_amh}} </option>
+                                  {% endfor %}
+                                </select>
+                              </div>
+
+        
+                          </div>
+                         
+                      </div>
+
+                      
+                      <div class="col-md-3 my-2">
+                        <button type="submit" id="submitButton" class="btn bg-green-500 ">
+                          <i class="fa fa-database"></i> Filter
+                        </button>
+                      </div>
+
+                    </form>
+
+                  </div>
+              </div>
             </div>
 
-            <!-- Custom Filter -->
+
+            
+
+            <!-- Performance Filter -->
              <div class="row">
               <div class="col-12">
                   <div class="card ">
                     <form id="filterForm" method="get">
 
                       <div class="card-header bg-green-500">
-                          <h3 class="card-title">Custom Filter</h3>
+                          <h3 class="card-title">Performance Filter</h3>
                           <div class="card-tools">
                             <button type="button" class="btn btn-tool" data-card-widget="collapse">
                               <i class="fas fa-minus"></i>
@@ -240,7 +302,9 @@
 
                   </div>
               </div>
+               
             </div>
+
             
           
             <div class="row">

@@ -74,7 +74,7 @@ class AnnualQuarterResource(resources.ModelResource):
 
 class QuarterPlanTempFormatResource1(resources.ModelResource):
     indicator_name = fields.Field(attribute='kpi_name_eng', column_name='indicator')
-    # indicator_code = fields.Field(attribute='kpi_code', column_name='Indicator Code')
+    indicator_code = fields.Field(attribute='code', column_name='indicator_code')
     # Placeholder fields for the QuarterPlanTemp fields
     year = fields.Field(column_name='year')
     quarter1_target = fields.Field(column_name='quarter1_target')
@@ -86,7 +86,7 @@ class QuarterPlanTempFormatResource1(resources.ModelResource):
         model = Indicator
         fields = (
             'indicator_name',
-           
+            'indicator_code'
             'year',
             'quarter1_target',
             'quarter2_target',
@@ -95,7 +95,7 @@ class QuarterPlanTempFormatResource1(resources.ModelResource):
         )
         export_order = (
             'indicator_name',
-            
+            'indicator_code',
          
             'year',
             'quarter1_target',
