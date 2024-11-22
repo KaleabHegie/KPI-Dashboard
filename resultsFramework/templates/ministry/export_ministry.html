@@ -109,10 +109,10 @@
             
             <div class="row">
               <!--Policy Area Filter-->
-              <div class="col-md-6">
-                  <div class="card ">
+              <div  class="col-md-6">
+                  <div style="height: 220px;" class="card ">
 
-                    <form id="filterForm" method="get">
+                    <form id="filterCustomForm" method="get">
 
                       <div class="card-header bg-green-500">
                           <h3 class="card-title">Filter</h3>
@@ -144,8 +144,8 @@
                       </div>
 
                       
-                      <div class="col-md-3 my-2">
-                        <button type="submit" id="submitButton" class="btn bg-green-500
+                      <div class="col-md-3 my-2 ">
+                        <button type="submit" id="submitButton" class="btn bg-green-500 
                         
                          "><i class="fa fa-database"></i> Filter</button>
                       </div>
@@ -154,9 +154,10 @@
 
                   </div>
               </div>
+
               <!--Custom Filter -->
               <div class="col-md-6">
-                  <div class="card ">
+                  <div style="height: 220px;" class="card ">
                     <form id="filterForm" method="get">
 
                       <div class="card-header bg-green-500">
@@ -172,28 +173,29 @@
                       <div class="card-body row p-0 mt-3">
                           <div class="col-md-12 p-2 m-1 row justify-content-center">
                             <!--form start here-->
-                           
+                          
 
-                              <div class="col-md-4">
-                                <!--Time period -->
-                                <label for="dataType">Select Time Period</label>
-                                <select id="dataPeriod" class="form-select" name="filter-period" aria-label="Floating label select example">
-                                  <option {% if filter_period|stringformat:"s" == 'year' %}selected{% endif %} value="year">Yearly</option>
-                                  <option {% if filter_period|stringformat:"s" == 'quarter' %}selected{% endif %}  value="quarter">Quarterly</option>
-                                </select>
-                              </div>
-
-                              <div class="col-md-4">
+                              <div class="col-md-8">
                                 <!--Year -->
-                                <label for="years">Select Year</label>
-                                <select multiple id="years" class="form-select" name="filter-year" aria-label="Floating label select example">
+                                <label for="CustomYear">Select Year</label>
+                                <select multiple data-placeholder="Select a Year" class="select2 form-control" id="multiSelect1"
+                                  name="selected_custom_year[]">
                                   {% for year in year_option_list %}
-                                  <option 
-                                    {% if year.year_amh|stringformat:"s" == filter_year|stringformat:"s" %}selected{% endif %}
-
-                                    value="{{year.year_amh}}">{{year.year_amh}} </option>
+                                  <option {% if year.year_amh|stringformat:"s" in custom_filter_year|stringformat:"s" %}selected{% endif %}
+                                    value="{{ year.year_amh }}">{{ year.year_amh }}
+                                  </option>
                                   {% endfor %}
                                 </select>
+
+                    
+                              </div>
+
+                              <div class="col-md-3">
+                                <!--Time period -->
+                                <label for="dataType">Include Quarter</label>
+                                <div>
+                                  <input {% if custom_filters_include_quarter %} checked {% endif %} name="custom_filters_include_quarter" type="checkbox" name="" id="">
+                                </div>
                               </div>
 
         
@@ -202,7 +204,7 @@
                       </div>
 
                       
-                      <div class="col-md-3 my-2">
+                      <div class="col-md-3 my-2 ">
                         <button type="submit" id="submitButton" class="btn bg-green-500 ">
                           <i class="fa fa-database"></i> Filter
                         </button>
@@ -323,7 +325,7 @@
                             <th  class="border">Indicator</th>
                             {% for year in years %}
                                 <th class="border">{{ year.year_amh }}</th>
-                                 {% if filter_period == 'quarter' %}
+                                 {% if filter_period == 'quarter' or custom_filters_include_quarter %}
 
                                 {% for quarter in quarters%}
                                 <th class="border">Q{{ forloop.counter }}</th>
@@ -387,7 +389,7 @@
                                       {% endwith %}
                                     </td>
 
-                                    {% if filter_period == 'quarter' %}
+                                    {% if filter_period == 'quarter' or custom_filters_include_quarter %}
                                     {% for quarter in quarters%}
                                     
                                       <td>
@@ -448,7 +450,7 @@
 
         </section>
       </div>
-    <div/>
+    </div>
 
 
       {% include "footer.html" %}
@@ -554,6 +556,12 @@
             function showLoadingAnimation() {
                 $('#loading-animation').show();
             }
+
+            $('#multiSelect1').select2();
+          // Function to show the loading animation
+          function showLoadingAnimation() {
+            $('#loading-animation').show();
+          }
 
             // Function to hide the loading animation
             function hideLoadingAnimation() {
