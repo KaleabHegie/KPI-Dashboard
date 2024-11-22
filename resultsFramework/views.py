@@ -768,23 +768,17 @@ def ministry_profile(request):
         ministry.responsible_ministry_amh = request.POST.get('responsible_ministry_amh')
         ministry.code = request.POST.get('code')
         ministry.save()
-
-        # Handle Emails
-        email_list = request.POST.getlist('emails[]')  # Get emails from the form
+        email_list = request.POST.getlist('emails[]')  
         print(request.POST)
-        # Delete existing emails and save new ones
         emails.delete()
         for email in email_list:
             ContactInfo.objects.create(contact_type='email', contact=email, ministry=ministry)
-
-        # Handle Phone Numbers
-        phone_list = request.POST.getlist('phones[]')  # Get phones from the form
-        # Delete existing phones and save new ones
+        phone_list = request.POST.getlist('phones[]')  
         phones.delete()
         for phone in phone_list:
             ContactInfo.objects.create(contact_type='phone', contact=phone, ministry=ministry)
 
-        return redirect('ministry_profile')  # Redirect back to the profile page after saving
+        return redirect('ministry_profile')  
 
 
     context = {
@@ -857,8 +851,6 @@ def threshold(request):
     kra_count = get_strategic_goals_with_cache(u_sector.user_sector.id)[1].count()
     indicator_count = Indicator.objects.filter(
         responsible_ministries_id=u_sector.user_sector.id).count()
-
-
 
 
     if request.method == "POST":
@@ -961,9 +953,11 @@ def threshold(request):
             quarter_progress_lookup[progress.indicator_id][progress.year_id] = {}
         quarter_progress_lookup[progress.indicator_id][progress.year_id][progress.quarter_id] = progress
 
-   
+ 
     context = {
+        'ministry' : ministry,
         'ministries' : ministries,
+        'main_ministry' : main_ministry,
         
         'strategic_goals': strategic_goals,
         'years': years,
@@ -1002,7 +996,7 @@ def performance_verification(request):
     u_sector = UserSector.objects.get(user=request.user)
     main_ministry = ResponsibleMinistry.objects.filter(id=u_sector.user_sector.id)
     affiliated_ministries = ResponsibleMinistry.objects.filter(affiliated_to=u_sector.user_sector)
-    ministries = list(main_ministry) + list(affiliated_ministries)
+    ministries =   list(affiliated_ministries)
     
     if request.method == "POST":
         plan_id = request.POST.get("plan_id")

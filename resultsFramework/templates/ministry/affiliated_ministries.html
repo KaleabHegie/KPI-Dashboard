@@ -21,19 +21,17 @@
     }
   </style>
   <body class="hold-transition sidebar-mini">
-    <div class="wrapper">
     
-      {% include "navbar.html" %}
+    <div class="wrapper">
+        
       {% include "sidebar.html" %}
-      <div class="content-wrapper">
-
-       
-
-    <div class="pc-container">
-        <div class="pc-content container-sm">
-            <div class="p-3">
+        {% include "navbar.html" %}
+        <div class="content-wrapper">
+            <div class="pc-container">
+                 <div class="pc-content container-sm p-0 m-0">
+        <div class="p-3">
                 <h2 class="text-info p-2"> Affiliated Organizations </h2>
-            <div class="container-sm">
+                <div class="container-sm">
                 <div class="row justify-content-end p-3">
                     <!--Filter Year and Quarter-->
                     <div class="col-md-2  form-floating">
@@ -50,15 +48,15 @@
                         <label for="dataTypeLists">Select time</label>
                     </div>
                 </div>
-            </div>
-            <div class="row m-0" id="ministryCardLists"></div>
-            <div class="row m-0" id="policyAreaMainCard"></div>
-            <div class="row m-0" id="goalWithKraList"></div>
-            </div>
+                </div>
+                <div class="row m-0" id="ministryCardLists"></div>
+                <div class="row m-0" id="policyAreaMainCard"></div>
+                <div class="row m-0" id="goalWithKraList"></div>
         </div>
-              <!--Indicator Detail Modal-->
-    <div class="modal fade" id="indicatorModal" tabindex="-1" aria-labelledby="indicatorModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
+                 </div>
+                       <!--Indicator Detail Modal-->
+                 <div class="modal fade" id="indicatorModal" tabindex="-1" aria-labelledby="indicatorModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="indicatorModalLabel">Modal title</h5>
@@ -204,15 +202,11 @@
                     </div>
                 </div>
             </div>
+            </div>
+                 </div>
+            </div>
         </div>
     </div>
-</div>
-    </div>
-</div>
-
-
-
-
 
 
 

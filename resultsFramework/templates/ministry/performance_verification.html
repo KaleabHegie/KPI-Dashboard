@@ -275,8 +275,11 @@
                                       class="form-check-input validate-all-checkbox" 
                                       data-year-id="{{ year.id }}">
                                     <label class="form-check-label" for="validateAllCheckbox_{{ year.id }}">Validate All</label>
+                                    <p class="d-flex float-right"> Validatation Comment </p>
                                   </div>
-                                </th>
+
+                                  
+                                </th> 
                             {% endfor %}
                             
                         </tr>
@@ -373,30 +376,35 @@
                                   </td>
                                   <td>
                                     {% if plan %}
-                                    
-                                      <div class="form-check">
-                                        <input 
-                                          type="checkbox" 
-                                          class="form-check-input validate-checkbox" 
-                                          data-plan-id="{{ plan.id }}" 
-                                          data-year-id="{{ year.id }}" 
-                                          {% if plan.validated %}checked{% endif %}>
-                                      </div>
-                                      {% if plan and not plan.validated %}
-                                      <button 
-                                        type="button" 
-                                        class="btn btn-sm" 
-                                        data-bs-toggle="modal" 
-                                        data-bs-target="#validationCommentModal_{{ indicator.id }}_{{ year.id }}">
-                                        <i class="ml-5 fas fa-2x fa-times text-danger"></i>
-                                      </button>
-                                      {% else %}
-                                      <i class="ml-5 fas fa-2x fa-check text-success"></i>
-                                    {% endif %}
-                                    
-                                    
+                                          <!-- Checkbox -->
+                                          <div class="form-check me-2">
+                                            <input 
+                                              type="checkbox" 
+                                              class="form-check-input validate-checkbox mt-3" 
+                                              data-plan-id="{{ plan.id }}" 
+                                              data-year-id="{{ year.id }}" 
+                                              {% if plan.validated %}checked{% endif %}>
+                                          </div>
+                                          
+                                          <!-- Validation icon or button -->
+                                          {% if plan and not plan.validated %}
+                                          <div>
+                                            <button 
+                                              type="button" 
+                                              class="btn btn-sm ml-3" 
+                                              data-bs-toggle="modal" 
+                                              data-bs-target="#validationCommentModal_{{ indicator.id }}_{{ year.id }}">
+                                              <i class="fas fa-2x fa-times text-danger"></i>
+                                            </button>
+                                              <p class="d-flex float-right">{{ plan.validation_comment }}</p>   
+                                            </div>
+                                          {% else %}
+                                            <i class="fas fa-2x fa-check text-success ml-4"></i>
+                                          {% endif %}
+                                      
                                     {% endif %}
                                   </td>
+                                  
                                   {% endwith %}
                                   
                                  
