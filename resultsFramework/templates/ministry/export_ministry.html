@@ -109,8 +109,8 @@
             
             <div class="row">
               <!--Policy Area Filter-->
-              <div class="col-md-6">
-                  <div class="card ">
+              <div  class="col-md-6">
+                  <div style="height: 270px;" class="card ">
 
                     <form id="filterForm" method="get">
 
@@ -144,8 +144,8 @@
                       </div>
 
                       
-                      <div class="col-md-3 my-2">
-                        <button type="submit" id="submitButton" class="btn bg-green-500
+                      <div class="col-md-3 my-2 border">
+                        <button type="submit" id="submitButton" class="btn bg-green-500 
                         
                          "><i class="fa fa-database"></i> Filter</button>
                       </div>
@@ -154,9 +154,10 @@
 
                   </div>
               </div>
+
               <!--Custom Filter -->
               <div class="col-md-6">
-                  <div class="card ">
+                  <div style="height: 270px;" class="card ">
                     <form id="filterForm" method="get">
 
                       <div class="card-header bg-green-500">
@@ -172,21 +173,12 @@
                       <div class="card-body row p-0 mt-3">
                           <div class="col-md-12 p-2 m-1 row justify-content-center">
                             <!--form start here-->
-                           
+                          
 
-                              <div class="col-md-4">
-                                <!--Time period -->
-                                <label for="dataType">Select Time Period</label>
-                                <select id="dataPeriod" class="form-select" name="filter-period" aria-label="Floating label select example">
-                                  <option {% if filter_period|stringformat:"s" == 'year' %}selected{% endif %} value="year">Yearly</option>
-                                  <option {% if filter_period|stringformat:"s" == 'quarter' %}selected{% endif %}  value="quarter">Quarterly</option>
-                                </select>
-                              </div>
-
-                              <div class="col-md-4">
+                              <div class="col-md-8">
                                 <!--Year -->
-                                <label for="years">Select Year</label>
-                                <select multiple id="years" class="form-select" name="filter-year" aria-label="Floating label select example">
+                                <label for="CustomYear">Select Year</label>
+                                <select multiple class="select2 form-control" id="multiSelect1" name="selected_year[]"  id="CustomYear" class="form-select" name="filter-year" aria-label="Floating label select example">
                                   {% for year in year_option_list %}
                                   <option 
                                     {% if year.year_amh|stringformat:"s" == filter_year|stringformat:"s" %}selected{% endif %}
@@ -196,13 +188,21 @@
                                 </select>
                               </div>
 
+                              <div class="col-md-3">
+                                <!--Time period -->
+                                <label for="dataType">Include Quarter</label>
+                                <div>
+                                  <input type="checkbox" name="" id="">
+                                </div>
+                              </div>
+
         
                           </div>
                          
                       </div>
 
                       
-                      <div class="col-md-3 my-2">
+                      <div class="col-md-3 my-2 ">
                         <button type="submit" id="submitButton" class="btn bg-green-500 ">
                           <i class="fa fa-database"></i> Filter
                         </button>
@@ -554,6 +554,12 @@
             function showLoadingAnimation() {
                 $('#loading-animation').show();
             }
+
+            $('#multiSelect1').select2();
+          // Function to show the loading animation
+          function showLoadingAnimation() {
+            $('#loading-animation').show();
+          }
 
             // Function to hide the loading animation
             function hideLoadingAnimation() {
