@@ -586,17 +586,29 @@ def export_ministry1(request):
     # Get the policy IDs from the request (assuming it's passed as GET parameters)
     selected_policies = request.GET.getlist('selected_policies[]')
 
-    #custom filter 
+    #performance filter 
     filter_period = request.GET.get('filter-period')
     filter_year = request.GET.get('filter-year')
     filter_performance = request.GET.get('filter-performance')
     filter_quarter = request.GET.get('filter-quarter')
+
+   
 
     
 
      # Fetch all visible years for the annual plans
     years = Year.objects.filter(mdip=True)
     quarters = Quarter.objects.filter()
+
+     #custom filter
+    custom_filter_year = request.GET.getlist('selected_custom_year[]')
+    custom_filters_include_quarter = request.GET.get('custom_filters_include_quarter')
+
+    if custom_filters_include_quarter == 'on':
+        quarters = Quarter.objects.all() 
+
+    if custom_filter_year:
+        years = Year.objects.filter(year_amh__in=custom_filter_year, mdip=True)
 
     if filter_year and filter_period == 'year':
         years = Year.objects.filter(year_amh=filter_year, mdip=True)
@@ -633,6 +645,13 @@ def export_ministry1(request):
             selected_policies if selected_policies else policies,
             quarters if filter_period == 'quarter' else None
             )
+    elif custom_filters_include_quarter == 'on':
+        strategic_goals = StrategicGoal.objects.prefetch_related(
+                Prefetch('kra_goal__indicators',
+                        queryset=Indicator.objects.filter(
+                            quarter_indicators__quarter__in = quarters,
+                            ))
+                            ).filter(policy_area_id__in=policies)
 
         
 
@@ -681,6 +700,8 @@ def export_ministry1(request):
         'filter_year' : filter_year or None,
         'filter_performance' : filter_performance or None,
         'filter_quarter' : filter_quarter or None,
+        'custom_filters_include_quarter' : True if custom_filters_include_quarter == 'on' else False,
+        'custom_filter_year' : custom_filter_year,
         'col_span_size' : years.count() if filter_year == 'year' else (4 * years.count()) + years.count() + 1 , 
         
     }
