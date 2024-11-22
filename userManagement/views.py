@@ -13,6 +13,28 @@ from django.contrib import messages
 from django.shortcuts import get_object_or_404, render, redirect
 from resultsFramework.models import Year , Month , Quarter 
 
+from django.contrib.auth import update_session_auth_hash
+from .forms import CustomPasswordChangeForm
+
+
+
+
+@login_required
+def change_password(request):
+    if request.method == "POST":
+        form = CustomPasswordChangeForm(user=request.user, data=request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)  # Keep the user logged in
+            messages.success(request, "Your password has been successfully changed.")
+            return redirect("ministry_profile")  # Redirect to any page after success
+        else:
+            messages.error(request, "Please correct the errors below.")
+    else:
+        form = CustomPasswordChangeForm(user=request.user)
+    
+    return render(request, "authentication-dashboard/change_password.html", {"form": form})
+
 
 @login_required(login_url='/login/')
 def logout_view(request):

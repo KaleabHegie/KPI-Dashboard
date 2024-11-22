@@ -6,9 +6,29 @@ from .models import Account, UserSector
 from resultsFramework.models import DashboardSetting
 
 
+
 from django import forms
 from django.contrib.auth.forms import PasswordResetForm
 from django.contrib.auth.forms import SetPasswordForm
+
+
+from django import forms
+from django.contrib.auth.forms import PasswordChangeForm
+
+class CustomPasswordChangeForm(PasswordChangeForm):
+    old_password = forms.CharField(
+        label="Current Password",
+        widget=forms.PasswordInput(attrs={"class": "form-control", "placeholder": "Enter your current password"})
+    )
+    new_password1 = forms.CharField(
+        label="New Password",
+        widget=forms.PasswordInput(attrs={"class": "form-control", "placeholder": "Enter your new password"})
+    )
+    new_password2 = forms.CharField(
+        label="Confirm Password",
+        widget=forms.PasswordInput(attrs={"class": "form-control", "placeholder": "Confirm your new password"})
+    )
+
 
 
 

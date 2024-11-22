@@ -8,6 +8,7 @@ from .forms import UserPasswordResetForm, UserPasswordConfirmForm
 urlpatterns = [
         path('login/', login_view, name='login_url'),
         path('logout/', logout_view, name='logout_url'),
+        path('change_password/', change_password, name='change_password'),
         path('', dashboard_setting, name="user-admin-dashboard-setting"),
         path('addsetting/', addsetting, name='addsetting'),
         path('setting_delete/<int:id>/', setting_delete, name='setting_delete'),
