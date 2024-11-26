@@ -244,7 +244,16 @@ th:first-child {
                 <div class="card">
                   <div class="card-header">
                     <h3 class="card-title">Development Plan</h3>
-                  
+                    <div class="text-right">
+                     <button
+                      id="btnDownloadExcel"
+                      onclick="handleExcel()"
+                      type="button"
+                      class="btn btn-success mb-2 float-end"
+                    >
+                      <i class="fa fa-download"></i>
+                    </button>
+                      </div>
                   </div>
                   <div class="card-body ">
 
@@ -327,26 +336,27 @@ th:first-child {
 
       <script src="{% static 'plugins/select2/js/select2.full.min.js' %}"></script>
         <script>
-        $(document).ready(function() {
+          const handleExcel = () =>{
+              const selectButton = $('#dt-length-0')
+              selectButton.val(-1)
+              selectButton.trigger("change");
+              tableToExcel('example', 'Ministry MDIP', 'Ministry MDIP.xls');
+              selectButton.val(100)
+              selectButton.trigger("change");
+        }
+       $(document).ready(function() {
             $('#example').DataTable({
                 pageLength: 100, // Show 100 entries by default
                 lengthMenu: [[ 50, 100, -1], [ 50, 100, "All"]],
                 ordering: false,  // Disable sorting
-                layout: {
-                  topEnd: 'search',
-                  topStart: {
-                  buttons: ['copy', 'csv', 'excel',]
-                },
-                
-              },
                 
                 rowGroup: {
                     dataSrc: [0, 1],  // Group by Goal Name (2nd column) and KRA Name (3rd column)
                     startRender: function (rows, group, level) {
                         // Apply different classes based on the group level
-                        var className = level === 0 ? 'group-header-1' : 'group-header-2';
+                        var className = level === 0 ? 'style="background-color: #5f915a; color: #ffffff;"' : 'style="background-color: #b4e3a6;" ';
                         return $('<tr/>')
-                            .append('<td colspan="10" class="group-header ' + className + '">' + group + '</td>');
+                            .append(`<td colspan="10"  ${className} class="group-header">  ${group}  </td>`);
                     }
                 },
 
@@ -355,7 +365,6 @@ th:first-child {
                 columnDefs: [
                     { targets: [0, 1], visible: false }  // Hide Goal Name and KRA Name columns from display
                 ],
-                
                 drawCallback: function(settings) {
                     var api = this.api();
                     // Apply styles to the grouped rows

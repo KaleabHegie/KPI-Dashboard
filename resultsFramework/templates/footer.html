@@ -27,12 +27,9 @@
 
 <!--Excel-->
 <script>
-
-let tableToExcel = (function () {
-  // Define the base URI for Excel export
+    let tableToExcel = (function () {
   let uri = 'data:application/vnd.ms-excel;base64,';
 
-  // Define the HTML template for the Excel file
   let template = `
     <html xmlns:o="urn:schemas-microsoft-com:office:office"
           xmlns:x="urn:schemas-microsoft-com:office:excel"
@@ -59,39 +56,42 @@ let tableToExcel = (function () {
       </body>
     </html>`;
 
-  // Function to convert a string to base64
   let base64 = function (s) {
     return window.btoa(unescape(encodeURIComponent(s)));
   };
 
-  // Function to format the template with provided context
   let format = function (s, c) {
     return s.replace(/{(\w+)}/g, function (m, p) {
       return c[p];
     });
   };
 
-  // Main function to export the specified table
   return function (table, name, filename) {
-    // Get the table element by ID if a string is provided
-    if (!table.nodeType) {
-      table = document.getElementById(table);
-    }
-    // Create the context object for formatting
+    if (!table.nodeType) table = document.getElementById(table);
+
+    // Clone the table and preprocess it
+    let tableClone = table.cloneNode(true);
+
+    // Remove all hyperlinks
+    tableClone.querySelectorAll('a').forEach(function (link) {
+      let text = link.innerText || link.textContent; // Get the visible text
+      link.replaceWith(text); // Replace the <a> tag with its text content
+    });
+
+    // Create the context
     var ctx = {
       worksheet: name || 'Worksheet',
-      table: table.innerHTML
+      table: tableClone.innerHTML // Use the modified table content
     };
-    
-    // Create a link element to trigger the download
+
+    // Trigger the download
     let link = document.createElement('a');
     link.href = uri + base64(format(template, ctx));
-    link.download = filename || 'export.xls'; // Set the dynamic filename
-
-    // Programmatically click the link to trigger the download
+    link.download = filename || 'export.xls';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
 })();
+
 </script>

@@ -356,12 +356,13 @@ th:first-child {
 
       <script src="{% static 'plugins/select2/js/select2.full.min.js' %}"></script>
       <script>
-        const handleExcel = () =>{
-          console.log("clicked")
-          const selectButton = $('#dt-length-0')
-          selectButton.val(-1)
-          selectButton.trigger("change");
-          tableToExcel('example', 'MDIP', 'MDIP.xls');
+         const handleExcel = () =>{
+              const selectButton = $('#dt-length-0')
+              selectButton.val(-1)
+              selectButton.trigger("change");
+              tableToExcel('example', 'Ministry MDIP', 'Ministry MDIP.xls');
+              selectButton.val(100)
+              selectButton.trigger("change");
         }
        $(document).ready(function() {
             $('#example').DataTable({
