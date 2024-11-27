@@ -107,8 +107,7 @@
               </div>
             </div>
             
-           
-
+         
             <!-- Custom Filter -->
              <div class="row">
               <div class="col-12">
@@ -297,41 +296,10 @@
                                                 <p class="mb-0 me-2"> <!-- No margin below and margin to the right -->
                                                     {{ plan.justification|default_if_none:"No justification provided" }}
                                                 </p>
-                                                <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#justificationModal_{{ plan.id }}">
-                                                    Edit
-                                                </button>
+                                              
                                             </div>
                                         </td>
                                         
-                                              <div class="modal fade" id="justificationModal_{{ plan.id }}" tabindex="-1" aria-labelledby="justificationModalLabel_{{ plan.id }}" aria-hidden="true">
-                                                <div class="modal-dialog">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title" id="justificationModalLabel_{{ plan.id }}">Add Justification</h5>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                        </div>
-                                                        <form method="POST">
-                                                            {% csrf_token %}
-                                                            <div class="modal-body">
-                                                                <input type="hidden" name="plan_id" value="{{ plan.id }}">
-                                                                <div class="mb-3">
-                                                                  <label for="justificationTextarea_{{ plan.id }}" class="form-label">Justification</label>
-                                                                  <textarea 
-                                                                      placeholder="Add your justification here ........" 
-                                                                      id="justificationTextarea_{{ plan.id }}" 
-                                                                      name="justification" 
-                                                                      class="form-control" 
-                                                                      rows="4">{{ plan.justification|default_if_none:"" }}</textarea>
-                                                              </div>
-                                                            </div>
-                                                            <div class="modal-footer">
-                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                                <button type="submit" class="btn btn-success">Save</button>
-                                                            </div>
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                              </div>
                                            {% endif %}
                                            {% endwith %}
                                       {% endfor %}

@@ -28,7 +28,9 @@ urlpatterns = [
     path('affiliated_ministries/', affiliated_ministries, name='affiliated_ministries'),
     path('affiliated_ministries_list/', affiliated_ministries_list, name='affiliated_ministries_list'),
     path('threshold/' , threshold , name='threshold'),
+    path('threshold_mopd/' , threshold_mopd , name='threshold_mopd'),
     path('performance_verification/' , performance_verification , name='performance_verification'),
+    path('performance_statues/' , performance_statues , name='performance_statues'),
     path('validate-plans/', validate_plans, name='validate_plans'),
 
     path('dashboard/', ministry_dashboard, name="ministry"),

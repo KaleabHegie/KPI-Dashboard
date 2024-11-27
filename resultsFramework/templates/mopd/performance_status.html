@@ -269,13 +269,8 @@
 
                                 <th>
                                   <div class="form-check">
-                                    <input 
-                                      type="checkbox" 
-                                      id="validateAllCheckbox_{{ year.id }}" 
-                                      class="form-check-input validate-all-checkbox" 
-                                      data-year-id="{{ year.id }}">
-                                    <label class="form-check-label" for="validateAllCheckbox_{{ year.id }}">Validate All</label>
-                                    <p class="d-flex float-right"> Validatation Comment </p>
+                                    <label class="form-check-label" for="validateAllCheckbox_{{ year.id }}">Validated</label>
+                                    <p class="d-flex float-right"> Validation Comment </p>
                                   </div>
 
                                   
@@ -333,67 +328,20 @@
                                       </div>
                                   </div> 
                                       
-                                      <!-- Modal -->
-                                           <div class="modal fade" id="validationCommentModal_{{ indicator.id }}_{{ year.id }}" tabindex="-1" aria-labelledby="validationCommentLabel_{{ indicator.id }}_{{ year.id }}" aria-hidden="true">
-                                             <div class="modal-dialog modal-lg"> <!-- Large modal -->
-                                               <div class="modal-content">
-                                                 <!-- Header -->
-                                                 <div class="modal-header bg-primary text-white">
-                                                   <h5 class="modal-title" id="validationCommentLabel_{{ indicator.id }}_{{ year.id }}">Edit Validation Details</h5>
-                                                   <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                 </div>
-                                           
-                                                 <!-- Body -->
-                                                 <div class="modal-body">
-                                                   <form method="POST">
-                                                     {% csrf_token %}
-                                                     <input type="hidden" name="plan_id" value="{{ plan.id }}">
-                                           
-                                                     <!-- Validation Comment -->
-                                                     <div class="mb-3">
-                                                       <label for="validationCommentTextarea_{{ indicator.id }}_{{ year.id }}" class="form-label fw-bold">Validation Comment</label>
-                                                       <textarea id="validationCommentTextarea_{{ indicator.id }}_{{ year.id }}" 
-                                                                 name="validation_comment" 
-                                                                 class="form-control" 
-                                                                 rows="4" 
-                                                                 placeholder="Enter validation comment here...">{% if plan and plan.validation_comment %}{{ plan.validation_comment }}{% endif %}</textarea>
-                                                   </div>
-                                                     <!-- Footer -->
-                                                     <div class="modal-footer">
-                                                       <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                                       <button type="submit" class="btn btn-primary">Save Changes</button>
-                                                     </div>
-                                                   </form>
-                                                 </div>
-                                               </div>
-                                             </div>
-                                           </div>
-
-                                    
-                                    
-                                    <!-- Checkbox for Validation -->
+                                  
                                    
                                   </td>
                                   <td>
                                     {% if plan %}
                                           <!-- Checkbox -->
-                                          <div class="form-check me-2">
-                                            <input 
-                                              type="checkbox" 
-                                              class="form-check-input validate-checkbox mt-3" 
-                                              data-plan-id="{{ plan.id }}" 
-                                              data-year-id="{{ year.id }}" 
-                                              {% if plan.validated %}checked{% endif %}>
-                                          </div>
-                                          
+                                         
                                           <!-- Validation icon or button -->
                                           {% if plan and not plan.validated %}
                                           <div>
                                             <button 
                                               type="button" 
                                               class="btn btn-sm ml-3" 
-                                              data-bs-toggle="modal" 
-                                              data-bs-target="#validationCommentModal_{{ indicator.id }}_{{ year.id }}">
+                                              >
                                               <i class="fas fa-2x fa-times text-danger"></i>
                                             </button>
                                               <p class="d-flex float-right">{{ plan.validation_comment }}</p>   
@@ -410,7 +358,7 @@
                                  
 
                                     {% if filter_period == 'quarter' %}
-                                    {% for quarter in quarters %}
+                                    {% for quarter in quarters%}
                                       <td>
                                         <div class="row">
                                           <div class="col-lg-9">
@@ -450,44 +398,30 @@
             
                                               {% endwith %}
                                           </div>
-
-                                          <div class="modal fade" id="validationCommentModal_{{ indicator.id }}_{{ year.id }}" tabindex="-1" aria-labelledby="validationCommentLabel_{{ indicator.id }}_{{ year.id }}" aria-hidden="true">
-                                            <div class="modal-dialog modal-lg"> <!-- Large modal -->
-                                              <div class="modal-content">
-                                                <!-- Header -->
-                                                <div class="modal-header bg-primary text-white">
-                                                  <h5 class="modal-title" id="validationCommentLabel_{{ indicator.id }}_{{ year.id }}">Edit Validation Details</h5>
-                                                  <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                </div>
-                                          
-                                                <!-- Body -->
-                                                <div class="modal-body">
-                                                  <form method="POST">
-                                                    {% csrf_token %}
-                                                    <input type="hidden" name="plan_id" value="{{ plan.id }}">
-                                          
-                                                    <!-- Validation Comment -->
-                                                    <div class="mb-3">
-                                                      <label for="validationCommentTextarea_{{ indicator.id }}_{{ year.id }}" class="form-label fw-bold">Validation Comment</label>
-                                                      <textarea id="validationCommentTextarea_{{ indicator.id }}_{{ year.id }}" 
-                                                                name="validation_comment" 
-                                                                class="form-control" 
-                                                                rows="4" 
-                                                                placeholder="Enter validation comment here...">{% if plan and plan.validation_comment %}{{ plan.validation_comment }}{% endif %}</textarea>
-                                                  </div>
-                                                    <!-- Footer -->
-                                                    <div class="modal-footer">
-                                                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                                      <button type="submit" class="btn btn-primary">Save Changes</button>
-                                                    </div>
-                                                  </form>
-                                                </div>
-                                              </div>
-                                            </div>
-                                          </div>
                                         </div>
 
-                                      
+                                        <form method="POST" name="quarter">
+                                          {% csrf_token %}
+                                          <input type="hidden" name="plan_id" value="{{ quarters_data.id }}">
+                                          <input type="hidden" name="plan_type" value="quarter"> <!-- Specify plan type -->
+                                        
+                                          <div class="mb-3">
+                                            <label for="validationCommentTextarea_{{ indicator.id }}_{{ year.id }}_quarter_{{ quarter.id }}" class="form-label fw-bold">
+                                              Validation Comment
+                                            </label>
+                                            <textarea id="validationCommentTextarea_{{ indicator.id }}_{{ year.id }}_quarter_{{ quarter.id }}" 
+                                                      name="justification" 
+                                                      class="form-control" 
+                                                      rows="4" 
+                                                      placeholder="Enter validation comment here...">{% if quarters_data and quarters_data.justification %}{{ quarters_data.justification }}{% endif %}
+                                            </textarea>
+                                          </div>
+                                        
+                                          <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                                          </div>
+                                        </form>
                                         
                                       </td>
 
@@ -533,7 +467,7 @@
                         {% endfor %}
 
                     </tbody>
-                    <button id="validateSelectedButton" class="btn btn-success float-right">Validate Selected</button>
+                    
                   </table>
                   
 
