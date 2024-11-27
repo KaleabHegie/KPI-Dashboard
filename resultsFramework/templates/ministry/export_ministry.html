@@ -315,6 +315,16 @@
                 <div class="card">
                   <div class="card-header">
                     <h3 class="card-title">Development Plan</h3>
+                    <div class="text-right">
+                     <button
+                      id="btnDownloadExcel"
+                      onclick="handleExcel()"
+                      type="button"
+                      class="btn btn-success mb-2 float-end"
+                    >
+                      <i class="fa fa-download"></i>
+                    </button>
+                      </div>
                   </div>
                   <div class="card-body table-responsive">
                   <table id="example" class=" table table-hover table-bordered table-sm" >
@@ -470,34 +480,38 @@
 
       <script src="{% static 'plugins/select2/js/select2.full.min.js' %}"></script>
       <script>
-        $(document).ready(function() {
-
-            var table = $('#example').DataTable({
-                dom: 'Bfrtip',
-                ordering: false,
-                lengthMenu: [[ 50, 100, -1], [ 50, 100, "All"]] ,
-                buttons: [
-                    'copyHtml5', 'excelHtml5', 'csvHtml5', 'pdfHtml5',
-                    
-                ],
+         const handleExcel = () =>{
+              const selectButton = $('#dt-length-0')
+              selectButton.val(-1)
+              selectButton.trigger("change");
+              tableToExcel('example', 'Ministry MDIP', 'Ministry MDIP.xls');
+              selectButton.val(100)
+              selectButton.trigger("change");
+        }
+       $(document).ready(function() {
+            $('#example').DataTable({
+                pageLength: 100, // Show 100 entries by default
+                lengthMenu: [[ 50, 100, -1], [ 50, 100, "All"]],
+                ordering: false,  // Disable sorting
+                
                 rowGroup: {
-                    dataSrc: [0, 1], // Group by Goal Name (1st column) and KRA Name (2nd column)
+                    dataSrc: [0, 1],  // Group by Goal Name (2nd column) and KRA Name (3rd column)
                     startRender: function (rows, group, level) {
-                        var className = level === 0 ? 'bg-green-500' : 'group-header-2';
+                        // Apply different classes based on the group level
+                        var className = level === 0 ? 'style="background-color: #5f915a; color: #ffffff;"' : 'style="background-color: #b4e3a6;" ';
                         return $('<tr/>')
-                            .append('<td colspan="{{col_span_size}}" class="group-header ' + className + '">' + group + '</td>');
+                            .append(`<td colspan="40"  ${className} class="group-header">  ${group}  </td>`);
                     }
                 },
-                 
-              columnDefs: [
-                { width: "50%", targets: 2 },
-                { targets: [0, 1], visible: false },
-              ],
-             
 
-                
+                responsive: true,
+                fixedHeader: true,
+                columnDefs: [
+                    { targets: [0, 1], visible: false }  // Hide Goal Name and KRA Name columns from display
+                ],
                 drawCallback: function(settings) {
                     var api = this.api();
+                    // Apply styles to the grouped rows
                     api.rows({page: 'current'}).nodes().each(function(row, i) {
                         if ($(row).hasClass('group-header')) {
                             // Add your custom styles here if needed
@@ -505,49 +519,7 @@
                     });
                 }
             });
-
-            // Example export function (modify for other formats)
-            function exportDataAsCSV(data) {
-                var csvContent = "";
-                data.forEach(function(row) {
-                    if (row.isGroup) {
-                        var prefix = row.level === 0 ? 'Goal: ' : 'KRA: ';
-                        csvContent += prefix + row.groupText + "\n";
-                    } else {
-                        csvContent += row.join(",") + "\n";
-                    }
-                });
-
-                var hiddenElement = document.createElement('a');
-                hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvContent);
-                hiddenElement.target = '_blank';
-                hiddenElement.download = 'data.csv';
-                hiddenElement.click();
-            }
-
-            function exportDataAsExcel(data) {
-              var workbook = XLSX.utils.book_new();
-              var worksheetData = [];
-              
-              data.forEach(function(row) {
-                  if (row.isGroup) {
-                      var prefix = row.level === 0 ? 'Goal: ' : 'KRA: ';
-                      worksheetData.push([prefix + row.groupText]);
-                  } else {
-                      worksheetData.push(row);
-                  }
-              });
-          
-              var worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
-              XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
-              XLSX.writeFile(workbook, 'data.xlsx');
-            }
-
-
-
         });
-       
-
 
 
         $(document).ready(function () {
