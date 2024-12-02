@@ -29,7 +29,7 @@ from userManagement.admin import handle_uploaded_responsible_ministry_file, conf
 from rest_framework.decorators import api_view
 from .serializers import *
 from .resource import *
-from .email import send_email_notifier
+from .email import send_email_notifier, send_preset_email_notifier
 import threading
 from auditlog.models import LogEntry
 from rest_framework.response import Response
@@ -4825,8 +4825,30 @@ def audit_log_list(request):
 
 
 
+
+
+
 def notifier(request):
     ministries_list = ResponsibleMinistry.objects.all()
+    year_list = Year.objects.all()
+    presets = [
+        {
+            'name' : 'dashboard_overview',
+            'message' : 'Send overview dashboard'
+        },
+         {
+            'name' : 'preset_performance',
+            'message' : 'Notify to enter performance'
+        },
+         {
+            'name' : 'preset_target',
+            'message' : 'Notify to enter target'
+        },
+         {
+            'name' : 'preset_document',
+            'message' :'Notify to enter document'
+        },
+    ]
 
     if request.method == 'POST':
         if 'form_custom' in request.POST:
@@ -4851,14 +4873,45 @@ def notifier(request):
 
 
                 stop_event = threading.Event()
-                background_thread = threading.Thread(target=send_email_notifier, args=(request,subject,message,"mikiyasmebrate@gmail.com",stop_event), daemon=True)
+                background_thread = threading.Thread(target=send_email_notifier, args=(subject,message,"mikiyasmebrate@gmail.com",stop_event), daemon=True)
                 background_thread.start()
                 stop_event.set()
                 
+            return JsonResponse({'success' : True, 'message' : "Emails sent successfully."})
+        
+        elif 'form_preset' in request.POST:
+            user_ministries_id = request.POST.getlist('ministries[]')
+            user_year = request.POST['year']
+            user_quarter = request.POST['quarter']
+            user_data_type = request.POST['dataType']
+            user_preset_name = request.POST['preset_name']
+            user_language = request.POST['language']
+
+            
+
+
+            if  not user_ministries_id:
+                return JsonResponse({'success' : False, 'message' : "Please select at least one ministry to proceed."})
+            
+            if  not user_year:
+                return JsonResponse({'success' : False, 'message' : "Please enter valid Year"})
+            
+            if not user_data_type or not user_preset_name  : #or user_preset_name or (user_data_type == 'quarter' and not user_quarter)
+                return JsonResponse({'success' : False, 'message' : "Something went wrong please try again later."})
+
+            ministries = ResponsibleMinistry.objects.filter(id__in=user_ministries_id)
+
+            for ministry in ministries:
+                stop_event = threading.Event()
+                background_thread = threading.Thread(target=send_preset_email_notifier, args=(request,['mikiyasmebrate@gmail.com', 'kaleabhegiem@gmail.com'],ministry.responsible_ministry_eng,user_preset_name,user_data_type, user_year ,user_quarter,user_language,stop_event), daemon=True)
+                background_thread.start()
+                stop_event.set()
             return JsonResponse({'success' : True, 'message' : "Emails sent successfully."})
 
 
     context = {
         'ministries': ministries_list,
+        'years' :year_list, 
+        'presets' : presets
     }
     return render(request, 'notifier.html', context=context)

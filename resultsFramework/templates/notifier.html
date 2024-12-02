@@ -2,6 +2,8 @@
 {% include "head.html" %}
 {% load static %}
 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-toast-plugin@1.3.2/dist/jquery.toast.min.css">
+
 {% include 'PolicyAndMinistries/include/head.html' %}
 <style>
     .scrollable {
@@ -91,8 +93,8 @@
                                     <div class="tab-pane fade active show" id="home" role="tabpanel" aria-labelledby="home-tab">
                                             <div class="row p-3 justify-content-center">
 
-                                                {% for i in "1234"|slice:":" %} 
-                                                <div class="col-xl-6"  name="preset_card" >
+                                                {% for i in presets %} 
+                                                <div class="col-xl-6"  data-name="{{i.name}}" name="preset_card" >
                                                     <div class="card border card-shadow p-2 m-2">
                                                         <div class="row ">
                                                             <div class="col-6 rounded-start rounded-start">
@@ -102,7 +104,7 @@
                                                             </div>
                                             
                                                             <div class="col-6 align-items-center d-flex">
-                                                                <p class="fw-bold">Notify to enter Performance</p>
+                                                                <p class="fw-bold">{{i.message}}</p>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -161,11 +163,48 @@
             <h5 class="modal-title" id="exampleModalLabel">Send Notification</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
+        <form id="form_preset_email" method="post">
           <div class="modal-body">
+            
               <h4>Seleccted Ministries</h4>
                 {% for ministry in ministries %}
                    <span name="selected_ministry" data-id="{{ministry.id}}" class="badge bg-secondary">{{ministry.code}}</span>
                 {% endfor %}
+
+                <div class="row mt-5">
+                    <div class="col-md-4">
+                        <!--Time period -->
+                        <label for="dataType">Select Time Period</label>
+                        <select id="dataPeriod" class="form-select" name="filter-period" aria-label="Floating label select example">
+                          <option {% if filter_period|stringformat:"s" == 'year' %}selected{% endif %} value="year">Yearly</option>
+                          <option {% if filter_period|stringformat:"s" == 'quarter' %}selected{% endif %}  value="quarter">Quarterly</option>
+                        </select>
+                    </div>
+                     <div class="col-md-4">
+                      <!--Year -->
+                      <label for="years">Select Year</label>
+                      <select id="years" class="form-select" name="filter-year" aria-label="Floating label select example">
+                        {% for year in years %}
+                        <option 
+                          {% if year.year_amh|stringformat:"s" == filter_year|stringformat:"s" %}selected{% endif %}
+                          value="{{year.year_amh}}">{{year.year_amh}} </option>
+                        {% endfor %}
+                      </select>
+                     </div>
+                    <div class="col-md-4">
+                      <label for="cars">Select Quarter:</label>
+                      <select name="filter-quarter" class="form-select" id="quarters">
+                        {% for year in years %}
+                        <optgroup label="{{year.year_amh}}">
+                          <option {% if year.year_amh|stringformat:"s"|add:"-q1" == filter_quarter|stringformat:"s" %}selected{% endif %} value="{{year.year_amh}}-q1">{{year.year_amh}} - Q1</option>
+                          <option {% if year.year_amh|stringformat:"s"|add:"-q2" == filter_quarter|stringformat:"s" %}selected{% endif %} value="{{year.year_amh}}-q2">{{year.year_amh}} - Q2</option>
+                          <option {% if year.year_amh|stringformat:"s"|add:"-q3" == filter_quarter|stringformat:"s" %}selected{% endif %} value="{{year.year_amh}}-q3">{{year.year_amh}} - Q3</option>
+                          <option {% if year.year_amh|stringformat:"s"|add:"-q4" == filter_quarter|stringformat:"s" %}selected{% endif %} value="{{year.year_amh}}-q4">{{year.year_amh}} - Q4</option>
+                        </optgroup>
+                        {% endfor %}
+                      </select>
+                    </div>
+                </div>
 
 
                 <div class="mt-5 row">
@@ -173,22 +212,34 @@
     
                     <div class="col-sm-3">
                         <div class="form-check mb-2">
-                            <input class="form-check-input" type="radio" name="group4" value="" id="flexCheckDefault">
-                            <label class="form-check-label" for="flexCheckDefault">Amharic</label>
+                            <input class="form-check-input" checked="checked" type="radio" name="language_radio" value="english" id="flexCheckDefault">
+                            <label class="form-check-label" for="flexCheckDefault">English</label>
                         </div>
                     
                         <div class="form-check mb-2">
-                            <input class="form-check-input" type="radio" name="group4" value="" id="flexCheckChecked" checked="checked">
-                            <label class="form-check-label" for="flexCheckChecked">English</label>
+                            <input class="form-check-input" type="radio" name="language_radio" value="amharic" id="flexCheckChecked" >
+                            <label class="form-check-label" for="flexCheckChecked">Amharic</label>
                         </div>
                     </div>
                 </div>
 
-                <h4 class="mt-5">Sample Email</h4>
-                <p>We are pleased to announce that the Performance Entry Portal is now open! This is your opportunity to record and submit
-                  performance data for the [specify period, e.g., Q4 2024 or Annual Review].
-                </p>
+                <div class="d-block" id="email-english">
+                    <h4 class="mt-5">Sample Email</h4>
+                    <p>We are pleased to announce that the Performance Entry Portal is now open! This is your opportunity to record and
+                        submit
+                        performance data for the [specify period, e.g., Q4 2024 or Annual Review].
+                    </p>
+                </div>
 
+
+               <div class="d-none" id="email-amharic">
+                <h4 class="mt-5 ">የምሳሌ ኢሜል</h4>
+                <p>እኛ የተሳናችን ፕርፎርማንስ መግቢያ መስመር አሁን እንደተከፈተ ማስታወቅ በጣም ደስ ብሎናል! ይህ ለእርስዎ የፕርፎርማንስ ውሎ ለ[የተለየውን ወቅት ይግላሉ፣ ለምሳሌ፣ የራብ 4 በ2024
+                    ወይም ዓመታዊ እይታ] መዝግብና ማቅረብ እድልዎ ነው።
+                </p>
+               </div>
+               
+               <input type="hidden" id="preset_name" >
                 
 
                 
@@ -196,8 +247,9 @@
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             <button  name="btn-loading" class="btn btn-success lh-1" style="display: none;" type="button" disabled="disabled"><span class="spinner-border spinner-border-sm" role="status"></span> Loading...</button>
-             <button name="btn-submit" type="submit" class="btn btn-success">Save changes</button>
+            <button name="btn-submit" type="submit" class="btn btn-success">Save changes</button>
           </div>
+        </form>
         </div>
       </div>
     </div>
@@ -209,10 +261,23 @@
 
 {% include "footer.html" %}
 <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-toast-plugin@1.3.2/dist/jquery.toast.min.js"></script>
 
 
 <script>
     $(document).ready(function () {
+
+        const showToast = (title, body, cssClass) => {
+               $.toast({
+                heading: title,
+                text: body,
+                showHideTransition: 'slide',
+                icon: cssClass,
+                position: 'top-right',
+            })
+        }
+
+
         // Initialize Choices.js
          const choices = new Choices('#multiSelect', {
            removeItemButton: true,
@@ -304,10 +369,90 @@
         });
 
 
+        //handle form submission with preset
+        $('#form_preset_email').on('submit', function(e) {
+            e.preventDefault(); // Prevent default form submission
+            
+            const selectedMinistry = choices.getValue(true);
+            const year = $('#years').val();
+            const quarter = $('#quarters').val()
+            const dataType = $('#dataPeriod').val()
+            const preset_name = $('#preset_name').val()
+            const language = $("[name='language_radio']").val()
+
+
+
+            
+
+
+             if (!preset_name.trim()) {
+                alert('Something went wrong please try again later.');
+                return; 
+            }
+   
+
+            if(selectedMinistry.length == 0){
+                alert('Please select at least one ministry to proceed.');
+                return;
+            }
+
+
+            $.ajax({
+                url: '{% url 'notifier' %}', // Replace with your backend endpoint
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'  // add CSRF token to headers
+                },
+                data: {
+                    form_preset : 'form_preset' ,
+                    year : year,
+                    quarter: quarter,
+                    dataType: dataType,
+                    preset_name : preset_name,
+                    ministries: selectedMinistry,
+                    language : language
+
+                 },
+                beforeSend: function() {
+                    $("[name='btn-submit']").hide()
+                    $("[name='btn-loading']").show();
+                },
+                // hides the loader after completion of request, whether successfull or failor.             
+                complete: function() {
+                    //Show save button finished 
+                    $("[name='btn-submit']").show()
+                    $("[name='btn-loading']").hide();
+                },
+                success: function (response) {
+                    // Handle success (e.g., show a confirmation message)
+                   if(response.success){
+                        $('#exampleModal').modal('hide')
+                        showToast('&#128515 Hello, User', 'Email successfully sent!', 'success')
+                        choices.removeActiveItems();
+                   }else{
+                    showToast('&#128515 Hello, User', response.message, 'error')
+                   }
+                },
+                error: function () {
+                    // Handle error (e.g., show an error message)
+                    $('exampleModal').modal('hide')
+                }
+            });
+
+
+
+        })
+
+
         //handle Modal 
         $("[name='preset_card']").on('click', function(){
             const selectedMinistry = choices.getValue(true);
             const ministryLists = $("[name='selected_ministry']")
+            const presetName = $(this).data('name')
+
+            $('#preset_name').val(presetName)
+
+    
 
             if(selectedMinistry.length == 0){
                 alert('Please select at least one ministry to proceed.');
@@ -328,6 +473,43 @@
             });
 
         })
+
+        //handle language chaned
+        $("[name='language_radio']").on('change', function(){
+           const language = $(this).val()
+    
+           if(language == 'amharic'){
+               $('#email-amharic').removeClass('d-none').addClass('d-block')
+               $('#email-english').removeClass('d-block').addClass('d-none')
+           }else{
+               $('#email-amharic').removeClass('d-block').addClass('d-none')
+               $('#email-english').removeClass('d-none').addClass('d-block')
+           }
+        })
+
+        //handle period changed
+        let currentPeriod = $('#dataPeriod').val()
+        if (currentPeriod == 'year') {
+            $('#years').parent().show()
+            $('#quarters').parent().hide()
+          } else {
+            $('#years').parent().hide()
+            $('#quarters').parent().show()
+          }
+    
+
+    $("#dataPeriod").on('change', function(){
+        let period = $(this).val()
+        
+
+        if(period == 'year'){
+          $('#years').parent().show()
+          $('#quarters').parent().hide()
+        }else{
+          $('#years').parent().hide()
+          $('#quarters').parent().show()
+        }
+    })
 
     });
 </script>
