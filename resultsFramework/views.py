@@ -29,6 +29,8 @@ from userManagement.admin import handle_uploaded_responsible_ministry_file, conf
 from rest_framework.decorators import api_view
 from .serializers import *
 from .resource import *
+from .email import send_email_notifier
+import threading
 from auditlog.models import LogEntry
 from rest_framework.response import Response
 from .admin import (
@@ -90,6 +92,7 @@ from django.contrib import messages
 from django.db.models import Count
 import time
 from django.db.models import Q
+from django.core.mail import send_mail
 
 CACHE_TIMEOUT = 2 * 1 # 1 hour
 
@@ -4817,3 +4820,45 @@ def ministry_index3(request):
 def audit_log_list(request):
     auditlog_entries = LogEntry.objects.select_related('content_type', 'actor')[:1500]
     return render(request, 'audit.html', {'auditlog_entries': auditlog_entries})
+
+
+
+
+
+def notifier(request):
+    ministries_list = ResponsibleMinistry.objects.all()
+
+    if request.method == 'POST':
+        if 'form_custom' in request.POST:
+            ministries_id = request.POST.getlist('ministries[]')
+            org_message = request.POST['message']
+            org_subject = request.POST['subject']
+
+            if  not ministries_id:
+                return JsonResponse({'success' : False, 'message' : "Please select at least one ministry to proceed."})
+            
+            if not org_message:
+                return JsonResponse({'success' : False, 'message' : "Message cannot be empty."})
+            
+            if not org_subject:
+                return JsonResponse({'success' : False, 'message' : "Subject cannot be empty."})
+
+
+            ministries = ResponsibleMinistry.objects.filter(id__in=ministries_id)
+            for ministry in ministries:
+                message = org_message.replace("$MINISTRY_NAME", ministry.responsible_ministry_eng)
+                subject = org_subject.replace("$MINISTRY_NAME", ministry.responsible_ministry_eng)
+
+
+                stop_event = threading.Event()
+                background_thread = threading.Thread(target=send_email_notifier, args=(request,subject,message,"mikiyasmebrate@gmail.com",stop_event), daemon=True)
+                background_thread.start()
+                stop_event.set()
+                
+            return JsonResponse({'success' : True, 'message' : "Emails sent successfully."})
+
+
+    context = {
+        'ministries': ministries_list,
+    }
+    return render(request, 'notifier.html', context=context)

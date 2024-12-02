@@ -111,7 +111,14 @@
         </li>
 
 
-
+      {% if not request.user.usersector.user_sector.is_affiliated %}
+        <li class="nav-item">
+              <a href="{% url 'affiliated_ministries' %}" class="nav-link">
+                <i class="far fa-eye nav-icon"></i>
+                <p>Visual</p>
+              </a>
+            </li>
+            
 
 
         <li class="nav-item">
@@ -122,21 +129,14 @@
             </p>
           </a>
           <ul class="nav nav-treeview">
-            <li class="nav-item">
-              <a href="{% url 'affiliated_ministries' %}" class="nav-link">
-                <i class="far fa-circle nav-icon"></i>
-                <p>Visual</p>
-              </a>
-            </li>
-    
-
-
+        
             <li class="nav-item">
               <a href="{% url 'performance_verification'  %}" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
                 <p>Performace Verification</p>
               </a>
             </li>
+       
 
             <!-- <li class="nav-item">
               <a href="{% url 'ministry_kpi_kra_quarter' %}" class="nav-link">
@@ -147,6 +147,9 @@
 
           </ul>
         </li>
+         {% endif %}
+
+       
         
         {% elif request.user.is_mopd %}
 
@@ -368,6 +371,13 @@
           <a href="{% url 'audit' %}" class="nav-link">
             <i class="nav-icon fas fa-tasks"></i>
             <p>Audit</p>
+          </a>
+        </li>
+
+         <li class="nav-item">
+          <a href="{% url 'notifier' %}" class="nav-link">
+            <i class="nav-icon fas fa-bell"></i>
+            <p>Notifier</p>
           </a>
         </li>
 

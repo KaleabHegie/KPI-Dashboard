@@ -79,6 +79,7 @@ class ResponsibleMinistry(models.Model):
     image = models.ImageField(upload_to='ministryImage' , blank=True , null = True)
     ministry_is_visable = models.BooleanField(default=False, blank=True , null = True)
     ministry_rank  = models.IntegerField(default=400, blank=True , null = True)
+    
     def __str__(self):
         return f"{self.responsible_ministry_eng}"
 

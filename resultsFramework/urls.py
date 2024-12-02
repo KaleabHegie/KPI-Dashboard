@@ -193,5 +193,7 @@ urlpatterns = [
    ##AUDIT 
    path('audit/', audit_log_list, name="audit"),
 
+   path('notifier/', notifier, name="notifier"),
+
 
 ]
