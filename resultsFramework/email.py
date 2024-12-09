@@ -159,7 +159,10 @@ def email_public_bodies_overview_notifier(subject, message,email,ministry,data_t
     while not stop_event.is_set():
         
         indicator = Indicator.objects.filter(responsible_ministries = ministry).values_list('id', flat=True)
-        score_card = ministry.ministry_score_card(year=year, indicator_id=indicator)
+        score_card = ministry.ministry_score_card(indicator_id=indicator, 
+                                                  quarter=calculate_quarter(quarter).quarter_eng if quarter else None,
+                                                  year=quarter.split('-')[0] if quarter else year
+                                                  )
         ministry_analysis = calculate_ministry_status(ministry, year, quarter, indicator,data_type)
         
         subject, from_email, to = "DPMEs Analysis", 'mikiyasmebrate2656@gmail.com', email
