@@ -377,7 +377,7 @@
             const quarter = $('#quarters').val()
             const dataType = $('#dataPeriod').val()
             const preset_name = $('#preset_name').val()
-            const language = $("[name='language_radio']").val()
+            const language = $("input[name='language_radio']:checked").val();
 
             if (!preset_name.trim()) {
                 alert('Something went wrong please try again later.');
@@ -443,6 +443,8 @@
             const selectedMinistry = choices.getValue(true);
             const ministryLists = $("[name='selected_ministry']")
             const presetName = $(this).data('name')
+
+            $('#preset_name').val(presetName)
 
             //make the all sample language disabled
             $(`[name='email-english']`).removeClass('d-block').addClass('d-none')
