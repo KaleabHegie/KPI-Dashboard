@@ -32,25 +32,37 @@ def send_preset_email_notifier(request,email ,ministry, preset, data_type, year,
         subject = body = None
         if preset == 'dashboard_overview':
             email_public_bodies_overview(email,ministry,data_type, year, quarter or None)
+            
         elif preset == 'preset_performance':
             subject = 'Notification: Submission of Performance Reports'
-            body = f'''Dear {ministry},
+            if language == 'english':
+                body = f'''Dear {ministry},
+    
+                   We hope this email finds you well. As part of our ongoing commitment to monitoring and evaluating performance across all public bodies, we kindly remind you to submit your performance data for the reporting period {year if data_type == 'year' else quarter}.
+                   '''
+            else:
+                body = f'''እማረኛ ኢሚኤል'''
 
-               We hope this email finds you well. As part of our ongoing commitment to monitoring and evaluating performance across all public bodies, we kindly remind you to submit your performance data for the reporting period {year if data_type == 'year' else quarter}.
-               '''
         elif preset == 'preset_target':
             subject = 'Submission of Performance Targets'
-            body = f'''Dear {ministry},
+            if language == 'english':
+                body = f'''Dear {ministry},
+    
+                  We hope this message finds you well. This is a gentle reminder to submit your performance targets for the upcoming {year if data_type == 'year' else quarter}.
+                  '''
+            else:
+                body = f'''እማረኛ ኢሚኤል'''
 
-              We hope this message finds you well. This is a gentle reminder to submit your performance targets for the upcoming {year if data_type == 'year' else quarter}.
-              '''
         elif preset == 'preset_document':
             subject = 'Reminder: Submission of Performance Documents'
-            body = f'''Dear {ministry},
-
-               We kindly remind you to submit your performance documentation for the {year if data_type == 'year' else quarter}.
-               These documents are critical for assessing and evaluating your organization's progress towards its objectives.
-               '''
+            if language == 'english':
+                body = f'''Dear {ministry},
+    
+                   We kindly remind you to submit your performance documentation for the {year if data_type == 'year' else quarter}.
+                   These documents are critical for assessing and evaluating your organization's progress towards its objectives.
+                   '''
+            else:
+                body = f'''እማረኛ ኢሚኤል'''
         
         stop_event = threading.Event()
         background_thread = threading.Thread(target=send_email_notifier, args=(subject,body,email,stop_event), daemon=True)

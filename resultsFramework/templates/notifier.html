@@ -91,7 +91,7 @@
                                 </ul>
                                 <div class="tab-content" id="myTabContent">
                                     <div class="tab-pane fade active show" id="home" role="tabpanel" aria-labelledby="home-tab">
-                                            <div class="row p-3 justify-content-center">
+                                            <div class="row p-3 ">
 
                                                 {% for i in presets %} 
                                                 <div class="col-xl-6"  data-name="{{i.name}}" name="preset_card" >
@@ -223,21 +223,20 @@
                     </div>
                 </div>
 
-                <div class="d-block" id="email-english">
+                {% for i in presets %} 
+                <!--sample email english-->
+                <div class="d-none" name="email-english" id="email-english-{{i.name}}" >
                     <h4 class="mt-5">Sample Email</h4>
-                    <p>We are pleased to announce that the Performance Entry Portal is now open! This is your opportunity to record and
-                        submit
-                        performance data for the [specify period, e.g., Q4 2024 or Annual Review].
-                    </p>
+                    <p>{{i.english | safe}}</p>
                 </div>
 
-
-               <div class="d-none" id="email-amharic">
+                <!--sample email amharic-->
+               <div class="d-none"  name="email-amharic" id="email-amharic-{{i.name}}">
                 <h4 class="mt-5 ">የምሳሌ ኢሜል</h4>
-                <p>እኛ የተሳናችን ፕርፎርማንስ መግቢያ መስመር አሁን እንደተከፈተ ማስታወቅ በጣም ደስ ብሎናል! ይህ ለእርስዎ የፕርፎርማንስ ውሎ ለ[የተለየውን ወቅት ይግላሉ፣ ለምሳሌ፣ የራብ 4 በ2024
-                    ወይም ዓመታዊ እይታ] መዝግብና ማቅረብ እድልዎ ነው።
-                </p>
+                <p>{{i.amharic | safe}}</p>
                </div>
+
+               {% endfor %}
                
                <input type="hidden" id="preset_name" >
                 
@@ -380,12 +379,7 @@
             const preset_name = $('#preset_name').val()
             const language = $("[name='language_radio']").val()
 
-
-
-            
-
-
-             if (!preset_name.trim()) {
+            if (!preset_name.trim()) {
                 alert('Something went wrong please try again later.');
                 return; 
             }
@@ -450,10 +444,16 @@
             const ministryLists = $("[name='selected_ministry']")
             const presetName = $(this).data('name')
 
-            $('#preset_name').val(presetName)
+            //make the all sample language disabled
+            $(`[name='email-english']`).removeClass('d-block').addClass('d-none')
+            $(`[name='email-amharic']`).removeClass('d-block').addClass('d-none')
+
+            //active defult english
+            $(`#email-english-${presetName}`).removeClass('d-none').addClass('d-block')
+
+            $("input[name='language_radio'][value='english']").prop('checked', true); // change the radio btn to english
 
     
-
             if(selectedMinistry.length == 0){
                 alert('Please select at least one ministry to proceed.');
             }else{
@@ -462,8 +462,6 @@
 
             ministryLists.each(function () {
                 const ministryId = $(this).data('id'); // Assuming each ministry has a `data-id` attribute
-
- 
                 // Check if the current ministry ID matches the selected ID(s)
                 if (selectedMinistry.includes(`${ministryId}`)) {
                     $(this).removeClass('d-none')
@@ -472,20 +470,24 @@
                 }
             });
 
+            //handle language chaned
+            $("[name='language_radio']").on('change', function(){
+               const language = $(this).val()
+               $(`[name='email-english']`).removeClass('d-block').addClass('d-none')
+               $(`[name='email-amharic']`).removeClass('d-block').addClass('d-none')
+        
+               if(language == 'amharic'){
+                   $(`#email-amharic-${presetName}`).removeClass('d-none').addClass('d-block')
+                   $(`#email-english-${presetName}`).removeClass('d-block').addClass('d-none')
+               }else if (language == 'english'){
+                   $(`#email-amharic-${presetName}`).removeClass('d-block').addClass('d-none')
+                   $(`#email-english-${presetName}`).removeClass('d-none').addClass('d-block')
+               }
+            })
+
         })
 
-        //handle language chaned
-        $("[name='language_radio']").on('change', function(){
-           const language = $(this).val()
-    
-           if(language == 'amharic'){
-               $('#email-amharic').removeClass('d-none').addClass('d-block')
-               $('#email-english').removeClass('d-block').addClass('d-none')
-           }else{
-               $('#email-amharic').removeClass('d-block').addClass('d-none')
-               $('#email-english').removeClass('d-none').addClass('d-block')
-           }
-        })
+        
 
         //handle period changed
         let currentPeriod = $('#dataPeriod').val()

@@ -4832,21 +4832,32 @@ def notifier(request):
     ministries_list = ResponsibleMinistry.objects.all()
     year_list = Year.objects.all()
     presets = [
-        {
-            'name' : 'dashboard_overview',
-            'message' : 'Send overview dashboard'
-        },
+        # {
+        #     'name' : 'dashboard_overview',
+        #     'message' : 'Send overview dashboard'
+        # },
          {
+            
             'name' : 'preset_performance',
-            'message' : 'Notify to enter performance'
+            'message' : 'Notify to enter performance',
+            'english' : '''Dear Ministry-Name-1,</br>
+                       We hope this email finds you well. As part of our ongoing commitment to monitoring and evaluating performance across all public bodies, we kindly remind you to submit your performance data for the reporting period Year/Quarter.''',
+            'amharic' : '''እማረኛ ኢሚኤል - 1'''
         },
          {
             'name' : 'preset_target',
-            'message' : 'Notify to enter target'
+            'message' : 'Notify to enter target',
+            'english' : '''Dear Ministry-Name-2,</br>
+                         We hope this message finds you well. This is a gentle reminder to submit your performance targets for the upcoming Year/Quarter.''',
+            'amharic' : '''እማረኛ ኢሚኤል - 2'''
         },
          {
             'name' : 'preset_document',
-            'message' :'Notify to enter document'
+            'message' :'Notify to enter document',
+            'english' : '''Dear Ministry-Name-3,</br>
+                       We kindly remind you to submit your performance documentation for the Year/Quarter.
+                   These documents are critical for assessing and evaluating your organization's progress towards its objectives''',
+            'amharic' : '''እማረኛ ኢሚኤል - 3'''
         },
     ]
 
@@ -4886,8 +4897,6 @@ def notifier(request):
             user_data_type = request.POST['dataType']
             user_preset_name = request.POST['preset_name']
             user_language = request.POST['language']
-
-            
 
 
             if  not user_ministries_id:
