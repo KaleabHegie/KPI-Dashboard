@@ -23,17 +23,29 @@ def send_email_notifier(subject, message, email, stop_event):
 
 
 #preset Email lists
-def email_public_bodies_overview(email,ministry,data_type, year, quarter=None):
-    pass
+def email_public_bodies_overview_notifier(subject, message,email,ministry,data_type, year, stop_event,quarter=None):
+    while not stop_event.is_set():
+
+        subject, from_email, to = subject, 'mikiyasmebrate2656@gmail.com', email
+        text_content = "Registration Successful"
+        context = {
+            'message': message,
+        }
+
+        html_content = render_to_string('email/notification.html',context)
+
+        msg = EmailMultiAlternatives(subject, text_content, from_email, to)
+        msg.attach_alternative(html_content, "text/html")
+
+        if msg.send():
+            print('Email sent')
 
 
 def send_preset_email_notifier(request,email ,ministry, preset, data_type, year, quarter, language ,stop_event):
     while not stop_event.is_set():
         subject = body = None
-        if preset == 'dashboard_overview':
-            email_public_bodies_overview(email,ministry,data_type, year, quarter or None)
-            
-        elif preset == 'preset_performance':
+
+        if preset == 'preset_performance':
             subject = 'Notification: Submission of Performance Reports'
             if language == 'english':
                 body = f'''Dear {ministry},
@@ -63,11 +75,18 @@ def send_preset_email_notifier(request,email ,ministry, preset, data_type, year,
                    '''
             else:
                 body = f'''እማረኛ ኢሚኤል'''
+
+        elif preset == 'dashboard_overview':
+            stop_event = threading.Event()
+            background_thread = threading.Thread(target=email_public_bodies_overview_notifier, args=(subject,body ,email,ministry,data_type, year, stop_event, quarter), daemon=True)
+            background_thread.start()
+            stop_event.set()
         
-        stop_event = threading.Event()
-        background_thread = threading.Thread(target=send_email_notifier, args=(subject,body,email,stop_event), daemon=True)
-        background_thread.start()
-        stop_event.set()
+        if preset != 'dashboard_overview':
+            stop_event = threading.Event()
+            background_thread = threading.Thread(target=send_email_notifier, args=(subject,body,email,stop_event), daemon=True)
+            background_thread.start()
+            stop_event.set()
 
 
             

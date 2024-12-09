@@ -4832,10 +4832,10 @@ def notifier(request):
     ministries_list = ResponsibleMinistry.objects.all()
     year_list = Year.objects.all()
     presets = [
-        # {
-        #     'name' : 'dashboard_overview',
-        #     'message' : 'Send overview dashboard'
-        # },
+        {
+            'name' : 'dashboard_overview',
+            'message' : 'Send overview dashboard'
+        },
          {
             
             'name' : 'preset_performance',
