@@ -441,7 +441,7 @@ def get_performance_ministry_verification(ministry , period ,year_filter , polic
     quarter = None
     year = year_filter
     quarter = quarter_filter[0].quarter_eng if quarter_filter else None
-    print(quarter)
+
     
     if quarter and year:
         performance = None
@@ -794,7 +794,7 @@ def ministry_profile(request):
         ministry.code = request.POST.get('code')
         ministry.save()
         email_list = request.POST.getlist('emails[]')  
-        print(request.POST)
+   
         emails.delete()
         for email in email_list:
             ContactInfo.objects.create(contact_type='email', contact=email, ministry=ministry)
@@ -1284,11 +1284,7 @@ def performance_verification(request):
         quarter_progress_lookup[progress.indicator_id][progress.year_id][progress.quarter_id] = progress
 
 
-    for goal in strategic_goals:
-        for kra in goal.kra_goal.all():
-            print(kra.indicators.all())
-            for indicator in kra.indicators.all():
-                print(indicator)
+
     context = {
         'ministries' : ministries,
         
@@ -4911,7 +4907,7 @@ def notifier(request):
 
             for ministry in ministries:
                 stop_event = threading.Event()
-                background_thread = threading.Thread(target=send_preset_email_notifier, args=(request,['mikiyasmebrate@gmail.com', 'kaleabhegiem@gmail.com'],ministry.responsible_ministry_eng,user_preset_name,user_data_type, user_year ,user_quarter,user_language,stop_event), daemon=True)
+                background_thread = threading.Thread(target=send_preset_email_notifier, args=(request,['mikiyasmebrate@gmail.com', 'kaleabhegiem@gmail.com'],ministry,user_preset_name,user_data_type, user_year ,user_quarter,user_language,stop_event), daemon=True)
                 background_thread.start()
                 stop_event.set()
             return JsonResponse({'success' : True, 'message' : "Emails sent successfully."})

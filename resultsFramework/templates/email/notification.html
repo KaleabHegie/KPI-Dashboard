@@ -453,7 +453,7 @@
                                                mso-line-height-rule: exactly;
                                                mso-text-raise: -16px;
                                                ">
-                                              Good performance Indicators - <span style="font-weight: 600;">10</span>
+                                              Good performance Indicators - <span style="font-weight: 600;">{{good_performance}}</span>
                                             </p>
 
                                             <p class="t5" style="
@@ -475,7 +475,7 @@
                                               mso-line-height-rule: exactly;
                                               mso-text-raise: -16px;
                                               ">
-                                              Indicator with target but no performance - <span style="font-weight: 600;">10</span>
+                                              Indicator with target but no performance - <span style="font-weight: 600;">{{no_performance}}</span>
                                             </p>
 
 
@@ -499,7 +499,7 @@
                                               mso-line-height-rule: exactly;
                                               mso-text-raise: -16px;
                                               ">
-                                              Low performance Indicator - <span style="font-weight: 600;">10</span>
+                                              Low performance Indicator - <span style="font-weight: 600;">{{low_performance}}</span>
                                             </p>
                                             <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" width="100%"
                                               style="max-width: 600px;">
@@ -523,11 +523,11 @@
                                                         <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0">
                                                           <tr>
                                                             <td align="right"
-                                                              style="background-color: #52f21c; color: #000000; font-weight: 400; font-size: 14px; font-family: Verdana, sans-serif; line-height: normal; margin: 0; padding: 0; width: 51%; height: 28px;"
+                                                              style="background-color: {{score_color}}; color: #000000; font-weight: 400; font-size: 14px; font-family: Verdana, sans-serif; line-height: normal; margin: 0; padding: 0; width: {{score}}%; height: 28px;"
                                                               height="28"></td>
                                                             <td align="left"
                                                               style="background-color: #e3e3e3; color: #000000; font-weight: 400; font-size: 14px; font-family: Verdana, sans-serif; line-height: normal; margin: 0; padding: 0; width: 49%; height: 28px;"
-                                                              height="28">&nbsp;51%</td>
+                                                              height="28">&nbsp;{{score}}%</td>
                                                           </tr>
                                                         </table>
                                                       </td>
@@ -549,19 +549,19 @@
                                                     <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
                                                       <caption
                                                         style="caption-side: top; color: #000000; font-family: Verdana, sans-serif; font-size: 16px; font-weight: 600; line-height: normal; text-align: left;">
-                                                        2016 Analysis </caption>
+                                                        {{period}} Analysis </caption>
                                                       <tr>
                                                         <td align="left" style="padding: 20px 0 0 0;">
                                                           <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0">
                                                             <tr>
                                                               <td align="left"
                                                                 style="background-color: #ffffff; color: #000000; font-weight: 400; font-size: 14px; font-family: Verdana, sans-serif; line-height: normal; margin: 0; padding: 0; width: 25%; height: 54px;"
-                                                                height="54">Indicator with target but no Performance</td>
+                                                                height="54">Indicator with target but no Performance - <span style="font-weight: 400; font-size: 14px;">[{{no_performance_percentage.no_performance_percentage}}%]</span></td>
                                                               <td align="right"
-                                                                style="background-color: 	#aaaaaa; color: #000000; font-weight: 400; font-size: 14px; font-family: Verdana, sans-serif; line-height: normal; margin: 0; padding: 0; width: 25.5%; height: 54px;"
-                                                                height="54">34%&nbsp;</td>
+                                                                style="background-color: 	#aaaaaa; color: #000000; font-weight: 400; font-size: 14px; font-family: Verdana, sans-serif; line-height: normal; margin: 0; padding: 0; width: {{no_performance_percentage.no_performance_percentage_75}}%; height: 54px;"
+                                                                height="54">&nbsp;</td>
                                                               <td align="right"
-                                                                style="background-color: #f1f1f1; color: #000000; font-weight: 400; font-size: 14px; font-family: Verdana, sans-serif; line-height: normal; margin: 0; padding: 0; width: 49.5%; height: 54px;"
+                                                                style="background-color: #f1f1f1; color: #000000; font-weight: 400; font-size: 14px; font-family: Verdana, sans-serif; line-height: normal; margin: 0; padding: 0; width: {{no_performance_percentage.no_performance_percentage_75_25}}%; height: 54px;"
                                                                 height="54"></td>
                                                               <td align="left"
                                                                 style="background-color: #ffffff; color: #000000; font-weight: 400; font-size: 14px; font-family: Verdana, sans-serif; line-height: normal; margin: 0; padding: 0; width: auto; height: 54px;"
@@ -576,12 +576,12 @@
                                                             <tr>
                                                               <td align="left"
                                                                 style="background-color: #ffffff; color: #000000; font-weight: 400; font-size: 14px; font-family: Verdana, sans-serif; line-height: normal; margin: 0; padding: 0; width: 25%; height: 54px;"
-                                                                height="54">Good Performance Indicator</td>
+                                                                height="54">Good Performance Indicator - <span style="font-weight: 400; font-size: 14px;">[{{percentage.good_performance_percentage}}%]</span></td>
                                                               <td align="right"
-                                                                style="background-color: 	#186f22; color: #000000; font-weight: 400; font-size: 14px; font-family: Verdana, sans-serif; line-height: normal; margin: 0; padding: 0; width: 41.25%; height: 54px;"
-                                                                height="54">55%&nbsp;</td>
+                                                                style="background-color: 	#186f22; color: #000000; font-weight: 400; font-size: 14px; font-family: Verdana, sans-serif; line-height: normal; margin: 0; padding: 0; width: {{percentage.good_performance_percentage_75}}%; height: 54px;"
+                                                                height="54">&nbsp;</td>
                                                               <td align="right"
-                                                                style="background-color: #f1f1f1; color: #000000; font-weight: 400; font-size: 14px; font-family: Verdana, sans-serif; line-height: normal; margin: 0; padding: 0; width: 33.75%; height: 54px;"
+                                                                style="background-color: #f1f1f1; color: #000000; font-weight: 400; font-size: 14px; font-family: Verdana, sans-serif; line-height: normal; margin: 0; padding: 0; width: {{percentage.good_performance_percentage_75_25}}%; height: 54px;"
                                                                 height="54"></td>
                                                               <td align="left"
                                                                 style="background-color: #ffffff; color: #000000; font-weight: 400; font-size: 14px; font-family: Verdana, sans-serif; line-height: normal; margin: 0; padding: 0; width: auto; height: 54px;"
@@ -596,12 +596,12 @@
                                                             <tr>
                                                               <td align="left"
                                                                 style="background-color: #ffffff; color: #000000; font-weight: 400; font-size: 14px; font-family: Verdana, sans-serif; line-height: normal; margin: 0; padding: 0; width: 25%; height: 54px;"
-                                                                height="54">Low Performance Indicator </td>
+                                                                height="54">Low Performance Indicator - <span style="font-weight: 400; font-size: 14px;">[{{percentage.low_performance_percentage}}%]</span></td>
                                                               <td align="right"
-                                                                style="background-color: #ff3b44; color: #000000; font-weight: 400; font-size: 14px; font-family: Verdana, sans-serif; line-height: normal; margin: 0; padding: 0; width: 47.25%; height: 54px;"
-                                                                height="54">63%&nbsp;</td>
+                                                                style="background-color: #ff3b44; color: #000000; font-weight: 400; font-size: 14px; font-family: Verdana, sans-serif; line-height: normal; margin: 0; padding: 0; width: {{percentage.low_performance_percentage_75}}%; height: 54px;"
+                                                                height="54">&nbsp;</td>
                                                               <td align="right"
-                                                                style="background-color: #f1f1f1; color: #000000; font-weight: 400; font-size: 14px; font-family: Verdana, sans-serif; line-height: normal; margin: 0; padding: 0; width: 27.75%; height: 54px;"
+                                                                style="background-color: #f1f1f1; color: #000000; font-weight: 400; font-size: 14px; font-family: Verdana, sans-serif; line-height: normal; margin: 0; padding: 0; width: {{percentage.low_performance_percentage_75_25}}%; height: 54px;"
                                                                 height="54"></td>
                                                               <td align="left"
                                                                 style="background-color: #ffffff; color: #000000; font-weight: 400; font-size: 14px; font-family: Verdana, sans-serif; line-height: normal; margin: 0; padding: 0; width: auto; height: 54px;"
